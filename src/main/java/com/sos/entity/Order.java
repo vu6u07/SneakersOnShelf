@@ -32,7 +32,7 @@ public class Order {
 	private int id;
 
 	@ManyToOne
-	private Account employee;
+	private Account staff;
 
 	@ManyToOne
 	private CustomerInfo customerInfo;

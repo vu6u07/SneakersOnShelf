@@ -29,15 +29,13 @@ public class CustomerInfo {
 
 	private String fullname;
 
-	private String email;
-
 	private String phone;
 
-	private String provinceId;
+	private int provinceId;
 
 	private String provinceName;
 
-	private String districtId;
+	private int districtId;
 
 	private String districtName;
 

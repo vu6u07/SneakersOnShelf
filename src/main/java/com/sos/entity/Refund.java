@@ -31,7 +31,7 @@ public class Refund {
 	private OrderItem orderItem;
 
 	@ManyToOne
-	private Account employee;
+	private Account staff;
 
 	private int quantity;
 
@@ -46,5 +46,5 @@ public class Refund {
 	private String description;
 
 	private Date createDate;
-
+	
 }
