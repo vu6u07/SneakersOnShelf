@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import com.sos.service.BrandService;
 @RestController
 @RequestMapping(value = "/api/v1/brands")
 public class BrandRestController {
+
+	private static Logger logger = LoggerFactory.getLogger(BrandRestController.class);
 
 	@Autowired
 	private BrandService brandService;
@@ -60,6 +64,7 @@ public class BrandRestController {
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
 		brandService.deleteById(id);
+		logger.info("Deleted brand with id : " + id);
 		return ResponseEntity.noContent().build();
 	}
 
