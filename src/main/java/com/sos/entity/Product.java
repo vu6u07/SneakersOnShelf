@@ -1,6 +1,7 @@
 package com.sos.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,8 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sos.common.ApplicationConstant.ProductGender;
 
 import lombok.AllArgsConstructor;
@@ -38,6 +42,14 @@ public class Product {
 
 	@ManyToOne
 	private Category category;
+
+	@JsonIgnoreProperties("product")
+	@OneToOne
+	private ProductImage productImage;
+
+	@JsonIgnoreProperties("product")
+	@OneToMany(mappedBy = "product")
+	private List<ProductDetail> productDetails;
 
 	private long sellPrice;
 

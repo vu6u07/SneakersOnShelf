@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,11 +33,17 @@ public class OrderItem {
 
 	private long price;
 
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
 
 	@OneToOne
 	private Rate rate;
+
+	public OrderItem(int id, int quantity) {
+		this.id = id;
+		this.quantity = quantity;
+	}
 
 }

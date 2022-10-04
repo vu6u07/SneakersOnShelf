@@ -1,7 +1,7 @@
 package com.sos.common;
 
 public class ApplicationConstant {
-	
+
 	public enum AccountStatus {
 		ACTIVE, INACTIVE
 	}

@@ -17,7 +17,7 @@ public class BrandServiceImpl implements BrandService {
 
 	@Autowired
 	private BrandRepository brandRepository;
-	
+
 	@Override
 	public List<Brand> findAll() {
 		return brandRepository.findAll();
@@ -40,7 +40,7 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public void deleteById(Integer id) {
-		// 
+		// TODO Auto-generated method stub
 	}
 
 }

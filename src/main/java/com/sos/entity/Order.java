@@ -1,6 +1,7 @@
 package com.sos.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,9 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sos.common.ApplicationConstant.OrderStatus;
 import com.sos.common.ApplicationConstant.PaymentMethod;
 import com.sos.common.ApplicationConstant.PaymentStatus;
@@ -36,6 +39,12 @@ public class Order {
 
 	@ManyToOne
 	private CustomerInfo customerInfo;
+
+	private String userTokenQuery;
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "order")
+	private List<OrderItem> orderItems;
 
 	@OneToOne
 	private Delivery delivery;
@@ -63,5 +72,9 @@ public class Order {
 	private Date createDate;
 
 	private Date updateDate;
+
+	public Order(int id) {
+		this.id = id;
+	}
 
 }

@@ -27,4 +27,15 @@ public class ProductDetail {
 	@ManyToOne
 	private Product product;
 
+	public ProductDetail(int id, int quantity) {
+		this.id = id;
+		this.quantity = quantity;
+	}
+
+	public ProductDetail(int id, String size, int quantity) {
+		this.id = id;
+		this.size = size;
+		this.quantity = quantity;
+	}
+
 }
