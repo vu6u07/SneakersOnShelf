@@ -49,4 +49,20 @@ public class CustomerInfo {
 
 	private Date updateDate;
 
+	public CustomerInfo(int id, String fullname, String phone, int provinceId, String provinceName, int districtId,
+			String districtName, String wardCode, String wardName, String address, Date createDate, Date updateDate) {
+		this.id = id;
+		this.fullname = fullname;
+		this.phone = phone;
+		this.provinceId = provinceId;
+		this.provinceName = provinceName;
+		this.districtId = districtId;
+		this.districtName = districtName;
+		this.wardCode = wardCode;
+		this.wardName = wardName;
+		this.address = address;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+	}
+
 }

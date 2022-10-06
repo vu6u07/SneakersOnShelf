@@ -42,4 +42,15 @@ public class Delivery {
 
 	private Date updateDate;
 
+	public Delivery(String parcelTrackingId, long fee, DeliveryPartner deliveryPartner, DeliveryStatus deliveryStatus,
+			String note, Date createDate, Date updateDate) {
+		this.parcelTrackingId = parcelTrackingId;
+		this.fee = fee;
+		this.deliveryPartner = deliveryPartner;
+		this.deliveryStatus = deliveryStatus;
+		this.note = note;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+	}
+
 }

@@ -41,8 +41,22 @@ public class OrderItem {
 	@OneToOne
 	private Rate rate;
 
+	public OrderItem(int id) {
+		this.id = id;
+	}
+
 	public OrderItem(int id, int quantity) {
 		this.id = id;
+		this.quantity = quantity;
+	}
+
+	public OrderItem(int id, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice, int quantity) {
+		this.id = id;
+		this.productDetail = new ProductDetail(productDetailId, productDetailSize, productDetailQuantity);
+		Product product = new Product();
+		product.setSellPrice(sellPrice);
+		product.setName(name);
+		this.productDetail.setProduct(product);
 		this.quantity = quantity;
 	}
 

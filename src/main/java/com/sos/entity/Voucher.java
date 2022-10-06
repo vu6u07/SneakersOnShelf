@@ -42,4 +42,8 @@ public class Voucher {
 
 	private Date experationDate;
 
+	public Voucher(long amount) {
+		this.amount = amount;
+	}
+
 }

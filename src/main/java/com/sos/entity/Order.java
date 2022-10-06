@@ -3,6 +3,7 @@ package com.sos.entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -46,7 +47,7 @@ public class Order {
 	@OneToMany(mappedBy = "order")
 	private List<OrderItem> orderItems;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST)
 	private Delivery delivery;
 
 	@ManyToOne
@@ -75,6 +76,13 @@ public class Order {
 
 	public Order(int id) {
 		this.id = id;
+	}
+
+	public Order(int id, String userTokenQuery, OrderStatus orderStatus, Date createDate) {
+		this.id = id;
+		this.userTokenQuery = userTokenQuery;
+		this.orderStatus = orderStatus;
+		this.createDate = createDate;
 	}
 
 }
