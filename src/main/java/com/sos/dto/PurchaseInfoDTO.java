@@ -25,7 +25,7 @@ public class PurchaseInfoDTO {
 	private List<CartItemDTO> items;
 
 	private Delivery delivery;
-	
+
 	private CustomerInfo customerInfo;
 
 	private long discount;
@@ -45,6 +45,8 @@ public class PurchaseInfoDTO {
 	private Date createDate;
 
 	private Date updateDate;
+	
+	private String paymentQRCode;
 
 	public PurchaseInfoDTO(int id, String userTokenQuery, long discount, long surcharge, long total, String description,
 			OrderStatus orderStatus, PaymentStatus paymentStatus, PaymentMethod paymentMethod, Date createDate,
