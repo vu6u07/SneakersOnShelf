@@ -1,14 +1,10 @@
 package com.sos.controller;
 
+import com.sos.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.sos.common.SorterConstant.ProductSorter;
 import com.sos.service.ProductService;
@@ -33,11 +29,18 @@ public class ProductDTORestController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-		System.out.println("IDDD"+productService.findProductInfoDTOById(id).getId());
-		System.out.println(productService.findProductInfoDTOById(id).getName());
-
 		return ResponseEntity.ok(productService.findProductInfoDTOById(id));
 
+	}
+
+	@PostMapping(value = "/save")
+	public ResponseEntity<?> save(@RequestBody Product product) {
+		try {
+			return ResponseEntity.ok(productService.save(product));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
