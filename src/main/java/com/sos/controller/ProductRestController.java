@@ -50,6 +50,7 @@ public class ProductRestController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
+		System.out.println("IDDD"+productService.findProductInfoDTOById(id).getId());
 		return ResponseEntity.ok(productService.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id : " + id)));
 	}

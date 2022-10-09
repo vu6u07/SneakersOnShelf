@@ -33,7 +33,11 @@ public class ProductDTORestController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
+		System.out.println("IDDD"+productService.findProductInfoDTOById(id).getId());
+		System.out.println(productService.findProductInfoDTOById(id).getName());
+
 		return ResponseEntity.ok(productService.findProductInfoDTOById(id));
+
 	}
 
 }
