@@ -1,5 +1,7 @@
 package com.sos.exception.handler;
 
+import javax.validation.ValidationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,5 +18,11 @@ public class RestControllerExceptionHandler {
 	public String resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
 		return ex.getMessage();
 	}
-	
+
+	@ExceptionHandler(value = { ValidationException.class })
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String validationException(ValidationException ex, WebRequest request) {
+		return ex.getMessage();
+	}
+
 }

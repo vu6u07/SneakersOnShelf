@@ -14,9 +14,11 @@ public interface CartService {
 
 	public CartDTO getCartDTO(int id, String userTokenQuery);
 
-	public void addToCart(int id, int productId, String userTokenQuery);
+	public void addToCart(int id, int productId, int quantity, String userTokenQuery);
+	
+	public void changeCartItemQuantity(int id, int quantity, String userTokenQuery);
 
-	public void deleteCartItem(int id, int cartId, String userTokenQuery);
+	public void deleteCartItem(int id, String userTokenQuery);
 
 	public void submitCart(int id, String userTokenQuery, CustomerInfo customerInfo, PaymentMethod paymentMethod) throws JsonMappingException, JsonProcessingException;
 

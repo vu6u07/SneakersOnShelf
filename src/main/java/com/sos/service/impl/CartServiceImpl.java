@@ -46,7 +46,7 @@ public class CartServiceImpl implements CartService {
 
 	@Autowired
 	private CustomerInfoRepository customerInfoRepository;
-	
+
 	@Autowired
 	private DeliveryService deliveryService;
 
@@ -74,37 +74,60 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public void addToCart(int id, int productId, String userTokenQuery) {
+	public void addToCart(int id, int productId, int quantity, String userTokenQuery) {
 		Order order = orderRepository.findOrderId(id, userTokenQuery, OrderStatus.TEMPORARY)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
 
 		ProductDetail productDetail = productDetailRepository.findByProductDetailId(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm."));
 
-		if (productDetail.getQuantity() < 1) {
-			throw new ResourceNotFoundException("Sản phẩm tạm hết hàng.");
+		if (quantity < 1) {
+			throw new ValidationException("Số lượng đặt hàng không hợp lệ.");
+		}
+
+		if (productDetail.getQuantity() < quantity) {
+			throw new ValidationException("Sản phẩm tạm hết hàng.");
 		}
 
 		OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(order.getId(), productId).orElseGet(() -> {
 			OrderItem oi = new OrderItem();
 			return oi;
 		});
-		orderItem.setQuantity(orderItem.getQuantity() + 1);
+		orderItem.setQuantity(orderItem.getQuantity() + quantity);
+
+		if (orderItem.getQuantity() > productDetail.getQuantity()) {
+			throw new ValidationException("Sản phẩm tạm hết hàng.");
+		}
+
 		orderItem.setOrder(order);
 		orderItem.setProductDetail(productDetail);
 		orderItemRepository.save(orderItem);
 	}
 
+	@Transactional
 	@Override
-	public void deleteCartItem(int id, int cartId, String userTokenQuery) {
-		OrderItem oi = orderItemRepository.findOrderItem(id, cartId, userTokenQuery, OrderStatus.TEMPORARY)
+	public void changeCartItemQuantity(int id, int quantity, String userTokenQuery) {
+		OrderItem oi = orderItemRepository.findOrderItem(id, userTokenQuery, OrderStatus.TEMPORARY)
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
+		ProductDetail pd = productDetailRepository.findByOrderItem(oi.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm."));
+		if(pd.getQuantity() < quantity) {
+			throw new ValidationException(String.format("Sản phẩm chỉ còn lại %s chiếc.", pd.getQuantity()));
+		}
+		orderItemRepository.updateCartItemQuantity(id, quantity);
+	}
+
+	@Override
+	public void deleteCartItem(int id, String userTokenQuery) {
+		OrderItem oi = orderItemRepository.findOrderItem(id, userTokenQuery, OrderStatus.TEMPORARY)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm"));
 		orderItemRepository.deleteById(oi.getId());
 	}
 
 	@Transactional
 	@Override
-	public synchronized void submitCart(int id, String userTokenQuery, CustomerInfo customerInfo, PaymentMethod paymentMethod) throws JsonMappingException, JsonProcessingException {
+	public synchronized void submitCart(int id, String userTokenQuery, CustomerInfo customerInfo,
+			PaymentMethod paymentMethod) throws JsonMappingException, JsonProcessingException {
 		Order order = orderRepository.findOrder(id, userTokenQuery, OrderStatus.TEMPORARY)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 
@@ -134,10 +157,10 @@ public class CartServiceImpl implements CartService {
 		customerInfoRepository.save(customerInfo);
 		order.setCustomerInfo(customerInfo);
 		order.setTotal(total);
-		
-		
-		Delivery delivery = new Delivery("123456789", deliveryService.getDeliveryFee(order.getId(), customerInfo.getDistrictId(), customerInfo.getWardCode()), DeliveryPartner.GHN, DeliveryStatus.PENDING, null,
-				now, now);
+
+		Delivery delivery = new Delivery("123456789",
+				deliveryService.getDeliveryFee(order.getId(), customerInfo.getDistrictId(), customerInfo.getWardCode()),
+				DeliveryPartner.GHN, DeliveryStatus.PENDING, null, now, now);
 		deliveryService.save(delivery);
 		order.setDelivery(delivery);
 		order.setOrderStatus(OrderStatus.PENDING);

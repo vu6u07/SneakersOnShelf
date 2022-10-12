@@ -14,8 +14,8 @@ import com.sos.entity.OrderItem;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
-	@Query(value = "SELECT new com.sos.entity.OrderItem(o.id) FROM OrderItem o WHERE o.id = :id AND o.order.id = :orderId AND o.order.userTokenQuery = :userTokenQuery AND o.order.orderStatus = :orderStatus")
-	Optional<OrderItem> findOrderItem(int id, int orderId, String userTokenQuery, OrderStatus orderStatus);
+	@Query(value = "SELECT new com.sos.entity.OrderItem(o.id) FROM OrderItem o WHERE o.id = :id AND o.order.userTokenQuery = :userTokenQuery AND o.order.orderStatus = :orderStatus")
+	Optional<OrderItem> findOrderItem(int id, String userTokenQuery, OrderStatus orderStatus);
 
 	@Query(value = "SELECT new com.sos.entity.OrderItem(o.id, o.quantity) FROM OrderItem o WHERE o.order.id = :orderId AND o.productDetail.id = :productId")
 	Optional<OrderItem> findByOrderIdAndProductId(int orderId, int productId);
@@ -27,4 +27,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 	@Query(value = "UPDATE OrderItem o SET o.price = :price WHERE o.id = :id")
 	void updateOrderItemPrice(int id, long price);
 
+	@Modifying(clearAutomatically = true)
+	@Query(value = "UPDATE OrderItem o SET o.quantity = :quantity WHERE o.id = :id")
+	void updateCartItemQuantity(int id, int quantity);
+	
 }
