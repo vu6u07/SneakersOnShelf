@@ -35,24 +35,22 @@ public class CartController {
 		return ResponseEntity.ok(cartService.getCartDTO());
 	}
 
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{id}", headers = { "user_token_query" })
 	public ResponseEntity<?> getCartById(@PathVariable(name = "id") int id,
 			@RequestHeader(name = "user_token_query") String userTokenQuery) {
 		return ResponseEntity.ok(cartService.getCartDTO(id, userTokenQuery));
 	}
 
-	@PostMapping(value = "/{id}/items")
+	@PostMapping(value = "/{id}/items", headers = { "user_token_query" })
 	public ResponseEntity<?> addToCart(@PathVariable(name = "id") int id,
-			@RequestParam(name = "product_id") int productId,
-			@RequestParam(name = "quantity") int quantity,
+			@RequestParam(name = "product_id") int productId, @RequestParam(name = "quantity") int quantity,
 			@RequestHeader(name = "user_token_query") String userTokenQuery) {
 		cartService.addToCart(id, productId, quantity, userTokenQuery);
 		return ResponseEntity.noContent().build();
 	}
-	
-	@PutMapping(value = "/items/{id}")
-	public ResponseEntity<?> setQuantityCartItem(
-			@PathVariable(name = "id") int id,
+
+	@PutMapping(value = "/items/{id}", headers = { "user_token_query" })
+	public ResponseEntity<?> setQuantityCartItem(@PathVariable(name = "id") int id,
 			@RequestParam(name = "quantity") int quantity,
 			@RequestHeader(name = "user_token_query") String userTokenQuery) {
 		cartService.changeCartItemQuantity(id, quantity, userTokenQuery);
@@ -60,7 +58,7 @@ public class CartController {
 	}
 
 	// @formatter:off
-	@DeleteMapping(value = "/items/{id}")
+	@DeleteMapping(value = "/items/{id}", headers = { "user_token_query" })
 	public ResponseEntity<?> deleteCartItem(
 			@PathVariable(name = "id") int id, 
 			@RequestHeader(name = "user_token_query") String userTokenQuery) {
@@ -70,7 +68,7 @@ public class CartController {
 	// @formatter:on
 
 	// @formatter:off
-	@PostMapping(value = "/{id}/submit")
+	@PostMapping(value = "/{id}/submit", headers = { "user_token_query" })
 	public ResponseEntity<?> submitCart(
 			@PathVariable(name = "id") int id, 
 			@RequestHeader(name = "user_token_query") String userTokenQuery,
