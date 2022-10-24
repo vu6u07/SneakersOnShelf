@@ -24,10 +24,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sos.entity.Delivery;
-import com.sos.entity.Voucher;
+import com.sos.repository.CartRepository;
 import com.sos.repository.DeliveryRepository;
-import com.sos.repository.OrderRepository;
-import com.sos.repository.VoucherRepository;
 import com.sos.service.DeliveryService;
 
 @Service
@@ -37,11 +35,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private DeliveryRepository deliveryRepository;
 	
 	@Autowired
-	private OrderRepository orderRepository;
+	private CartRepository cartRepository;
 	
-	@Autowired
-	private VoucherRepository voucherRepository;
-
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -123,15 +118,15 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	@Override
-	public ResponseEntity<?> getFeeAndExpectedTime(int orderId, int districtId, String wardCode)
+	public ResponseEntity<?> getFeeAndExpectedTime(int cartId, int districtId, String wardCode)
 			throws JsonMappingException, JsonProcessingException {
 		int serviceId = getAvailableServiceId(ghnShopId, ghnShopDistrictId, districtId);
-		long insuranceValue = orderRepository.getTotal(orderId);
+		long insuranceValue = cartRepository.getTotal(cartId);
 
-		Optional<Voucher> voucher = voucherRepository.getVoucherAmountByOrderId(orderId);
-		if (voucher.isPresent()) {
-			insuranceValue -= voucher.get().getAmount();
-		}
+//		Optional<Voucher> voucher = voucherRepository.getVoucherAmount(cartId);
+//		if (voucher.isPresent()) {
+//			insuranceValue -= voucher.get().getAmount();
+//		}
 
 		long fee = getFee(ghnShopDistrictId, serviceId, districtId, wardCode, 20, 11, 31, 1000, insuranceValue);
 		long leadtime = getLeadTime(ghnShopDistrictId, ghnShopWardCode, districtId, wardCode, serviceId);
@@ -143,16 +138,23 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	@Override
-	public long getDeliveryFee(int orderId, int districtId, String wardCode)
+	public long getDeliveryFee(int cartId, int districtId, String wardCode)
 			throws JsonMappingException, JsonProcessingException {
 		int serviceId = getAvailableServiceId(ghnShopId, ghnShopDistrictId, districtId);
-		long insuranceValue = orderRepository.getTotal(orderId);
+		long insuranceValue = cartRepository.getTotal(cartId);
 
-		Optional<Voucher> voucher = voucherRepository.getVoucherAmountByOrderId(orderId);
-		if (voucher.isPresent()) {
-			insuranceValue -= voucher.get().getAmount();
-		}
+//		Optional<Voucher> voucher = voucherRepository.getVoucherAmount();
+//		if (voucher.isPresent()) {
+//			insuranceValue -= voucher.get().getAmount();
+//		}
 
+		return getFee(ghnShopDistrictId, serviceId, districtId, wardCode, 20, 11, 31, 1000, insuranceValue);
+	}
+	
+	@Override
+	public long getDeliveryFee(long insuranceValue, int districtId, String wardCode)
+			throws JsonMappingException, JsonProcessingException {
+		int serviceId = getAvailableServiceId(ghnShopId, ghnShopDistrictId, districtId);
 		return getFee(ghnShopDistrictId, serviceId, districtId, wardCode, 20, 11, 31, 1000, insuranceValue);
 	}
 

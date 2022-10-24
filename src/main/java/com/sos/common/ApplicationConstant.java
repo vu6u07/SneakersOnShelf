@@ -40,7 +40,7 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum DeliveryStatus {
-		
+
 		PENDING("Đang chờ vận chuyển"), TRANSIT("Đang vận chuyển"), DELIVERED("Đã giao hàng"), CANCELLED("Đã hủy"),
 		FAILED("Thất bại"), RETURNED("Đã trả hàng");
 
@@ -85,7 +85,7 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderStatus {
-		TEMPORARY("Giỏ hàng"), PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"),
+		PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"),
 		APPROVED("Đã hoàn thành");
 
 		private final String description;
@@ -98,6 +98,26 @@ public class ApplicationConstant {
 			return description;
 		}
 
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum CartStatus {
+		PENDING("Đang chờ xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
+
+		private final String description;
+
+		private CartStatus(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+	}
+	
+	public enum CustomerInfoStatus {
+		ACTIVE, INACTIVE
 	}
 
 	public enum VerifyStatus {

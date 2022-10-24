@@ -14,10 +14,13 @@ public interface DeliveryService extends CrudService<Delivery, Integer> {
 
 	ResponseEntity<?> getAllWardsByDistrictId(int districtId);
 
-	ResponseEntity<?> getFeeAndExpectedTime(int orderId, int districtId, String wardCode)
+	ResponseEntity<?> getFeeAndExpectedTime(int cartId, int districtId, String wardCode)
 			throws JsonMappingException, JsonProcessingException;
 
-	long getDeliveryFee(int orderId, int districtId, String wardCode)
+	long getDeliveryFee(int cartId, int districtId, String wardCode)
 			throws JsonMappingException, JsonProcessingException;
 
+	long getDeliveryFee(long insuranceValue, int districtId, String wardCode)
+			throws JsonMappingException, JsonProcessingException;
+	
 }

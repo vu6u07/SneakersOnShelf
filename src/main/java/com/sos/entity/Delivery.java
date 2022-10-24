@@ -29,6 +29,8 @@ public class Delivery {
 	private String parcelTrackingId;
 
 	private long fee;
+	
+	private String address;
 
 	@Enumerated(EnumType.STRING)
 	private DeliveryPartner deliveryPartner;
@@ -42,10 +44,11 @@ public class Delivery {
 
 	private Date updateDate;
 
-	public Delivery(String parcelTrackingId, long fee, DeliveryPartner deliveryPartner, DeliveryStatus deliveryStatus,
+	public Delivery(String parcelTrackingId, long fee, String address, DeliveryPartner deliveryPartner, DeliveryStatus deliveryStatus,
 			String note, Date createDate, Date updateDate) {
 		this.parcelTrackingId = parcelTrackingId;
 		this.fee = fee;
+		this.address = address;
 		this.deliveryPartner = deliveryPartner;
 		this.deliveryStatus = deliveryStatus;
 		this.note = note;

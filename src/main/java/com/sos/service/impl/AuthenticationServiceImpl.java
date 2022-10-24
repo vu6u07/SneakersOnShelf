@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public JwtResponse signin(LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 		CustomUserDetail user = (CustomUserDetail) authentication.getPrincipal();
 		String token = jwtUtils.generateToken(String.valueOf(user.getId()), authentication.getAuthorities());
 
@@ -85,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public JwtResponse signup(@Valid LoginRequest loginRequest) {
 		Date date = new Date();
 		Account account = new Account();
-		account.setEmail(loginRequest.getEmail());
+		account.setEmail(loginRequest.getUsername());
 		account.setPassword(passwordEncoder.encode(loginRequest.getPassword()));
 		account.setRoles(userRoles);
 		account.setAccountStatus(AccountStatus.ACTIVE);
@@ -107,9 +107,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public JwtResponse refreshToken(String token) throws AuthenticationException {
-		System.out.println("token " + token);
 		jwtUtils.validateJwtRefreshToken(token);
-		System.out.println("wtf");
 		Date date = new Date();
 		int accountId = refreshTokenRepository.findAccountIdByTokenValue(token, date)
 				.orElseThrow(() -> new NonceExpiredException("Token not found"));
@@ -118,7 +116,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.map(Role::getName).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
 		String accessToken = jwtUtils.generateToken(String.valueOf(accountId), authorities);
-		System.out.println("ngon");
 		return new JwtResponse(accountId, accessToken, "Bearer", token);
 	}
 

@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sos.common.ApplicationConstant.AccountStatus;
 
 import lombok.AllArgsConstructor;
@@ -31,9 +32,13 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	private String email;
+	private String username;
 
 	private String password;
+
+	private String email;
+
+	private String fullname;
 
 	@ManyToMany
 	private Set<Role> roles;
@@ -44,11 +49,15 @@ public class Account {
 	@Column(name = "facebook_oauth_id")
 	private String facebookOAuthId;
 
+	@JsonIgnoreProperties("account")
 	@OneToOne
 	private CustomerInfo customerInfo;
 
 	@Enumerated(EnumType.STRING)
 	private AccountStatus accountStatus;
+
+	@OneToOne
+	private Cart cart;
 
 	private String picture;
 
@@ -58,14 +67,28 @@ public class Account {
 
 	private Date updateDate;
 
-	public Account(int id, String email, String password) {
+	public Account(int id) {
 		this.id = id;
-		this.email = email;
+	}
+
+	public Account(int id, String username, String password) {
+		this.id = id;
+		this.username = username;
 		this.password = password;
 	}
 
-	public Account(int id) {
+	public Account(int id, String username, String email, String fullname, String googleOAuthEmail,
+			String facebookOAuthId, CustomerInfo customerInfo, String picture, long point, Date createDate) {
 		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.fullname = fullname;
+		this.googleOAuthEmail = googleOAuthEmail;
+		this.facebookOAuthId = facebookOAuthId;
+		this.customerInfo = customerInfo;
+		this.picture = picture;
+		this.point = point;
+		this.createDate = createDate;
 	}
 
 }

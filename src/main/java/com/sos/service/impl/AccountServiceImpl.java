@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
 	// @formatter:off
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountRepository.findByEmail(username, AccountStatus.ACTIVE)
+		Account account = accountRepository.findByUsername(username, AccountStatus.ACTIVE)
 				.orElseThrow(() -> new UsernameNotFoundException("Username not found : " + username));
 		Collection<GrantedAuthority> authorities = roleRepository.findByAccountId(account.getId())
 				.stream()
@@ -57,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Optional<Account> findById(Integer id) {
-		return null;
+		return accountRepository.findById(id);
 	}
 
 	@Override
@@ -68,6 +68,10 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void deleteById(Integer id) {
 
+	}
+
+	public Optional<Account> findAccountDTOById(int id) {
+		return accountRepository.findAccountDTOById(id);
 	}
 
 }
