@@ -1,0 +1,135 @@
+package com.sos.service.util;
+
+import com.sos.entity.Order;
+
+public class EmailUtil {
+
+	private static final String NEW_ORDER_EMAIL_CONTENT = "<!DOCTYPE html>" + "<html lang=\"vn\">" + "<head>"
+			+ "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+			+ "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>" + "    <style>"
+			+ "        .divine-body-primary {" + "            max-width: 1200px;" + "            margin: auto;"
+			+ "            background-color: #f3f3f3;" + "        }" + "        .divine-table {"
+			+ "            margin: 0;" + "            padding: 0;" + "            width: 100%%;" + "        }"
+			+ "        .divine-container a {" + "            text-decoration: none;" + "        }"
+			+ "        .divine-container {" + "            font-family: 'Helvetica', sans-serif;"
+			+ "            font-style: normal;" + "            font-weight: 400;"
+			+ "            background-color: #f3f3f3;" + "            padding: 40px 70px;" + "        }"
+			+ "        .divine-header {" + "            text-align: center;" + "        }" + "        .divine-logo {"
+			+ "            max-width: 260px;" + "            max-height: 55px;" + "        }" + "        .divine-body {"
+			+ "            background-color: #fff;" + "            margin: 30px 0;" + "        }"
+			+ "        .divine-body-header {" + "            background: #014AB5;" + "            padding: 40px 15px;"
+			+ "            margin: 30px 0;" + "            text-align: center;" + "            font-style: normal;"
+			+ "            font-weight: 600;" + "            font-size: 32px;" + "            line-height: 39px;"
+			+ "            color: #fff;" + "        }" + "        .divine-body-header .caption {"
+			+ "            font-style: normal;" + "            font-weight: 400;" + "            font-size: 16px;"
+			+ "            line-height: 19px;" + "            color: #fff;" + "            opacity: 0.5;"
+			+ "            margin-top: 10px;" + "        }" + "        .divine-body-content {"
+			+ "            font-weight: 400;" + "            font-size: 16px;" + "            line-height: 30px;"
+			+ "            padding: 40px;" + "            color: #072227;" + "        }"
+			+ "        .divine-body-content div + div {" + "            line-height: normal;"
+			+ "            margin-top: 20px;" + "        }" + "        .divine-footer {"
+			+ "            text-align: center;" + "        }" + "        .divine-hotline-content {"
+			+ "            color: #7d8a8d;" + "            font-size: 14px;" + "        }"
+			+ "        .divine-back-link {" + "            margin-top: 10px;" + "        }" + "        .divine-code {"
+			+ "            color: #2579f2;" + "            border: 1px solid rgba(37, 121, 242, 0.5);"
+			+ "            padding: 10px;" + "            font-weight: 600;" + "            font-size: 24px;"
+			+ "        }" + "        .divine-button {" + "            background: #2579F2;"
+			+ "            padding: 20px 30px;" + "            font-weight: 600;" + "            font-size: 16px;"
+			+ "            color: #fff;" + "            border: none;" + "            cursor: pointer;" + "        }"
+			+ "        .divine-success-color {" + "            color: #28ad70;" + "        }"
+			+ "        .divine-link-color {" + "            color: #2579f2;" + "        }"
+			+ "        .divine-table-item-name {" + "            width: 165px;" + "            display: inline-block;"
+			+ "        }" + "        .divine-table-item-value {" + "            font-weight: bold;" + "        }"
+			+ "        .divine-table tr {" + "            height: 40px;" + "        }" + "        .divine-order-image {"
+			+ "            width: 230px;" + "            height: 108px;" + "        }"
+			+ "        .divine-order-text-medium {" + "            font-weight: 600;" + "            font-size: 16px;"
+			+ "            color: #000;" + "        }" + "        .divine-order-price-item {"
+			+ "            font-weight: 400;" + "            font-size: 16px;" + "            color: #989898;"
+			+ "        }" + "        .divine-order-information {" + "            font-weight: 400;"
+			+ "            font-size: 14px;" + "            color: #2579F2;" + "        }"
+			+ "        .divine-order-key {" + "            border: 1px solid rgba(37, 121, 242, 0.5);"
+			+ "            padding: 10px;" + "        }" + "        .divine-order-item {"
+			+ "            padding-bottom: 25px;" + "            border-bottom: 1px solid rgba(0, 0, 0, 0.12);"
+			+ "        }" + "        .divine-text-align-right {" + "            text-align: right;" + "        }"
+			+ "        .divine-title {" + "            font-weight: 600;" + "            font-size: 24px;" + "        }"
+			+ "        .divine-date-mb {" + "            border: 1px solid rgba(0, 0, 0, 0.12);"
+			+ "            padding: 7px 12px;" + "            margin-left: 20px;" + "        }"
+			+ "        @media screen and (max-device-width: 767px), screen and (max-width: 767px) {"
+			+ "            .divine-container, .divine-body-content {" + "                padding: 15px;"
+			+ "            }" + "            .divine-title {" + "                font-weight: 600;"
+			+ "                font-size: 20px;" + "            }" + "            .divine-date-mb {"
+			+ "                border: none;" + "                padding: inherit;"
+			+ "                display: table-cell;" + "                margin-bottom: -10px;" + "            }"
+			+ "            .divine-table td {" + "                display: block;"
+			+ "                width: 100%%!important;" + "                padding-bottom: 5px;" + "            }"
+			+ "            .divine-table-item-name {" + "                width: auto;" + "            }"
+			+ "            .divine-order-price-mb {" + "                margin-top: -50px;" + "            }"
+			+ "            .divine-hide-mb {" + "                display: none!important;" + "            }"
+			+ "            .divine-inline-mb {" + "                display: inline!important;" + "            }"
+			+ "            .divine-table tr {" + "                height: 20px;" + "            }"
+			+ "            .divine-text-align-left-mb {" + "                text-align: left!important;"
+			+ "            }" + "        }" + "    </style>" + "    <title></title>" + "</head>"
+			+ "<body class=\"divine-body-primary\">" + "<div class=\"divine-container\">"
+			+ "    <div class=\"divine-body-header\">" + "        <div>Đơn hàng mới %s</div>"
+			+ "        <div class=\"caption\">Cảm ơn bạn đã quan tâm sản phẩm<br>của Sneakers On Shelf.</div>"
+			+ "    </div>" + "    <div class=\"divine-body\">" + "        <div class=\"divine-body-content\">"
+			+ "            <div class=\"divine-title\">Chào %s,</div>"
+			+ "            <div style=\"line-height: 30px;\">"
+			+ "                Đơn hàng của bạn đã được nhận và sẽ được xử lý ngay khi bạn xác nhận thanh toán.<br>"
+			+ "                Để xem chi tiết đơn hàng của mình tại Divine Shop, bạn có thể <a href=\"%s\" class=\"divine-link-color\"><b>nhấn vào đây</b></a>."
+			+ "            </div>" + "            <div>"
+			+ "                <span class=\"divine-title\">Thông tin đơn hàng</span>"
+			+ "                <span class=\"divine-date-mb\">Ngày đặt hàng %s</span>" + "            </div>"
+			+ "            <div>"
+			+ "                <table class=\"divine-table\" border=\"0\" cellspacing=\"0\" width=\"100%%\">"
+			+ "                    <tr>" + "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Khách hàng:</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Mã Đơn hàng</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                    </tr>" + "                    <tr>"
+			+ "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Email:</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Tình trạng:</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                    </tr>" + "                    <tr>"
+			+ "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Số điện thoại:</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                        <td>"
+			+ "                            <span class=\"divine-table-item-name\">Tổng giá trị:</span>"
+			+ "                            <span class=\"divine-table-item-value\">%s</span>"
+			+ "                        </td>" + "                    </tr>" + "                </table>"
+			+ "            </div>" + "" + "            <div style=\"margin-top: 40px;text-align: center;\">"
+			+ "                <a href=\"http://truottotnghiep.ga/\" target=\"_blank\">"
+			+ "                    <button class=\"divine-button\">Tiếp tục mua sắm</button>" + "                </a>"
+			+ "            </div>" + "        </div>" + "    </div>" + "    <div class=\"divine-footer\">"
+			+ "        <div class=\"divine-hotline-content\">" + "            Hotline hỗ trợ: 1900 633 305"
+			+ "        </div>" + "        <div class=\"divine-back-link\">"
+			+ "            <a href=\"https://www.facebook.com/profile.php?id=100042172720299\" target=\"_blank\">"
+			+ "                <img src=\"https://cdn.divineshop.vn/image/mail/facebook.png\" alt=\"\">"
+			+ "            </a>" + "            <a href=\"https://truottotnghiep.ga\" target=\"_blank\">"
+			+ "                <img src=\"https://cdn.divineshop.vn/image/mail/website.png\" alt=\"\">"
+			+ "            </a>" + "        </div>" + "    </div>" + "</div>" + "</body>" + "</html>";
+
+	public static String getNewOrderEmailContent(Order order) {
+
+		String linkOrder = String.format("http://52.76.26.240:9999/purchase/%s", order.getId().toString());
+		if (order.getToken() != null) {
+			linkOrder = linkOrder.concat("?token=").concat(order.getToken());
+		}
+
+		return String.format(NEW_ORDER_EMAIL_CONTENT, order.getId().toString(), order.getCustomerInfo().getFullname(),
+				linkOrder, DateUtil.convertToString(order.getCreateDate()), order.getCustomerInfo().getFullname(),
+				order.getId().toString(), order.getEmail(), order.getOrderStatus().getDescription(),
+				order.getCustomerInfo().getPhone(), NumberUtil.VND(order.getTotal()));
+	}
+
+	public static String getNewOrderEmailSubject(String orderId) {
+		return String.format("Sneakers On Shelf - Đơn hàng mới %s", orderId);
+	}
+
+}

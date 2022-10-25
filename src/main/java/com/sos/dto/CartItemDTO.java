@@ -41,6 +41,4 @@ public class CartItemDTO {
 		this.price = price;
 	}
 	
-	
-	
 }

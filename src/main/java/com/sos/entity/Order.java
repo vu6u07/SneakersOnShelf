@@ -2,18 +2,19 @@ package com.sos.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sos.common.ApplicationConstant.OrderStatus;
@@ -32,8 +33,8 @@ import lombok.NoArgsConstructor;
 public class Order {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@Type(type = "org.hibernate.type.UUIDCharType")
+	private UUID id;
 
 	@ManyToOne
 	private Account staff;
@@ -41,7 +42,7 @@ public class Order {
 	@ManyToOne
 	private CustomerInfo customerInfo;
 
-	private String userTokenQuery;
+	private String token;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "order")
@@ -73,14 +74,12 @@ public class Order {
 	private Date createDate;
 
 	private Date updateDate;
-
-	public Order(int id) {
+	
+	private String email;
+	
+	public Order(UUID id, String token, OrderStatus orderStatus, Date createDate) {
 		this.id = id;
-	}
-
-	public Order(int id, String userTokenQuery, OrderStatus orderStatus, Date createDate) {
-		this.id = id;
-		this.userTokenQuery = userTokenQuery;
+		this.token = token;
 		this.orderStatus = orderStatus;
 		this.createDate = createDate;
 	}

@@ -1,10 +1,13 @@
 package com.sos.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
@@ -13,27 +16,54 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.sos.common.ApplicationConstant.CartStatus;
+import com.sos.common.ApplicationConstant.CustomerInfoStatus;
 import com.sos.common.ApplicationConstant.DeliveryPartner;
 import com.sos.common.ApplicationConstant.DeliveryStatus;
 import com.sos.common.ApplicationConstant.OrderStatus;
 import com.sos.common.ApplicationConstant.PaymentMethod;
 import com.sos.common.ApplicationConstant.PaymentStatus;
 import com.sos.dto.CartDTO;
+import com.sos.dto.EmailRequest;
+import com.sos.entity.Account;
+import com.sos.entity.Cart;
+import com.sos.entity.CartItem;
 import com.sos.entity.CustomerInfo;
 import com.sos.entity.Delivery;
 import com.sos.entity.Order;
 import com.sos.entity.OrderItem;
 import com.sos.entity.ProductDetail;
 import com.sos.exception.ResourceNotFoundException;
+import com.sos.repository.AccountRepository;
+import com.sos.repository.CartItemRepository;
+import com.sos.repository.CartRepository;
 import com.sos.repository.CustomerInfoRepository;
 import com.sos.repository.OrderItemRepository;
 import com.sos.repository.OrderRepository;
 import com.sos.repository.ProductDetailRepository;
+import com.sos.security.AccountAuthentication;
 import com.sos.service.CartService;
 import com.sos.service.DeliveryService;
+import com.sos.service.EmailService;
+import com.sos.service.util.EmailUtil;
 
 @Service
 public class CartServiceImpl implements CartService {
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
+	private CustomerInfoRepository customerInfoRepository;
+
+	@Autowired
+	private CartRepository cartRepository;
+
+	@Autowired
+	private CartItemRepository cartItemRepository;
+
+	@Autowired
+	private ProductDetailRepository productDetailRepository;
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -42,40 +72,44 @@ public class CartServiceImpl implements CartService {
 	private OrderItemRepository orderItemRepository;
 
 	@Autowired
-	private ProductDetailRepository productDetailRepository;
-
-	@Autowired
-	private CustomerInfoRepository customerInfoRepository;
-
-	@Autowired
 	private DeliveryService deliveryService;
 
+	@Autowired
+	private EmailService emailService;
+
+	@Transactional
 	@Override
-	public CartDTO getCartDTO() {
-		Order order = new Order();
-		order.setOrderStatus(OrderStatus.TEMPORARY);
-		order.setUserTokenQuery(generateUserTokenQuery());
-		order.setCreateDate(new Date());
-		orderRepository.save(order);
-		return new CartDTO(order.getId(), order.getUserTokenQuery(), new ArrayList<>());
+	public CartDTO getOrCreateCart(AccountAuthentication authentication) {
+		Optional<CartDTO> rs = cartRepository.findCurrentCartDTOByAccountId(authentication.getId(), CartStatus.PENDING);
+		if (rs.isPresent()) {
+			CartDTO cartDTO = rs.get();
+			cartDTO.setItems(cartRepository.findAllCartItemDTOByCartId(cartDTO.getId()));
+			return cartDTO;
+		}
+		Date date = new Date();
+		Cart cart = new Cart();
+		cart.setCreateDate(date);
+		cart.setUpdateDate(date);
+		cart.setAccount(new Account(authentication.getId()));
+		cart.setCartStatus(CartStatus.PENDING);
+		cartRepository.save(cart);
+		if (accountRepository.updateCart(authentication.getId(), cart) == 0) {
+			throw new ResourceNotFoundException("Có lỗi xảy ra, hãy thử lại sau.");
+		}
+		return new CartDTO(cart.getId(), new ArrayList<>());
 	}
 
 	@Override
-	public CartDTO getCartDTO(int id) {
-		return null;
-	}
-
-	@Override
-	public CartDTO getCartDTO(int id, String userTokenQuery) {
-		CartDTO rs = orderRepository.findCartDTO(id, userTokenQuery, OrderStatus.TEMPORARY)
+	public CartDTO getCartDTO(int id, AccountAuthentication authentication) {
+		CartDTO cartDTO = cartRepository.findCartDTO(id, CartStatus.PENDING, authentication.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
-		rs.setItems(orderRepository.findAllCartItemDTO(id));
-		return rs;
+		cartDTO.setItems(cartRepository.findAllCartItemDTOByCartId(cartDTO.getId()));
+		return cartDTO;
 	}
 
 	@Override
-	public void addToCart(int id, int productId, int quantity, String userTokenQuery) {
-		Order order = orderRepository.findOrderId(id, userTokenQuery, OrderStatus.TEMPORARY)
+	public void addToCart(int id, int productId, int quantity, AccountAuthentication authentication) {
+		Cart cart = cartRepository.findCartId(id, CartStatus.PENDING, authentication.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
 
 		ProductDetail productDetail = productDetailRepository.findByProductDetailId(productId)
@@ -85,81 +119,101 @@ public class CartServiceImpl implements CartService {
 			throw new ValidationException("Số lượng đặt hàng không hợp lệ.");
 		}
 
-		if (productDetail.getQuantity() < quantity) {
+		CartItem cartItem = cartItemRepository.findByCartIdAndProductDetailId(cart.getId(), productDetail.getId())
+				.orElseGet(() -> new CartItem(cart, productDetail, 0));
+		cartItem.setQuantity(cartItem.getQuantity() + quantity);
+		if (cartItem.getQuantity() > productDetail.getQuantity()) {
 			throw new ValidationException("Sản phẩm tạm hết hàng.");
 		}
-
-		OrderItem orderItem = orderItemRepository.findByOrderIdAndProductId(order.getId(), productId).orElseGet(() -> {
-			OrderItem oi = new OrderItem();
-			return oi;
-		});
-		orderItem.setQuantity(orderItem.getQuantity() + quantity);
-
-		if (orderItem.getQuantity() > productDetail.getQuantity()) {
-			throw new ValidationException("Sản phẩm tạm hết hàng.");
-		}
-
-		orderItem.setOrder(order);
-		orderItem.setProductDetail(productDetail);
-		orderItemRepository.save(orderItem);
+		cartItemRepository.save(cartItem);
 	}
 
 	@Transactional
 	@Override
-	public void changeCartItemQuantity(int id, int quantity, String userTokenQuery) {
-		OrderItem oi = orderItemRepository.findOrderItem(id, userTokenQuery, OrderStatus.TEMPORARY)
+	public void changeCartItemQuantity(int id, int quantity, AccountAuthentication authentication) {
+		CartItem cartItem = cartItemRepository.findCartItemId(id, CartStatus.PENDING, authentication.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
-		ProductDetail pd = productDetailRepository.findByOrderItem(oi.getId())
+		ProductDetail productDetail = productDetailRepository.findByCartItemId(cartItem.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm."));
-		if(pd.getQuantity() < quantity) {
-			throw new ValidationException(String.format("Sản phẩm chỉ còn lại %s chiếc.", pd.getQuantity()));
+
+		if (productDetail.getQuantity() < quantity) {
+			throw new ValidationException(String.format("Sản phẩm chỉ còn lại %s chiếc.", productDetail.getQuantity()));
 		}
-		orderItemRepository.updateCartItemQuantity(id, quantity);
+
+		if (cartItemRepository.changeCartItemQuantity(cartItem.getId(), quantity) == 0) {
+			throw new ValidationException("Có lỗi xảy ra, hãy thử lại sau.");
+		}
 	}
 
 	@Override
-	public void deleteCartItem(int id, String userTokenQuery) {
-		OrderItem oi = orderItemRepository.findOrderItem(id, userTokenQuery, OrderStatus.TEMPORARY)
-				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm"));
-		orderItemRepository.deleteById(oi.getId());
+	public void deleteCartItem(int id, AccountAuthentication authentication) {
+		CartItem cartItem = cartItemRepository.findCartItemId(id, CartStatus.PENDING, authentication.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
+		cartItemRepository.deleteById(cartItem.getId());
 	}
 
 	@Transactional
 	@Override
-	public synchronized void submitCart(int id, String userTokenQuery, CustomerInfo customerInfo,
-			PaymentMethod paymentMethod) throws JsonMappingException, JsonProcessingException {
-		Order order = orderRepository.findOrder(id, userTokenQuery, OrderStatus.TEMPORARY)
-				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
+	public void deleteAllCartItem(int cartId, AccountAuthentication authentication) {
+		Cart cart = cartRepository.findCartId(cartId, CartStatus.PENDING, authentication.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
+		cartItemRepository.deleteCartItemByCartId(cart.getId());
+	}
 
-		List<OrderItem> orderItems = orderItemRepository.findOrderItemsByOrderId(order.getId());
+	@Transactional
+	@Override
+	public Order submitCart(int id, PaymentMethod paymentMethod, int customerInfoId,
+			AccountAuthentication authentication) throws JsonMappingException, JsonProcessingException {
+		Cart cart = cartRepository.findCartId(id, CartStatus.PENDING, authentication.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
+
+		CustomerInfo customerInfo = customerInfoRepository
+				.findCustomerInfo(customerInfoId, authentication.getId(), CustomerInfoStatus.ACTIVE)
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng."));
+
+		List<CartItem> cartItems = cartItemRepository.findCartItemsByCartId(cart.getId());
+
+		if (cartItems.size() < 1) {
+			throw new ValidationException("Không có sản phẩm nào trong giỏ.");
+		}
+
 		Date now = new Date();
 		long total = 0l;
 
-		for (OrderItem orderItem : orderItems) {
-			if (orderItem.getQuantity() < 1) {
+		Order order = new Order();
+		List<OrderItem> orderItems = new ArrayList<>();
+
+		for (CartItem cartItem : cartItems) {
+			if (cartItem.getQuantity() < 1) {
 				throw new ValidationException("Số lượng đặt hàng không hợp lệ");
 			}
 
-			if (orderItem.getQuantity() > orderItem.getProductDetail().getQuantity()) {
-				throw new ResourceNotFoundException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng",
-						orderItem.getProductDetail().getProduct().getName(), orderItem.getProductDetail().getSize()));
+			if (cartItem.getQuantity() > cartItem.getProductDetail().getQuantity()) {
+				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng",
+						cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
 			}
 
-			orderItem.setPrice(orderItem.getProductDetail().getProduct().getSellPrice());
+			OrderItem orderItem = new OrderItem();
+			orderItem.setOrder(order);
+			orderItem.setProductDetail(cartItem.getProductDetail());
+			orderItem.setQuantity(cartItem.getQuantity());
+			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
 			productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 					orderItem.getQuantity());
-			orderItemRepository.updateOrderItemPrice(orderItem.getId(), orderItem.getPrice());
 			total += orderItem.getPrice() * orderItem.getQuantity();
+			orderItems.add(orderItem);
 		}
 
-		customerInfo.setCreateDate(now);
-		customerInfo.setUpdateDate(now);
-		customerInfoRepository.save(customerInfo);
+		order.setId(UUID.randomUUID());
+		order.setToken(cart.getToken());
 		order.setCustomerInfo(customerInfo);
 		order.setTotal(total);
 
 		Delivery delivery = new Delivery("123456789",
-				deliveryService.getDeliveryFee(order.getId(), customerInfo.getDistrictId(), customerInfo.getWardCode()),
+				deliveryService.getDeliveryFee(order.getTotal() + order.getSurcharge() - order.getDiscount(),
+						customerInfo.getDistrictId(), customerInfo.getWardCode()),
+				String.format("%s, %s, %s, %s", customerInfo.getAddress(), customerInfo.getWardName(),
+						customerInfo.getDistrictName(), customerInfo.getProvinceName()),
 				DeliveryPartner.GHN, DeliveryStatus.PENDING, null, now, now);
 		deliveryService.save(delivery);
 		order.setDelivery(delivery);
@@ -168,11 +222,43 @@ public class CartServiceImpl implements CartService {
 		order.setPaymentStatus(PaymentStatus.PENDING);
 		order.setCreateDate(now);
 		order.setUpdateDate(now);
-		orderRepository.save(order);
-	}
 
-	private String generateUserTokenQuery() {
-		return UUID.randomUUID().toString();
+		accountRepository.getAccountEmail(authentication.getId()).ifPresent(email -> {
+			order.setEmail(email);
+		});
+
+		Order created = orderRepository.save(order);
+		orderItemRepository.saveAll(orderItems);
+
+		if (cartRepository.updateCartStatus(cart.getId(), CartStatus.APPROVED) == 0) {
+			throw new ResourceNotFoundException("Không tìm thấy giỏ hàng");
+		}
+
+		accountRepository.getAccountEmail(authentication.getId()).ifPresent(email -> {
+			try {
+				emailService.sendEmail(new EmailRequest(new String[] { email }, null, null,
+						EmailUtil.getNewOrderEmailSubject(order.getId().toString()),
+						EmailUtil.getNewOrderEmailContent(order), true));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		});
+		
+		if (order.getEmail() != null) {
+			try {
+				emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
+						EmailUtil.getNewOrderEmailSubject(order.getId().toString()),
+						EmailUtil.getNewOrderEmailContent(order), true));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return created;
 	}
 
 }
