@@ -1,22 +1,25 @@
 package com.sos.controller;
 
-import com.sos.entity.Brand;
-import com.sos.entity.Voucher;
-import com.sos.exception.ResourceNotFoundException;
-import com.sos.service.VoucherService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.sos.entity.Voucher;
+import com.sos.exception.ResourceNotFoundException;
+import com.sos.service.VoucherService;
 
 @RestController
 @RequestMapping(value = "/api/v1/vouchers")
-public class VoucherController {
-    private static Logger logger = LoggerFactory.getLogger(BrandRestController.class);
+public class VoucherRestController {
+    private static Logger logger = LoggerFactory.getLogger(VoucherRestController.class);
 
     @Autowired
     private VoucherService voucherService;
