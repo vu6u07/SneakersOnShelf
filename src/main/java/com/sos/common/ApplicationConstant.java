@@ -8,6 +8,10 @@ public class ApplicationConstant {
 		ACTIVE, INACTIVE
 	}
 
+	public enum OAuthProvider {
+		local, facebook, google
+	}
+
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum PaymentMethod {
 		CASH("Tiền mặt"), BANKING("Chuyển khoản"), COD("Thanh toán khi nhận hàng");
@@ -85,8 +89,7 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderStatus {
-		PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"),
-		APPROVED("Đã hoàn thành");
+		PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
 
 		private final String description;
 
@@ -115,7 +118,7 @@ public class ApplicationConstant {
 		}
 
 	}
-	
+
 	public enum CustomerInfoStatus {
 		ACTIVE, INACTIVE
 	}
