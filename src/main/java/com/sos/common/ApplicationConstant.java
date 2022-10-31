@@ -1,21 +1,63 @@
 package com.sos.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class ApplicationConstant {
 
 	public enum AccountStatus {
 		ACTIVE, INACTIVE
 	}
 
+	public enum OAuthProvider {
+		local, facebook, google
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum PaymentMethod {
-		CASH, BANKING, COD
+		CASH("Tiền mặt"), BANKING("Chuyển khoản"), COD("Thanh toán khi nhận hàng");
+
+		private final String description;
+
+		private PaymentMethod(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum PaymentStatus {
-		PENDING, RECONCILING, APPROVED
+		PENDING("Đang chờ xác nhận"), APPROVED("Đã thanh toán");
+
+		private final String description;
+
+		private PaymentStatus(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum DeliveryStatus {
-		PENDING, TRANSIT, DELIVERED, CANCELLED, FAILED, RETURNED
+
+		PENDING("Đang chờ vận chuyển"), TRANSIT("Đang vận chuyển"), DELIVERED("Đã giao hàng"), CANCELLED("Đã hủy"),
+		FAILED("Thất bại"), RETURNED("Đã trả hàng");
+
+		private final String description;
+
+		private DeliveryStatus(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
 	}
 
 	public enum DeliveryPartner {
@@ -45,8 +87,40 @@ public class ApplicationConstant {
 		ACTIVE, CLOSE, NOTIFIED
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderStatus {
-		TEMPORARY, PENDING, CONFIRMED, CANCELLED, APPROVED
+		PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
+
+		private final String description;
+
+		private OrderStatus(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum CartStatus {
+		PENDING("Đang chờ xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
+
+		private final String description;
+
+		private CartStatus(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+	}
+
+	public enum CustomerInfoStatus {
+		ACTIVE, INACTIVE
 	}
 
 	public enum VerifyStatus {

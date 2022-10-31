@@ -7,4 +7,5 @@ public interface CategoryService  extends CrudService<Category, Integer> {
         Category findCategoryById(Integer id);
 
         Category findCategoryByName(String name);
+
 }

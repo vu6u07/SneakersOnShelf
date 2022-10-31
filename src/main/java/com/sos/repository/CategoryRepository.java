@@ -1,5 +1,6 @@
 package com.sos.repository;
 
+<<<<<<< HEAD
 import com.sos.entity.Brand;
 import com.sos.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,4 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     @Query(value = "SELECT b FROM Category b WHERE b.name = :name")
     Category findCategoryByName(@Param("name") String name);
-
 }
