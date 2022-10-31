@@ -10,20 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.sos.common.SorterConstant.BrandSorter;
 import com.sos.entity.Product;
 import com.sos.exception.ResourceNotFoundException;
 import com.sos.service.ProductService;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/v1/products")
 public class ProductRestController {
@@ -62,10 +55,10 @@ public class ProductRestController {
 				.build();
 	}
 
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
 		productService.deleteById(id);
-		logger.info("Deleted brand with id : " + id);
+		logger.info("Deleted product with id : " + id);
 		return ResponseEntity.noContent().build();
 	}
 

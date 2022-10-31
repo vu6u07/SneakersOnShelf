@@ -32,6 +32,15 @@ public class BrandServiceImpl implements BrandService {
 	public Optional<Brand> findById(Integer id) {
 		return brandRepository.findById(id);
 	}
+	@Override
+	public Brand findBrandById(Integer id) {
+		return brandRepository.findBrandById(id);
+	}
+
+	@Override
+	public Brand findBrandByName(String name) {
+		return brandRepository.findBrandByName(name);
+	}
 
 	@Override
 	public Brand save(Brand entity) {

@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.sos.dto.CartDTO;
 import com.sos.dto.CartItemDTO;
 import com.sos.entity.Order;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CartRepository extends JpaRepository<Order, Integer> {
 
 	@Query(value = "SELECT new com.sos.entity.Order(o.id) FROM Order o WHERE o.id = :id AND o.userTokenQuery = :userTokenQuery")
