@@ -1,7 +1,5 @@
 package com.sos.repository;
 
-<<<<<<< HEAD
-import com.sos.entity.Brand;
 import com.sos.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

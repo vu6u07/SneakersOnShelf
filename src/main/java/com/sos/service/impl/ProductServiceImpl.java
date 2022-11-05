@@ -20,6 +20,7 @@ import com.sos.repository.ProductDetailRepository;
 import com.sos.repository.ProductImageRepository;
 import com.sos.repository.ProductRepository;
 import com.sos.service.ProductService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Service
@@ -60,9 +61,13 @@ public class ProductServiceImpl implements ProductService {
 		System.out.println("Save product");
 		return productRepository.save(entity);
 	}
-
+	@Transactional
 	@Override
 	public void deleteById(Integer id) {
+		System.out.println("id :   "+productRepository.findProductByID(id).getId());
+		Product product = productRepository.findProductByID(id);
+		productImageRepository.deleteProductImageByProduct(product);
+		productDetailRepository.deleteProductDetailByProduct(product);
 		productRepository.deleteById(id);
 	}
 

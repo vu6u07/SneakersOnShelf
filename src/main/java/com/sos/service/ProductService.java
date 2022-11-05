@@ -8,11 +8,14 @@ import com.sos.dto.CollectionProductDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.entity.Product;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductService extends CrudService<Product, Integer> {
 
 	Page<CollectionProductDTO> findCollectionProductDTO(Pageable pageable);
+
+
 
 	Page<CollectionProductDTO> findCollectionProductDTOByBrandId(int brandId, Pageable pageable);
 
@@ -34,5 +37,7 @@ public interface ProductService extends CrudService<Product, Integer> {
 
 
 	ProductInfoDTO findProductInfoDTOByName(String name);
+
+
 
 }

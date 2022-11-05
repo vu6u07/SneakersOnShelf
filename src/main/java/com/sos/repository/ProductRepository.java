@@ -30,6 +30,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	@Query(value = "SELECT b FROM Product b WHERE b.name = :name")
 	Product findProductByName(@Param("name") String name);
+
+	@Query(value = "SELECT b FROM Product b WHERE b.id = :id")
+	Product findProductByID(@Param("id") Integer id);
+
 	@Query(value = "SELECT new com.sos.dto.CollectionProductDTO(p.id, p.name, i.image, p.sellPrice, p.originalPrice) FROM Product p LEFT JOIN p.productImage i WHERE p.brand.id = :brandId")
 	Page<CollectionProductDTO> findCollectionProductDTOByBrandId(int brandId, Pageable pageable);
 

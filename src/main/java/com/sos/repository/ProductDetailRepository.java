@@ -30,5 +30,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 	@Modifying(clearAutomatically = true)
 	@Query(value = "UPDATE ProductDetail p SET p.quantity = p.quantity - :amount WHERE p.id = :id")
 	void decreaseProductDetailQuantity(int id, int amount);
-	
+
+	@Modifying
+	@Query(value = "DELETE FROM ProductDetail b WHERE b.product = :product")
+	void deleteProductDetailByProduct(@Param("product") Product product);
 }

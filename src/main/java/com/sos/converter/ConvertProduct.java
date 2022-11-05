@@ -1,6 +1,7 @@
 package com.sos.converter;
 
 import com.sos.controller.ProductDTORestController;
+import com.sos.dto.ProductDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.entity.Brand;
 import com.sos.entity.Category;
@@ -11,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class ConvertProduct {
@@ -71,4 +74,24 @@ public class ConvertProduct {
         }
         return null;
     }
+
+    public Product getProductEntity(ProductDTO product){
+        System.out.println(product.getName());
+        Product product1 = new Product();
+        product1.setId(product.getId());
+        product1.setProductGender(product.getProductGender());
+        product1.setProductImage(product.getProductImage());
+
+        product1.setCategory(product.getCategory());
+        product1.setBrand(product.getBrand());
+        product1.setName(product.getName());
+        product1.setDescription(product.getDescription());
+        product1.setImportPrice(product.getImportPrice());
+        product1.setSellPrice(product.getSellPrice());
+        product1.setOriginalPrice(product.getOriginalPrice());
+        product1.setCreateDate(new Date());
+        product1.setUpdateDate(null);
+        return product1;
+    }
+
 }

@@ -36,6 +36,7 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 	@Modifying
 	@Query(value = "UPDATE Cart c SET c.cartStatus = :cartStatus WHERE c.id = :id")
 	int updateCartStatus(int id, CartStatus cartStatus);
+
 	// Cart
 	@Query(value = "SELECT new com.sos.dto.CartDTO(a.cart.id) FROM Account a WHERE a.id = :accountId AND a.cart.cartStatus = :cartStatus")
 	Optional<CartDTO> findCurrentCartDTOByAccountId(int accountId, CartStatus cartStatus);
@@ -44,4 +45,5 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 	Optional<CartDTO> findCartDTO(int id, CartStatus cartStatus, int accountId);
 
 	@Query(value = "SELECT new com.sos.entity.Cart(c.id) FROM Cart c WHERE c.id = :id AND c.account.id = :accountId AND c.cartStatus = :cartStatus")
-	Optional<Cart> findCartId(int id, CartStatus cartStatus,  int accountId);
+	Optional<Cart> findCartId(int id, CartStatus cartStatus, int accountId);
+}
