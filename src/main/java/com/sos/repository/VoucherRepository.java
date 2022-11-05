@@ -11,7 +11,7 @@ import com.sos.entity.Voucher;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
-	@Query(value = "SELECT new com.sos.entity.Voucher(o.voucher.amount) FROM Order o WHERE o.id = :orderId")
-	Optional<Voucher> getVoucherAmountByOrderId(int orderId);
+	@Query(value = "SELECT new com.sos.entity.Voucher(v.amount) FROM Voucher v WHERE v.id = :voucherId")
+	Optional<Voucher> getVoucherAmount(int voucherId);
 
 }
