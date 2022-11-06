@@ -37,7 +37,7 @@ public class AccountRestController {
 	@Autowired
 	private AccountService accountService;
 
-//	@PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+	@PreAuthorize(value = "hasRole('ROLE_ADMIN')")
 	@GetMapping(value = "/accounts")
 	public ResponseEntity<?> get() {
 		return ResponseEntity.ok(accountService.findAll());
@@ -51,7 +51,7 @@ public class AccountRestController {
 			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter sorter) {
 		return ResponseEntity.ok(accountService.findAll(PageRequest.of(page - 1, size, sorter.getSort())));
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<?> post(@RequestBody Account account, HttpServletRequest request) throws URISyntaxException {
 		account.setAccountStatus(AccountStatus.ACTIVE);
@@ -59,7 +59,7 @@ public class AccountRestController {
 		Account created = accountService.save(account);
 		return ResponseEntity.created(new URI("/api/v1/accounts/" + created.getId())).body(created);
 	}
-	
+
 	@PutMapping("/{id}")
     public ResponseEntity put(@PathVariable int id, @RequestBody Account account) {
 		Account currentAccount = accountService.findById(id).orElseThrow(RuntimeException::new);
@@ -70,7 +70,7 @@ public class AccountRestController {
 
         return ResponseEntity.ok(currentAccount);
     }
-	
+
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
 		accountService.deleteById(id);

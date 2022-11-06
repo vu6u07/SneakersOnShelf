@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCo
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.sos.security.jwt.JwtAuthenticationFilter;
@@ -41,6 +42,12 @@ public class WebSecurityConfig {
 
 	@Autowired
 	private JwtUtils jwtUtils;
+
+	@Autowired
+	private AccessDeniedHandler accessDeniedHandler;
+
+	@Autowired
+	private AuthenticationEntryPointImpl authenticationEntryPointImpl;
 
 //	@Bean
 //	public WebSecurityCustomizer webSecurityCustomizer() {
@@ -74,9 +81,13 @@ public class WebSecurityConfig {
 
 		http.addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
-		http.oauth2Login().authorizationEndpoint().baseUri("/oauth2/authorize")
+		http.oauth2Login()
+			.authorizationEndpoint().baseUri("/oauth2/authorize")
 				.authorizationRequestRepository(getAuthorizationRequestRepository()).and().userInfoEndpoint()
 				.userService(oauth2UserService).and().successHandler(oauth2AuthenticationSuccessHandler);
+
+		http.exceptionHandling().authenticationEntryPoint(authenticationEntryPointImpl)
+				.accessDeniedHandler(accessDeniedHandler);
 
 		return http.build();
 	}

@@ -18,13 +18,15 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
 	@Query(value = "SELECT new com.sos.dto.CartItemDTO(c.id, c.quantity, c.productDetail.product.id, c.productDetail.id, c.productDetail.product.name, c.productDetail.size, c.productDetail.product.productImage.image, c.productDetail.product.sellPrice) FROM CartItem c WHERE c.cart.id = :id")
 	List<CartItemDTO> findAllCartItemDTOByCartId(int id);
-	
+
+
 	@Query(value = "SELECT COALESCE(SUM(ci.productDetail.product.sellPrice * ci.quantity), '0') FROM Cart c LEFT JOIN c.cartItems ci WHERE c.id = :id")
 	long getTotal(int id);
 
 	// Anonymous Cart
 	@Query(value = "SELECT new com.sos.dto.CartDTO(c.id, c.token) FROM Cart c WHERE c.id = :id AND c.token = :token AND c.cartStatus = :cartStatus AND c.account IS NULL")
 	Optional<CartDTO> findCartDTO(int id, CartStatus cartStatus, String token);
+
 
 	@Query(value = "SELECT new com.sos.entity.Cart(c.id) FROM Cart c WHERE c.id = :id AND c.token = :token AND c.cartStatus = :cartStatus AND c.account IS NULL")
 	Optional<Cart> findCartId(int id, CartStatus cartStatus, String token);
@@ -44,6 +46,5 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 	Optional<CartDTO> findCartDTO(int id, CartStatus cartStatus, int accountId);
 
 	@Query(value = "SELECT new com.sos.entity.Cart(c.id) FROM Cart c WHERE c.id = :id AND c.account.id = :accountId AND c.cartStatus = :cartStatus")
-	Optional<Cart> findCartId(int id, CartStatus cartStatus,  int accountId);
-
+	Optional<Cart> findCartId(int id, CartStatus cartStatus, int accountId);
 }

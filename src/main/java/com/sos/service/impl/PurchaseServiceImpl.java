@@ -4,12 +4,15 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sos.common.ApplicationConstant.PaymentMethod;
 import com.sos.common.ApplicationConstant.PaymentStatus;
+import com.sos.dto.PurchaseDTO;
 import com.sos.dto.PurchaseInfoDTO;
 import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.CustomerInfoRepository;
@@ -84,7 +87,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	// @formatter:off
 	private String getPaymentQRCode(String bankId, String accountId, String vietQRTemplate, long amount, String addInfo, String accountName) {
-		UriComponents uriComponents = 
+		UriComponents uriComponents =
 				UriComponentsBuilder.newInstance()
 				.scheme("https")
 				.host("img.vietqr.io")
@@ -96,5 +99,11 @@ public class PurchaseServiceImpl implements PurchaseService {
 		return uriComponents.toUriString();
 	}
 	// @formatter:on
+
+	@Override
+	public Page<PurchaseDTO> findAllPurchaseDTOByAccountId(AccountAuthentication accountAuthentication,
+			Pageable pageable) {
+		return orderRepository.findAllPurchaseDTOByAccountId(accountAuthentication.getId(), pageable);
+	}
 
 }

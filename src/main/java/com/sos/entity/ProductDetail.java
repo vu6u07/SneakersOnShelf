@@ -37,5 +37,4 @@ public class ProductDetail {
 		this.size = size;
 		this.quantity = quantity;
 	}
-
 }
