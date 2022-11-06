@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.sos.common.ApplicationConstant.AccountStatus;
 import com.sos.common.SorterConstant.BrandSorter;
 import com.sos.entity.Account;
@@ -35,9 +35,10 @@ public class AccountRestController {
 	private static Logger logger = LoggerFactory.getLogger(ProductRestController.class);
 
 	@Autowired
-	AccountService accountService;
+	private AccountService accountService;
 
-	@GetMapping
+//	@PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+	@GetMapping(value = "/accounts")
 	public ResponseEntity<?> get() {
 		return ResponseEntity.ok(accountService.findAll());
 	}
@@ -49,13 +50,6 @@ public class AccountRestController {
 			@RequestParam(name = "size", defaultValue = "8") int size,
 			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter sorter) {
 		return ResponseEntity.ok(accountService.findAll(PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	
-	// @formatter:on
-	@GetMapping(value = "/{id}")
-	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-		return ResponseEntity.ok(accountService.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Account not found with id : " + id)));
 	}
 	
 	@PostMapping
@@ -82,6 +76,12 @@ public class AccountRestController {
 		accountService.deleteById(id);
 		logger.info("Deleted account with id : " + id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize(value = "hasRole('ROLE_USER') and #id == authentication.id")
+	@GetMapping(value = "/accounts/{id}")
+	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
+		return ResponseEntity.of(accountService.findAccountDTOById(id));
 	}
 
 }

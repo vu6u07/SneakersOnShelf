@@ -13,13 +13,22 @@ public class CartDTO {
 
 	private int id;
 
-	private String userTokenQuery;
+	private String token;
 
 	private List<CartItemDTO> items;
 
-	public CartDTO(int id, String userTokenQuery) {
+	public CartDTO(int id) {
 		this.id = id;
-		this.userTokenQuery = userTokenQuery;
+	}
+
+	public CartDTO(int id, String token) {
+		this.id = id;
+		this.token = token;
+	}
+
+	public CartDTO(int id, List<CartItemDTO> items) {
+		this.id = id;
+		this.items = items;
 	}
 
 }

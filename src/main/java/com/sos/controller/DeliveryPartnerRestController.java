@@ -37,11 +37,11 @@ public class DeliveryPartnerRestController {
 	// @formatter:off
 	@GetMapping(value = "/{id}/calculate")
 	public ResponseEntity<?> getWards(
-			@PathVariable(name = "id") int orderId,
+			@PathVariable(name = "id") int cartId,
 			@RequestParam(name = "district_id") int districtId,
 			@RequestParam(name = "ward_code") String wardCode)
 			throws JsonMappingException, JsonProcessingException {
-		return deliveryService.getFeeAndExpectedTime(orderId, districtId, wardCode);
+		return deliveryService.getFeeAndExpectedTime(cartId, districtId, wardCode);
 	}
 	// @formatter:on
 

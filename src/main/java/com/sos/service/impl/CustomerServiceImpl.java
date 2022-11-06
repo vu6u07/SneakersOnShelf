@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Optional<CustomerInfo> getByAccountId(int accountId) {
-		return customerRepo.findCustomerByAccountId(accountId);
+		return null;
 	}
 
 }
