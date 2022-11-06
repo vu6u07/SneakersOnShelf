@@ -63,4 +63,5 @@ public class Product {
 
 	private Date updateDate;
 
+
 }
