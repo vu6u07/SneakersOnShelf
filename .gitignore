@@ -39,3 +39,6 @@ build/
 /src/main/resources/application-dev.properties
 /logs/**
 /log/**
+*.properties
+*.properties
+logs
