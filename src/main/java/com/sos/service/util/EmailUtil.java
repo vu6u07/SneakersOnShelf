@@ -123,7 +123,7 @@ public class EmailUtil {
 		}
 
 		return String.format(NEW_ORDER_EMAIL_CONTENT, order.getId().toString(), order.getCustomerInfo().getFullname(),
-				linkOrder, DateUtil.convertToString(order.getCreateDate()), order.getCustomerInfo().getFullname(),
+				linkOrder, DateUtil.convertToStringddMMyyyy(order.getCreateDate()), order.getCustomerInfo().getFullname(),
 				order.getId().toString(), order.getEmail(), order.getOrderStatus().getDescription(),
 				order.getCustomerInfo().getPhone(), NumberUtil.VND(order.getTotal()));
 	}
