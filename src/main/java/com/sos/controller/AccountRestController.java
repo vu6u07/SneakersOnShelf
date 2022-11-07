@@ -29,7 +29,7 @@ import com.sos.exception.ResourceNotFoundException;
 import com.sos.service.AccountService;
 
 @RestController
-@RequestMapping(value = "/api/v1/accounts")
+@RequestMapping(value = "/api/v1")
 public class AccountRestController {
 
 	private static Logger logger = LoggerFactory.getLogger(ProductRestController.class);
@@ -42,9 +42,10 @@ public class AccountRestController {
 	public ResponseEntity<?> get() {
 		return ResponseEntity.ok(accountService.findAll());
 	}
+	
 
 	// @formatter:off
-	@GetMapping(params = "page")
+	@GetMapping( value = "/accounts" , params = "page")
 	public ResponseEntity<?> get(
 			@RequestParam(name = "page") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size,
@@ -52,15 +53,18 @@ public class AccountRestController {
 		return ResponseEntity.ok(accountService.findAll(PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 
-	@PostMapping
+	@PostMapping(value = "/accounts")
 	public ResponseEntity<?> post(@RequestBody Account account, HttpServletRequest request) throws URISyntaxException {
 		account.setAccountStatus(AccountStatus.ACTIVE);
 		account.setCreateDate(new Date());
+		account.setPoint(0);
+		System.out.println(account);
 		Account created = accountService.save(account);
+		System.out.println(created);
 		return ResponseEntity.created(new URI("/api/v1/accounts/" + created.getId())).body(created);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping(value = "/accounts/{id}")
     public ResponseEntity put(@PathVariable int id, @RequestBody Account account) {
 		Account currentAccount = accountService.findById(id).orElseThrow(RuntimeException::new);
 		currentAccount.setEmail(account.getEmail());
@@ -71,7 +75,7 @@ public class AccountRestController {
         return ResponseEntity.ok(currentAccount);
     }
 
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/accounts/{id}")
 	public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
 		accountService.deleteById(id);
 		logger.info("Deleted account with id : " + id);

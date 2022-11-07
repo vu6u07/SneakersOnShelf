@@ -34,6 +34,11 @@ public class CustomerInfoRestController {
 	public ResponseEntity<?> getAllCustomerInfoByAccount(@PathVariable(name = "id") int id) {
 		return ResponseEntity.ok(customerInfoService.findByAccountId(id));
 	}
+	
+	@GetMapping(value = "/customers")
+	public ResponseEntity<?> getAllCustomerInfo() {
+		return ResponseEntity.ok(customerInfoService.findAll());
+	}
 
 	@PreAuthorize(value = "hasRole('ROLE_USER')")
 	@PostMapping(value = "/customer-infos")
