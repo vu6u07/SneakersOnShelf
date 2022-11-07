@@ -26,7 +26,9 @@ import com.sos.service.AccountService;
 public class AccountServiceImpl implements AccountService {
 
 	@Autowired
-	private AccountRepository accountRepository;
+	AccountRepository accountRepo;
+
+
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -34,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
 	// @formatter:off
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountRepository.findByUsername(username, AccountStatus.ACTIVE)
+		Account account = accountRepo.findByUsername(username, AccountStatus.ACTIVE)
 				.orElseThrow(() -> new UsernameNotFoundException("Username not found : " + username));
 		Collection<GrantedAuthority> authorities = roleRepository.findByAccountId(account.getId())
 				.stream()
@@ -46,31 +48,31 @@ public class AccountServiceImpl implements AccountService {
 	// @formatter:on
 	@Override
 	public List<Account> findAll() {
-		return accountRepository.findAll();
+		return accountRepo.findAll();
 
 	}
 	@Override
 	public Page<Account> findAll(Pageable pageable) {
-		return accountRepository.findAll(pageable);
+		return accountRepo.findAll(pageable);
 	}
 
 	@Override
 	public Optional<Account> findById(Integer id) {
-		return accountRepository.findById(id);
+		return accountRepo.findById(id);
 	}
 
 	@Override
 	public Account save(Account entity) {
-		return accountRepository.save(entity);
+		return accountRepo.save(entity);
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		accountRepository.deleteAccountById(AccountStatus.INACTIVE, id);
+		accountRepo.deleteAccountById(AccountStatus.INACTIVE, id);
 	}
 
 	public Optional<Account> findAccountDTOById(int id) {
-		return accountRepository.findAccountDTOById(id);
+		return accountRepo.findAccountDTOById(id);
 	}
 
 }

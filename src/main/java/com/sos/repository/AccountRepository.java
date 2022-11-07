@@ -30,6 +30,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	int updateCart(int id, Cart cart);
 
 
+
 	@Query(value = "SELECT a.email FROM Account a WHERE a.id = :id")
 	Optional<String> getAccountEmail(int id);
 
@@ -37,8 +38,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	Optional<Account> findAccountByGoogleOAuthEmail(String googleOAuthEmail, AccountStatus accountStatus);
 
 
+
 	@Query(value = "SELECT new com.sos.entity.Account(a.id) FROM Account a WHERE a.facebookOAuthId = :facebookOAuthId AND a.accountStatus = :accountStatus")
 	Optional<Account> findAccountFacebookOAuthId(String facebookOAuthId, AccountStatus accountStatus);
+
 
 
 }
