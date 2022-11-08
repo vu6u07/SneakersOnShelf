@@ -54,11 +54,15 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product save(Product entity) {
 		ProductInfoDTO productInfoDTO = findProductInfoDTOByName(entity.getName());
+		ProductImage productImage = new ProductImage();
+		productImage.setImage("https://bizweb.dktcdn.net/thumb/1024x1024/100/413/756/products/dq2514-100-01-1661750899934.png?v=1661750906003");
+		ProductImage img = productImageRepository.save(productImage);
 		if(productInfoDTO != null){
 			System.out.println("Update product");
 			entity.setId(productInfoDTO.getId());
 			return productRepository.save(entity);
 		}
+		entity.setProductImage(img);
 		System.out.println("Save product");
 		return productRepository.save(entity);
 	}
