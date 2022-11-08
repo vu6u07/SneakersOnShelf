@@ -26,23 +26,26 @@ public class ConvertProduct {
     public CategoryService categoryService;
 
     public Product convertProductDtoToProductEntity(ProductInfoDTO productInfoDTO){
-        Product product = new Product();
-        String brandName = productInfoDTO.getBrand().trim();
-        String cateName = productInfoDTO.getCategory().trim();
-        Brand brand = getBrand(brandName);
-        product.setBrand(brand);
-        LOGGER.info("brand: -- "+brand);
-        Category category = getCategory(cateName);
-        product.setCategory(category);
-        LOGGER.info("cate: -- "+category);
-        product.setProductGender(productInfoDTO.getProductGender());
-        product.setDescription(productInfoDTO.getDescription());
-        product.setImportPrice(productInfoDTO.getImportPrice());
-        product.setSellPrice(productInfoDTO.getSellPrice());
-        product.setName(productInfoDTO.getName());
-        product.setOriginalPrice(productInfoDTO.getOriginalPrice());
-        product.setUpdateDate(productInfoDTO.getUpdateDate());
-        return product;
+        if(productInfoDTO != null){
+            Product product = new Product();
+            String brandName = productInfoDTO.getBrand().trim();
+            String cateName = productInfoDTO.getCategory().trim();
+            Brand brand = getBrand(brandName);
+            product.setBrand(brand);
+            LOGGER.info("brand: -- "+brand);
+            Category category = getCategory(cateName);
+            product.setCategory(category);
+            LOGGER.info("cate: -- "+category);
+            product.setProductGender(productInfoDTO.getProductGender());
+            product.setDescription(productInfoDTO.getDescription());
+            product.setImportPrice(productInfoDTO.getImportPrice());
+            product.setSellPrice(productInfoDTO.getSellPrice());
+            product.setName(productInfoDTO.getName());
+            product.setOriginalPrice(productInfoDTO.getOriginalPrice());
+            product.setUpdateDate(productInfoDTO.getUpdateDate());
+            return product;
+        }
+        return null;
     }
 
     public Brand getBrand(String brandName){

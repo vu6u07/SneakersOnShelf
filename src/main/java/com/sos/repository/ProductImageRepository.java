@@ -20,7 +20,6 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Inte
 	@Query(value = "DELETE FROM ProductImage b WHERE b.product = :product")
 	void deleteProductImageByProduct(@Param("product") Product product);
 
-//	@Modifying
-//	@Query(value = "DELETE FROM CartItem c WHERE c.id = :id")
-//	int deleteCartItemById(int id);
+	@Query(value = "UPDATE ProductImage b SET b.product = null WHERE b.product = :product")
+	void updateByProduct(@Param("product") Product product);
 }

@@ -1,5 +1,6 @@
 package com.sos.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,5 +31,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	
 	@Query(value = "SELECT new com.sos.entity.Account(a.id) FROM Account a WHERE a.facebookOAuthId = :facebookOAuthId AND a.accountStatus = :accountStatus")
 	Optional<Account> findAccountFacebookOAuthId(String facebookOAuthId, AccountStatus accountStatus);
-	
+
+
 }

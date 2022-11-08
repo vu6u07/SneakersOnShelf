@@ -1,5 +1,6 @@
 package com.sos.controller;
 
+import com.sos.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sos.service.AccountService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -28,5 +31,6 @@ public class AccountRestController {
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
 		return ResponseEntity.of(accountService.findAccountDTOById(id));
 	}
+
 
 }

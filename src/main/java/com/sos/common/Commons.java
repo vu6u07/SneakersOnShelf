@@ -47,4 +47,19 @@ public class Commons {
         }
         return false;
     }
+
+    public static String convertStringToTypeLong(String number) {
+        try {
+            System.out.println("number: "+number);
+            if (number == null || number.trim() == "") {
+                return "";
+            }
+            String[] num = number.split("\\.");
+            return num[0];
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 }

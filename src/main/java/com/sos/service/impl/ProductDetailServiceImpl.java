@@ -17,7 +17,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     public ProductDetail save(ProductDetail productDetail) {
-
         return productDetailRepository.save(productDetail);
     }
 

@@ -77,7 +77,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		RefreshToken refreshTokenEntity = new RefreshToken(new Account(user.getId()), refreshToken, date,
 				refreshTokenEmpiredDate);
 		refreshTokenRepository.save(refreshTokenEntity);
-
 		return new JwtResponse(user.getId(), token, "Bearer", refreshToken);
 	}
 

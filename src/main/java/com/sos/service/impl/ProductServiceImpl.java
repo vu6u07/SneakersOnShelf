@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.sos.entity.ProductDetail;
+import com.sos.entity.ProductImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,11 +65,13 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	@Override
 	public void deleteById(Integer id) {
-		System.out.println("id :   "+productRepository.findProductByID(id).getId());
-		Product product = productRepository.findProductByID(id);
-		productImageRepository.deleteProductImageByProduct(product);
-		productDetailRepository.deleteProductDetailByProduct(product);
-		productRepository.deleteById(id);
+			System.out.println("id :   "+productRepository.findProductByID(id).getId());
+			Product product = productRepository.findProductByID(id);
+			productRepository.setProductImageNullById(product.getId());
+			System.out.println("Id: "+product.getId());
+			productDetailRepository.deleteProductDetailByProduct(product);
+			productImageRepository.deleteProductImageByProduct(product);
+			productRepository.deleteById(product.getId());
 	}
 
 	@Override

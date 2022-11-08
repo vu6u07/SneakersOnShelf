@@ -47,8 +47,9 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public List<Account> findAll() {
-		return null;
+		return accountRepository.findAll();
 	}
+
 
 	@Override
 	public Page<Account> findAll(Pageable pageable) {
@@ -69,7 +70,6 @@ public class AccountServiceImpl implements AccountService {
 	public void deleteById(Integer id) {
 
 	}
-
 	public Optional<Account> findAccountDTOById(int id) {
 		return accountRepository.findAccountDTOById(id);
 	}
