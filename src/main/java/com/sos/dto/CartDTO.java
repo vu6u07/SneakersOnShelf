@@ -14,7 +14,7 @@ public class CartDTO {
 	private int id;
 
 	private String token;
-
+	
 	private List<CartItemDTO> items;
 
 	public CartDTO(int id) {

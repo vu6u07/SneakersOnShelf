@@ -15,9 +15,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.sos.common.ApplicationConstant.AccountStatus;
+import com.sos.common.ApplicationConstant.CustomerInfoStatus;
+import com.sos.dto.AccountDTO;
 import com.sos.entity.Account;
 import com.sos.entity.Role;
+import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.AccountRepository;
+import com.sos.repository.CustomerInfoRepository;
 import com.sos.repository.RoleRepository;
 import com.sos.security.CustomUserDetail;
 import com.sos.service.AccountService;
@@ -27,6 +31,9 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private CustomerInfoRepository customerInfoRepository;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -72,6 +79,24 @@ public class AccountServiceImpl implements AccountService {
 
 	public Optional<Account> findAccountDTOById(int id) {
 		return accountRepository.findAccountDTOById(id);
+	}
+
+	@Override
+	public AccountDTO findAccountReportDTOById(int id) {
+		AccountDTO rs = accountRepository.findAccountDTOById(id, AccountStatus.ACTIVE)
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản."));
+		rs.setCustomerInfos(customerInfoRepository.findByAccountId(rs.getId(), CustomerInfoStatus.ACTIVE));
+		return rs;
+	}
+
+	@Override
+	public Page<AccountDTO> findAccoutDTOs(Pageable pageable) {
+		return accountRepository.findAccountDTOs(AccountStatus.ACTIVE, pageable);
+	}
+
+	@Override
+	public Page<AccountDTO> findAccoutDTOs(String query, Pageable pageable) {
+		return accountRepository.findAccountDTOs("%".concat(query).concat("%"), AccountStatus.ACTIVE, pageable);
 	}
 
 }

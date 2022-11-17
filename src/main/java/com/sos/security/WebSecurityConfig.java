@@ -78,6 +78,8 @@ public class WebSecurityConfig {
 		http.csrf().disable();
 
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.authorizeHttpRequests().antMatchers("/admin/**").hasRole("ADMIN");
 
 		http.addFilterBefore(new JwtAuthenticationFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
 

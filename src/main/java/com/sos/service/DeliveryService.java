@@ -4,9 +4,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sos.entity.Delivery;
 
-public interface DeliveryService extends CrudService<Delivery, Integer> {
+public interface DeliveryService {
 
 	ResponseEntity<?> getAllProvinces();
 
@@ -22,5 +21,5 @@ public interface DeliveryService extends CrudService<Delivery, Integer> {
 
 	long getDeliveryFee(long insuranceValue, int districtId, String wardCode)
 			throws JsonMappingException, JsonProcessingException;
-	
+
 }

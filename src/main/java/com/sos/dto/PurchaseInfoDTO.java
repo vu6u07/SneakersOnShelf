@@ -2,13 +2,9 @@ package com.sos.dto;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import com.sos.common.ApplicationConstant.OrderStatus;
-import com.sos.common.ApplicationConstant.PaymentMethod;
-import com.sos.common.ApplicationConstant.PaymentStatus;
-import com.sos.entity.CustomerInfo;
-import com.sos.entity.Delivery;
+import com.sos.common.ApplicationConstant.SaleMethod;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,15 +15,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PurchaseInfoDTO {
 
-	private UUID id;
+	private String id;
 
-	private String userTokenQuery;
+	private String token;
+	
+	private SaleMethod saleMethod;
 
-	private List<CartItemDTO> items;
-
-	private Delivery delivery;
-
-	private CustomerInfo customerInfo;
+	private OrderStatus orderStatus;
 
 	private long discount;
 
@@ -35,34 +29,46 @@ public class PurchaseInfoDTO {
 
 	private long total;
 
+	private long fee;
+
+	private String fullname;
+
+	private String email;
+
+	private String phone;
+
 	private String description;
-
-	private OrderStatus orderStatus;
-
-	private PaymentStatus paymentStatus;
-
-	private PaymentMethod paymentMethod;
 
 	private Date createDate;
 
-	private Date updateDate;
-	
+	private String address;
+
+	private String detailedAddress;
+
 	private String paymentQRCode;
 
-	public PurchaseInfoDTO(UUID id, String userTokenQuery, long discount, long surcharge, long total, String description,
-			OrderStatus orderStatus, PaymentStatus paymentStatus, PaymentMethod paymentMethod, Date createDate,
-			Date updateDate) {
+	private List<CartItemDTO> items;
+	
+	private List<OrderTimelineDTO> timelines;
+
+	public PurchaseInfoDTO(String id, String token, SaleMethod saleMethod, OrderStatus orderStatus, long discount, long surcharge, long total,
+			long fee, String fullname, String email, String phone, String description, Date createDate, String address,
+			String detailedAddress) {
 		this.id = id;
-		this.userTokenQuery = userTokenQuery;
+		this.token = token;
+		this.saleMethod = saleMethod;
+		this.orderStatus = orderStatus;
 		this.discount = discount;
 		this.surcharge = surcharge;
 		this.total = total;
+		this.fee = fee;
+		this.fullname = fullname;
+		this.email = email;
+		this.phone = phone;
 		this.description = description;
-		this.orderStatus = orderStatus;
-		this.paymentStatus = paymentStatus;
-		this.paymentMethod = paymentMethod;
 		this.createDate = createDate;
-		this.updateDate = updateDate;
+		this.address = address;
+		this.detailedAddress = detailedAddress;
 	}
 
 }

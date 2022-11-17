@@ -2,26 +2,27 @@ package com.sos.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sos.common.ApplicationConstant.PaymentMethod;
+import com.sos.common.ApplicationConstant.SaleMethod;
 import com.sos.dto.CartDTO;
+import com.sos.entity.CustomerInfo;
 import com.sos.entity.Order;
-import com.sos.security.AccountAuthentication;
+import com.sos.entity.Voucher;
 
-public interface CartService {
+public interface CartService<T> {
 
-	public CartDTO getOrCreateCart(AccountAuthentication authentication);
+	CartDTO createCart(T authentication);
 
-	public CartDTO getCartDTO(int id, AccountAuthentication authentication);
+	CartDTO getCartDTOById(int id, T authentication);
 
-	public void addToCart(int id, int productId, int quantity, AccountAuthentication authentication);
+	void addToCart(int id, int productId, int quantity, T authentication);
 
-	public void changeCartItemQuantity(int id, int quantity, AccountAuthentication authentication);
+	void changeCartItemQuantity(int id, int quantity, T authentication);
 
-	public void deleteCartItem(int cartItemId, AccountAuthentication authentication);
+	void deleteCartItem(int cartItemId, T authentication);
 
-	public void deleteAllCartItem(int cartId, AccountAuthentication authentication);
+	void deleteAllCartItem(int cartId, T authentication);
 
-	public Order submitCart(int id, PaymentMethod paymentMethod, int customerInfoId,
-			AccountAuthentication authentication) throws JsonMappingException, JsonProcessingException;
+	Order submitCart(int id, CustomerInfo customerInfo, String email, SaleMethod saleMethod, Voucher voucher, T authentication)
+			throws JsonMappingException, JsonProcessingException;
 
 }

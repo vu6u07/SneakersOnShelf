@@ -10,33 +10,33 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import com.sos.common.ApplicationConstant.WishlistStatus;
+import com.sos.common.ApplicationConstant.OrderTimelineType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
-public class Wishlist {
+public class OrderTimeline {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
 	@ManyToOne
-	private Account account;
+	private Order order;
 
 	@ManyToOne
-	private Product product;
+	private Account staff;
 
-	private Date createDate;
-
-	private Date updateDate;
+	private Date createdDate;
 
 	@Enumerated(EnumType.STRING)
-	private WishlistStatus wishlistStatus;
+	private OrderTimelineType orderTimelineType;
+
+	private String description;
 
 }
