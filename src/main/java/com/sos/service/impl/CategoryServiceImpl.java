@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Optional<Category> findById(Integer id) {
-        return Optional.empty();
+        return categoryRepository.findById(id);
     }
 
     @Override

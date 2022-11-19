@@ -7,10 +7,10 @@ import com.sos.dto.ResponseUnSuccess;
 import com.sos.entity.Product;
 
 public class Utils {
-    public static ResponseSuccess responseSuccess() {
+    public static ResponseSuccess responseSuccess(String message) {
         ResponseSuccess responseObject = new ResponseSuccess();
         responseObject.setCode(200);
-        responseObject.setMessage("success");
+        responseObject.setMessage(message+" success");
         return responseObject;
     }
 

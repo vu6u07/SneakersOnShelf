@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.sos.converter.ConvertProduct;
+import com.sos.dto.ProductCrudDTO;
 import com.sos.entity.ProductDetail;
 import com.sos.entity.ProductImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,8 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
+	@Autowired
+	private ConvertProduct convertProduct;
 	@Autowired
 	private ProductRepository productRepository;
 
@@ -88,6 +91,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public Product findProductById(int id) {
+		return productRepository.findProductByID(id);
+	}
+
+	@Override
 	public ProductInfoDTO findProductInfoDTOByName(String name) {
 		Product rs = productRepository.findProductByName(name);
 		if(rs != null){
@@ -108,6 +116,23 @@ public class ProductServiceImpl implements ProductService {
 			return dto;
 		}
 		return null;
+	}
+	@Transactional
+	@Override
+	public boolean saveDatabase(ProductCrudDTO productDTO) {
+		try {
+			Product product = convertProduct.getProductCRUD(productDTO,null);
+			List<ProductImage> Images = convertProduct.getProductImage(productDTO,product);
+			product.setProductImage(Images.get(0));
+			List<ProductDetail> details = convertProduct.getProductDetail(productDTO,product);
+			productRepository.save(product);
+			productImageRepository.saveAll(Images);
+			productDetailRepository.saveAll(details);
+			return true;
+		}catch (Exception e){
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override

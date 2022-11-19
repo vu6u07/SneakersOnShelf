@@ -6,6 +6,7 @@ import com.sos.common.SorterConstant;
 import com.sos.common.ValidateData;
 import com.sos.controller.ProductDTORestController;
 import com.sos.converter.ConvertProduct;
+import com.sos.dto.ProductCrudDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.dto.ResponseObject;
 import com.sos.entity.Product;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+
 @RestController
 @RequestMapping(value = "/admin/v1/")
 public class ProductAdminController extends BaseController{
@@ -55,7 +57,7 @@ public class ProductAdminController extends BaseController{
     @GetMapping(value = "/products",params = "pages")
     public ResponseEntity<?> getAll(
             @RequestParam(name = "pages", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "3") int size,
+            @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "sort", defaultValue = "id_asc") SorterConstant.ProductSorter sorter) {
         return ResponseEntity.ok(productService.findAll(PageRequest.of(page - 1, size, sorter.getSort())));
     }
@@ -74,10 +76,11 @@ public class ProductAdminController extends BaseController{
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/products/{id}")
     public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-        return ResponseEntity.ok(productService.findProductInfoDTOById(id));
+        return ResponseEntity.ok(productService.findProductById(id));
 
     }
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/products/getName/{name}")
     public ResponseEntity<?> getByName(@PathVariable(name = "name") String name) {
         System.out.println("getByName");
@@ -87,13 +90,14 @@ public class ProductAdminController extends BaseController{
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/products/save")
-    public Mono<?> save(@RequestBody Product product) {
+    public Mono<?> save(@RequestBody ProductCrudDTO product  ) {
         try {
             LOGGER.info("Save product");
-            ResponseObject responseInvalid = validateData.validateDataObject(product);
+            LOGGER.info(product.toString());
+            ResponseObject responseInvalid = validateData.validateProductCrudDTOObject(product);
             if (responseInvalid == null) {
-                productService.save(product);
-                return Mono.just(Utils.responseSuccess());
+                productService.saveDatabase(product);
+                return Mono.just(Utils.responseSuccess("products save"));
             } else {
                 return Mono.just(responseInvalid);
             }
@@ -101,7 +105,6 @@ public class ProductAdminController extends BaseController{
             e.printStackTrace();
             return Mono.just(Utils.responseUnSuccess());
         }
-
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
@@ -113,9 +116,9 @@ public class ProductAdminController extends BaseController{
             if (responseInvalid == null) {
                 product.setUpdateDate(new Date());
                 productService.save(product);
-                return Mono.just(Utils.responseSuccess());
+                return Mono.just(Utils.responseSuccess("updated product"));
             } else {
-                return Mono.just(responseInvalid);
+                return Mono.just(Utils.responseUnSuccess());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,11 +132,11 @@ public class ProductAdminController extends BaseController{
     @DeleteMapping(value = "/products/delete/{id}")
     public Mono<?> delete(@PathVariable(name = "id") int id) {
         try {
-            LOGGER.info("Updated product");
+            LOGGER.info("delete product");
             ResponseObject responseInvalid = validateData.validateDeleteProduct(id);
             if (responseInvalid == null) {
                 productService.deleteById(id);
-                return Mono.just(Utils.responseSuccess());
+                return Mono.just(Utils.responseSuccess("delete product"));
             } else {
                 return Mono.just(responseInvalid);
             }
@@ -151,7 +154,6 @@ public class ProductAdminController extends BaseController{
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @ExceptionHandler(value = {MultipartException.class})
     @PostMapping(value = "/products/saveList")
     public Mono<?> save(@RequestParam("files") MultipartFile[] files) {
@@ -162,7 +164,7 @@ public class ProductAdminController extends BaseController{
             if (responseInvalid == null) {
                 File filePro = getFileData(files);
                 getValuesFileSaveDatabase(filePro);
-                return Mono.just(Utils.responseSuccess());
+                return Mono.just(Utils.responseSuccess("save product list"));
             } else {
                 return Mono.just(responseInvalid);
             }
@@ -292,7 +294,6 @@ public class ProductAdminController extends BaseController{
                                         productDetailService.save(productDetail);
                                     } else {
                                         productDetailService.save(productDetail);
-
                                     }
                                 }
                             }

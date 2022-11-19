@@ -26,4 +26,6 @@ public class BaseController {
 
     @Autowired
     public ValidateData validateData;
+
+
 }

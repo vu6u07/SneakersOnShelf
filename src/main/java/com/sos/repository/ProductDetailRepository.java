@@ -34,4 +34,16 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 	@Modifying
 	@Query(value = "DELETE FROM ProductDetail b WHERE b.product = :product")
 	void deleteProductDetailByProduct(@Param("product") Product product);
+
+	@Query(value = "SELECT new com.sos.entity.ProductDetail(c.id,c.size, c.quantity) FROM ProductDetail c WHERE c.id = :id")
+	ProductDetail findById(@Param("id") int id);
+
+	@Modifying
+	@Query(value = "UPDATE ProductDetail b SET b.quantity = :quantity where b.id = :id")
+	int updateQuantityById(@Param("quantity") int quantity, @Param("id") int id);
+
+	@Modifying
+	@Query(value = "DELETE FROM ProductDetail b WHERE b.id = :id")
+	void deleteProductDetailById(@Param("id") int id);
+
 }

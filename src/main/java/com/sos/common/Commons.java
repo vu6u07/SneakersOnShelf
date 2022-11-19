@@ -26,7 +26,7 @@ public class Commons {
     }
     public static boolean isNullOrEmptyNumberTypeLong(Long s) {
         try {
-            if (s == null || s == 0 ) {
+            if (s == null || s <= 0 ) {
                 return true;
             }
         }catch (Exception e){
@@ -62,5 +62,35 @@ public class Commons {
         }
     }
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Integer d = Integer.parseInt(strNum);
+            if(d < 0){
+              return false;
+            }
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 
+    public static boolean isNumericSize(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            Integer d = Integer.parseInt(strNum);
+            if(d < 35){
+                return false;
+            }else if(d > 43) {
+                return false;
+            }
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 }

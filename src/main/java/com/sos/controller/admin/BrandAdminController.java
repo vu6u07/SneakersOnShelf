@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping(value = "/admin/v1/brands")
 public class BrandAdminController {

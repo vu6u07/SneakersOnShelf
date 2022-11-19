@@ -63,5 +63,22 @@ public class Product {
 
 	private Date updateDate;
 
-
+	@Override
+	public String toString() {
+		return "Product{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", productGender=" + productGender +
+				", brand=" + brand +
+				", category=" + category +
+				", productImage=" + productImage +
+				", productDetails=" + productDetails +
+				", sellPrice=" + sellPrice +
+				", originalPrice=" + originalPrice +
+				", importPrice=" + importPrice +
+				", description='" + description + '\'' +
+				", createDate=" + createDate +
+				", updateDate=" + updateDate +
+				'}';
+	}
 }

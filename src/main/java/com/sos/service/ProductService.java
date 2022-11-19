@@ -1,5 +1,6 @@
 package com.sos.service;
 
+import com.sos.dto.ProductCrudDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,8 +15,6 @@ import java.util.Optional;
 public interface ProductService extends CrudService<Product, Integer> {
 
 	Page<CollectionProductDTO> findCollectionProductDTO(Pageable pageable);
-
-
 
 	Page<CollectionProductDTO> findCollectionProductDTOByBrandId(int brandId, Pageable pageable);
 
@@ -35,9 +34,10 @@ public interface ProductService extends CrudService<Product, Integer> {
 
 	ProductInfoDTO findProductInfoDTOById(int id);
 
+	Product findProductById(int id);
+
 
 	ProductInfoDTO findProductInfoDTOByName(String name);
 
-
-
+	boolean saveDatabase(ProductCrudDTO product);
 }

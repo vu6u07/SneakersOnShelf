@@ -3,6 +3,7 @@ package com.sos.controller;
 import com.sos.common.Commons;
 import com.sos.common.ValidateData;
 import com.sos.converter.ConvertProduct;
+import com.sos.dto.ProductCrudDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.dto.ResponseObject;
 import com.sos.entity.Product;
@@ -96,16 +97,18 @@ public class ProductDTORestController {
 	}
 
 	@PostMapping(value = "/save")
-	public Mono<?> save(@RequestBody Product product) {
+	public Mono<?> save(@RequestBody ProductCrudDTO product) {
 		try {
 			LOGGER.info("Save product");
-			ResponseObject responseInvalid = validateData.validateDataObject(product);
+			LOGGER.info(product.toString());
+			ResponseObject responseInvalid = validateData.validateProductCrudDTOObject(product);
 			if (responseInvalid == null) {
-				productService.save(product);
-				return Mono.just(Utils.responseSuccess());
+				productService.saveDatabase(product);
+				return Mono.just(Utils.responseSuccess("save product"));
 			} else {
 				return Mono.just(responseInvalid);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Mono.just(Utils.responseUnSuccess());
@@ -121,7 +124,7 @@ public class ProductDTORestController {
 			if (responseInvalid == null) {
 				product.setUpdateDate(new Date());
 				productService.save(product);
-				return Mono.just(Utils.responseSuccess());
+				return Mono.just(Utils.responseSuccess("Update product"));
 			} else {
 				return Mono.just(responseInvalid);
 			}
@@ -141,7 +144,7 @@ public class ProductDTORestController {
 			ResponseObject responseInvalid = validateData.validateDeleteProduct(id);
 			if (responseInvalid == null) {
 				productService.deleteById(id);
-				return Mono.just(Utils.responseSuccess());
+				return Mono.just(Utils.responseSuccess("Delete product"));
 			} else {
 				return Mono.just(responseInvalid);
 			}
@@ -168,7 +171,7 @@ public class ProductDTORestController {
 			if (responseInvalid == null) {
 				File filePro = convertToFile(files);
 				getValuesFileSaveDatabase(filePro);
-				return Mono.just(Utils.responseSuccess());
+				return Mono.just(Utils.responseSuccess("save List "));
 			} else {
 				return Mono.just(responseInvalid);
 			}
