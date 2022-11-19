@@ -39,11 +39,7 @@ public class ValidateData {
             ResponseObject responseObject = Utils.responseValidateInputData("Gender");
             return responseObject;
         }
-        LOGGER.info(String.valueOf(product.getImportPrice()));
-        if (Commons.isNullOrEmptyNumberTypeLong(product.getImportPrice())) {
-            ResponseObject responseObject = Utils.responseValidateInputData( "ImportPrice null");
-            return responseObject;
-        }
+
         LOGGER.info(String.valueOf(product.getOriginalPrice()));
         if (Commons.isNullOrEmptyNumberTypeLong(product.getOriginalPrice())) {
             ResponseObject responseObject = Utils.responseValidateInputData("OriginalPrice null");

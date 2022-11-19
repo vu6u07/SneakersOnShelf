@@ -73,7 +73,6 @@ public class Product {
 				", productDetails=" + productDetails +
 				", sellPrice=" + sellPrice +
 				", originalPrice=" + originalPrice +
-				", importPrice=" + importPrice +
 				", description='" + description + '\'' +
 				", createDate=" + createDate +
 				", updateDate=" + updateDate +

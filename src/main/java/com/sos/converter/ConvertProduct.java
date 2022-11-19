@@ -40,7 +40,6 @@ public class ConvertProduct {
             LOGGER.info("cate: -- "+category);
             product.setProductGender(productInfoDTO.getProductGender());
             product.setDescription(productInfoDTO.getDescription());
-            product.setImportPrice(productInfoDTO.getImportPrice());
             product.setSellPrice(productInfoDTO.getSellPrice());
             product.setName(productInfoDTO.getName());
             product.setOriginalPrice(productInfoDTO.getOriginalPrice());
@@ -130,7 +129,6 @@ public class ConvertProduct {
         product.setCreateDate(new Date());
         product.setDescription(productDTO.getDescription());
         product.setSellPrice(productDTO.getSellPrice());
-        product.setImportPrice(productDTO.getImportPrice());
         product.setOriginalPrice(productDTO.getOriginalPrice());
         product.setProductImage(productImage);
         return product;

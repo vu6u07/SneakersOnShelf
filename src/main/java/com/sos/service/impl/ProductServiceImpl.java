@@ -108,7 +108,6 @@ public class ProductServiceImpl implements ProductService {
 			dto.setProductDetails(productDetailRepository.findByProductId(rs.getId()));
 			dto.setBrand(rs.getBrand().getName());
 			dto.setCategory(rs.getCategory().getName());
-			dto.setImportPrice(rs.getImportPrice());
 			dto.setOriginalPrice(rs.getOriginalPrice());
 			dto.setSellPrice(rs.getSellPrice());
 			dto.setCreateDate(rs.getCreateDate());
