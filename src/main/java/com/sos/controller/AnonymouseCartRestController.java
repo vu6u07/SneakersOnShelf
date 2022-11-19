@@ -25,10 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sos.common.ApplicationConstant.PaymentMethod;
+import com.sos.common.ApplicationConstant.SaleMethod;
 import com.sos.entity.CustomerInfo;
 import com.sos.entity.Order;
-import com.sos.service.AnonymouseCartService;
+import com.sos.entity.Voucher;
+import com.sos.service.CartService;
 import com.sos.service.util.ValidationUtil;
 
 @RestController
@@ -36,7 +37,7 @@ import com.sos.service.util.ValidationUtil;
 public class AnonymouseCartRestController {
 
 	@Autowired
-	private AnonymouseCartService anonymouseCartService;
+	private CartService<String> anonymouseCartService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -46,13 +47,13 @@ public class AnonymouseCartRestController {
 
 	@GetMapping(value = "/anonymous")
 	public ResponseEntity<?> getCart() {
-		return ResponseEntity.ok(anonymouseCartService.createAnonymousCart());
+		return ResponseEntity.ok(anonymouseCartService.createCart(null));
 	}
 
 	@GetMapping(value = "/{id}", headers = { "token" })
 	public ResponseEntity<?> getCartById(@PathVariable(name = "id") int id,
 			@RequestHeader(name = "token") String token) {
-		return ResponseEntity.ok(anonymouseCartService.getCartDTO(id, token));
+		return ResponseEntity.ok(anonymouseCartService.getCartDTOById(id, token));
 	}
 
 	@PostMapping(value = "/{id}/items", headers = { "token" })
@@ -91,15 +92,12 @@ public class AnonymouseCartRestController {
 	}
 	// @formatter:on
 
-	// @formatter:off
 	@PostMapping(value = "/{id}/submit", headers = { "token" })
-	public ResponseEntity<?> submitCart(
-			@PathVariable(name = "id") int id, 
-			@RequestHeader(name = "token") String token,
-			@RequestBody JsonNode data,
-			HttpServletRequest request) 
+	public ResponseEntity<?> submitCart(@PathVariable(name = "id") int id, @RequestHeader(name = "token") String token,
+			@RequestBody JsonNode data, HttpServletRequest request)
 			throws JsonProcessingException, IllegalArgumentException, URISyntaxException {
-		CustomerInfo customerInfo = objectMapper.treeToValue(data.get("customer_info"), CustomerInfo.class);
+		CustomerInfo customerInfo = objectMapper.treeToValue(data.get("customerInfo"), CustomerInfo.class);
+
 		Set<ConstraintViolation<CustomerInfo>> violations = validator.validate(customerInfo);
 		if (!violations.isEmpty()) {
 			String errorsMsg = violations.stream().map(ConstraintViolation<CustomerInfo>::getMessage)
@@ -108,17 +106,13 @@ public class AnonymouseCartRestController {
 		}
 		ValidationUtil.validatePhone(customerInfo.getPhone());
 		
-		String email = null;
-		if(!data.get("email").isNull()) {
-			email = data.get("email").asText();
-			ValidationUtil.validateEmail(email);
-		}
-		
-		PaymentMethod paymentMethod = PaymentMethod.valueOf(data.get("payment_method").asText());
-		
-		Order order = anonymouseCartService.submitCart(id, token, customerInfo, paymentMethod, email);
+		String email = data.get("email").asText();
+		ValidationUtil.validateEmail(email);
+
+		Voucher voucher = objectMapper.treeToValue(data.get("voucher"), Voucher.class);
+
+		Order order = anonymouseCartService.submitCart(id, customerInfo, email, SaleMethod.DELIVERY, voucher, token);
 		return ResponseEntity.ok(order.getId());
 	}
-	// @formatter:on
 
 }

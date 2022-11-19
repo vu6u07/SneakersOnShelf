@@ -28,36 +28,57 @@ public class ApplicationConstant {
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-	public enum PaymentStatus {
-		PENDING("Đang chờ xác nhận"), APPROVED("Đã thanh toán");
+	public enum SaleMethod {
+		DELIVERY("DELIVERY", "Giao hàng", "primary"), RETAIL("RETAIL", "Tại quầy", "success");
 
+		private final String name;
 		private final String description;
+		private final String color;
 
-		private PaymentStatus(String description) {
+		private SaleMethod(String name, String description, String color) {
+			this.name = name;
 			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public String getDescription() {
 			return description;
+		}
+
+		public String getColor() {
+			return color;
 		}
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-	public enum DeliveryStatus {
+	public enum TransactionStatus {
+		PENDING("PENDING", "Đang chờ xác nhận", "warning"), APPROVED("APPROVED", "Đã thanh toán", "primary");
 
-		PENDING("Đang chờ vận chuyển"), TRANSIT("Đang vận chuyển"), DELIVERED("Đã giao hàng"), CANCELLED("Đã hủy"),
-		FAILED("Thất bại"), RETURNED("Đã trả hàng");
-
+		private final String name;
 		private final String description;
+		private final String color;
 
-		private DeliveryStatus(String description) {
+		private TransactionStatus(String name, String description, String color) {
+			this.name = name;
 			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public String getDescription() {
 			return description;
 		}
 
+		public String getColor() {
+			return color;
+		}
 	}
 
 	public enum DeliveryPartner {
@@ -89,34 +110,106 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderStatus {
-		PENDING("Đang chờ xác nhận"), CONFIRMED("Đã xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
+		PENDING("PENDING", "Đang chờ xác nhận", "warning"), CONFIRMED("CONFIRMED", "Đã xác nhận", "success"),
+		SHIPPING("SHIPPING", "Đang vận chuyển", "secondary"), CANCELLED("CANCELLED", "Đã hủy", "error"),
+		APPROVED("APPROVED", "Đã hoàn thành", "primary"), REVERSE("REVERSE", "Đã trả hàng", "info");
 
+		private final String name;
 		private final String description;
+		private final String color;
 
-		private OrderStatus(String description) {
+		private OrderStatus(String name, String description, String color) {
+			this.name = name;
 			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public String getDescription() {
 			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum OrderTimelineType {
+		CREATED("CREATED", "Đơn Tạo Đơn Hàng", "FaRegFileAlt", "#2dc258"),
+		CONFIRMED("CONFIRMED", "Đã Xác Nhận Thông Tin Thanh Toán", "FaMoneyCheckAlt", "#2dc258"),
+		SHIPPING("SHIPPING", "Đã Giao Cho Đơn Vị Vận Chuyển", "FaTruck", "#2dc258"),
+		APPROVED("APPROVED", "Đã Nhận Được Hàng", "FaCalendarCheck", "#2dc258"),
+		CANCELLED("CANCELLED", "Đơn Hàng Đã Hủy", "FaWindowClose", "#9c2919"),
+		EDITED("EDITED", "Chỉnh Sửa Đơn Hàng", "FaPenSquare", "#ffc107");
+
+		private final String name;
+		private final String title;
+		private final String icon;
+		private final String color;
+
+		private OrderTimelineType(String name, String title, String icon, String color) {
+			this.name = name;
+			this.title = title;
+			this.icon = icon;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public String getIcon() {
+			return icon;
+		}
+
+		public String getColor() {
+			return color;
 		}
 
 	}
 
+	public enum OrderItemStatus {
+		APPROVED, REVERSE
+	}
+
+	public enum TransactionType {
+		PAYMENT, REVERSE
+	}
+
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum CartStatus {
-		PENDING("Đang chờ xác nhận"), CANCELLED("Đã hủy"), APPROVED("Đã hoàn thành");
+		PENDING("PENDING", "Đang chờ", "primary"), CANCELLED("CANCELLED", "Đã hủy", "error"),
+		APPROVED("APPROVED", "Đã hoàn thành", "success");
 
+		private final String name;
 		private final String description;
+		private final String color;
 
-		private CartStatus(String description) {
+		private CartStatus(String name, String description, String color) {
+			this.name = name;
 			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public String getDescription() {
 			return description;
 		}
 
+		public String getColor() {
+			return color;
+		}
 	}
 
 	public enum CustomerInfoStatus {
@@ -139,16 +232,62 @@ public class ApplicationConstant {
 		IMPORT, EXPORT, RETURN
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum VoucherStatus {
+		ACTIVE("ACTIVE", "Kích hoạt", "primary"), INACTIVE("INACTIVE", "Đã hủy", "error");
+		
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private VoucherStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
 	public enum VoucherType {
-		PUBLIC, REDEEM
+		DISCOUNT, PERCENT
 	}
 
-	public enum ReturnType {
-		DEFECT
-	}
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum VoucherAccess {
+		PUBLIC("PUBLIC", "Công khai", "primary"), PROTECTED("PROTECTED", "Giới hạn", "warning");
+		
+		private final String name;
+		private final String description;
+		private final String color;
 
-	public enum ExchangeType {
-		SIZE_CHANGE, DEFECT
+		private VoucherAccess(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 }

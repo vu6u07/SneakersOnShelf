@@ -6,6 +6,6 @@ import com.sos.common.ApplicationConstant.OAuthProvider;
 
 public interface OAuth2AuthenticationService {
 
-	public OAuth2User signin(OAuthProvider oauthProvider, OAuth2User oAuth2User);
+	OAuth2User signin(OAuthProvider oauthProvider, OAuth2User oAuth2User);
 
 }

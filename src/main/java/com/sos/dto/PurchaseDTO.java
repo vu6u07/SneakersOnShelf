@@ -1,10 +1,9 @@
 package com.sos.dto;
 
 import java.util.Date;
-import java.util.UUID;
 
 import com.sos.common.ApplicationConstant.OrderStatus;
-import com.sos.common.ApplicationConstant.PaymentStatus;
+import com.sos.common.ApplicationConstant.SaleMethod;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,18 +14,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PurchaseDTO {
 
-	private UUID id;
-	
+	private String id;
+
+	private String fullname;
+
+	private String phone;
+
 	private long productCount;
 
 	private long total;
 
+	private SaleMethod saleMethod;
+	
 	private OrderStatus orderStatus;
 
-	private PaymentStatus paymentStatus;
-
 	private Date createDate;
-
-	private Date updateDate;
 
 }

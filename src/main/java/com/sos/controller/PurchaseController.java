@@ -1,9 +1,8 @@
 package com.sos.controller;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +25,13 @@ public class PurchaseController {
 	@GetMapping(value = "/purchases/{id}", headers = { "token" })
 	public ResponseEntity<?> getAnonymousPurchase(@PathVariable(name = "id") String id,
 			@RequestHeader(name = "token") String userTokenQuery) {
-		return ResponseEntity.ok(purchaseService.findPurchaseDTO(UUID.fromString(id), userTokenQuery));
+		return ResponseEntity.ok(purchaseService.findPurchaseDTO(id, userTokenQuery));
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@GetMapping(value = "/purchases/{id}")
 	public ResponseEntity<?> getPurchase(@PathVariable(name = "id") String id, AccountAuthentication authentication) {
-		return ResponseEntity.ok(purchaseService.findPurchaseDTO(UUID.fromString(id), authentication));
+		return ResponseEntity.ok(purchaseService.findPurchaseDTO(id, authentication));
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER') and #id == authentication.id")
@@ -41,7 +40,7 @@ public class PurchaseController {
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size, AccountAuthentication authentication) {
 		return ResponseEntity
-				.ok(purchaseService.findAllPurchaseDTOByAccountId(authentication, PageRequest.of(page - 1, size)));
+				.ok(purchaseService.findAllPurchaseDTOByAccountId(authentication, PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
 	}
 
 }

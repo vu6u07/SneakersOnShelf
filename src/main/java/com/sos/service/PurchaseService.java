@@ -1,7 +1,5 @@
 package com.sos.service;
 
-import java.util.UUID;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,9 +9,9 @@ import com.sos.security.AccountAuthentication;
 
 public interface PurchaseService {
 
-	PurchaseInfoDTO findPurchaseDTO(UUID id, String userTokenQuery);
+	PurchaseInfoDTO findPurchaseDTO(String id, String userTokenQuery);
 
-	PurchaseInfoDTO findPurchaseDTO(UUID id, AccountAuthentication authentication);
+	PurchaseInfoDTO findPurchaseDTO(String id, AccountAuthentication authentication);
 
 	Page<PurchaseDTO> findAllPurchaseDTOByAccountId(AccountAuthentication accountAuthentication, Pageable pageable);
 	

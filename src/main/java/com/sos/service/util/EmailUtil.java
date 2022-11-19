@@ -122,10 +122,10 @@ public class EmailUtil {
 			linkOrder = linkOrder.concat("?token=").concat(order.getToken());
 		}
 
-		return String.format(NEW_ORDER_EMAIL_CONTENT, order.getId().toString(), order.getCustomerInfo().getFullname(),
-				linkOrder, DateUtil.convertToStringddMMyyyy(order.getCreateDate()), order.getCustomerInfo().getFullname(),
+		return String.format(NEW_ORDER_EMAIL_CONTENT, order.getId(), order.getFullname(),
+				linkOrder, DateUtil.convertToStringddMMyyyy(order.getCreateDate()), order.getFullname(),
 				order.getId().toString(), order.getEmail(), order.getOrderStatus().getDescription(),
-				order.getCustomerInfo().getPhone(), NumberUtil.VND(order.getTotal()));
+				order.getPhone(), NumberUtil.VND(order.getTotal()));
 	}
 
 	public static String getNewOrderEmailSubject(String orderId) {

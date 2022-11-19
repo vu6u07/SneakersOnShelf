@@ -9,51 +9,44 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
-import com.sos.common.ApplicationConstant.ExchangeStatus;
-import com.sos.common.ApplicationConstant.ExchangeType;
+import com.sos.common.ApplicationConstant.PaymentMethod;
+import com.sos.common.ApplicationConstant.TransactionStatus;
+import com.sos.common.ApplicationConstant.TransactionType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
-public class Exchange {
+public class Transaction {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
 	@ManyToOne
-	private OrderItem orderItem;
+	private Order order;
 
 	@ManyToOne
-	private ProductDetail productDetail;
-
-	@OneToOne
-	private Delivery delivery;
-
-	@ManyToOne
-	private CustomerInfo customerInfo;
-
-	private int quantity;
-
-	private long surcharge;
+	private Account staff;
 
 	@Enumerated(EnumType.STRING)
-	private ExchangeType exchangeType;
+	private TransactionType transactionType;
 
 	@Enumerated(EnumType.STRING)
-	private ExchangeStatus exchangeStatus;
+	private TransactionStatus transactionStatus;
 
-	private String description;
+	@Enumerated(EnumType.STRING)
+	private PaymentMethod paymentMethod;
 
-	private Date createdDate;
-	
+	private long amount;
+
+	private Date createDate;
+
 	private Date updateDate;
 
 }

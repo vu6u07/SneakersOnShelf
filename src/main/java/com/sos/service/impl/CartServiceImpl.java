@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -17,44 +17,43 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sos.common.ApplicationConstant.CartStatus;
-import com.sos.common.ApplicationConstant.CustomerInfoStatus;
-import com.sos.common.ApplicationConstant.DeliveryPartner;
-import com.sos.common.ApplicationConstant.DeliveryStatus;
+import com.sos.common.ApplicationConstant.OrderItemStatus;
 import com.sos.common.ApplicationConstant.OrderStatus;
-import com.sos.common.ApplicationConstant.PaymentMethod;
-import com.sos.common.ApplicationConstant.PaymentStatus;
+import com.sos.common.ApplicationConstant.OrderTimelineType;
+import com.sos.common.ApplicationConstant.SaleMethod;
+import com.sos.common.ApplicationConstant.VoucherStatus;
 import com.sos.dto.CartDTO;
 import com.sos.dto.EmailRequest;
 import com.sos.entity.Account;
 import com.sos.entity.Cart;
 import com.sos.entity.CartItem;
 import com.sos.entity.CustomerInfo;
-import com.sos.entity.Delivery;
 import com.sos.entity.Order;
 import com.sos.entity.OrderItem;
+import com.sos.entity.OrderTimeline;
 import com.sos.entity.ProductDetail;
+import com.sos.entity.Voucher;
 import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.AccountRepository;
 import com.sos.repository.CartItemRepository;
 import com.sos.repository.CartRepository;
-import com.sos.repository.CustomerInfoRepository;
 import com.sos.repository.OrderItemRepository;
 import com.sos.repository.OrderRepository;
+import com.sos.repository.OrderTimelineRepository;
 import com.sos.repository.ProductDetailRepository;
+import com.sos.repository.VoucherRepository;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.CartService;
 import com.sos.service.DeliveryService;
 import com.sos.service.EmailService;
+import com.sos.service.util.CartUtils;
 import com.sos.service.util.EmailUtil;
 
-@Service
-public class CartServiceImpl implements CartService {
+@Service("CartServiceImpl")
+public class CartServiceImpl implements CartService<AccountAuthentication> {
 
 	@Autowired
 	private AccountRepository accountRepository;
-
-	@Autowired
-	private CustomerInfoRepository customerInfoRepository;
 
 	@Autowired
 	private CartRepository cartRepository;
@@ -67,9 +66,15 @@ public class CartServiceImpl implements CartService {
 
 	@Autowired
 	private OrderRepository orderRepository;
-
+	
 	@Autowired
 	private OrderItemRepository orderItemRepository;
+
+	@Autowired
+	private OrderTimelineRepository orderTimelineRepository;
+
+	@Autowired
+	private VoucherRepository voucherRepository;
 
 	@Autowired
 	private DeliveryService deliveryService;
@@ -79,7 +84,7 @@ public class CartServiceImpl implements CartService {
 
 	@Transactional
 	@Override
-	public CartDTO getOrCreateCart(AccountAuthentication authentication) {
+	public CartDTO createCart(AccountAuthentication authentication) {
 		Optional<CartDTO> rs = cartRepository.findCurrentCartDTOByAccountId(authentication.getId(), CartStatus.PENDING);
 		if (rs.isPresent()) {
 			CartDTO cartDTO = rs.get();
@@ -100,7 +105,7 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public CartDTO getCartDTO(int id, AccountAuthentication authentication) {
+	public CartDTO getCartDTOById(int id, AccountAuthentication authentication) {
 		CartDTO cartDTO = cartRepository.findCartDTO(id, CartStatus.PENDING, authentication.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
 		cartDTO.setItems(cartRepository.findAllCartItemDTOByCartId(cartDTO.getId()));
@@ -162,14 +167,10 @@ public class CartServiceImpl implements CartService {
 
 	@Transactional
 	@Override
-	public Order submitCart(int id, PaymentMethod paymentMethod, int customerInfoId,
+	public Order submitCart(int id, CustomerInfo customerInfo, String email, SaleMethod saleMethod, Voucher voucher,
 			AccountAuthentication authentication) throws JsonMappingException, JsonProcessingException {
 		Cart cart = cartRepository.findCartId(id, CartStatus.PENDING, authentication.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giỏ hàng."));
-
-		CustomerInfo customerInfo = customerInfoRepository
-				.findCustomerInfo(customerInfoId, authentication.getId(), CustomerInfoStatus.ACTIVE)
-				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng."));
 
 		List<CartItem> cartItems = cartItemRepository.findCartItemsByCartId(cart.getId());
 
@@ -197,6 +198,7 @@ public class CartServiceImpl implements CartService {
 			orderItem.setOrder(order);
 			orderItem.setProductDetail(cartItem.getProductDetail());
 			orderItem.setQuantity(cartItem.getQuantity());
+			orderItem.setOrderItemStatus(OrderItemStatus.APPROVED);
 			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
 			productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 					orderItem.getQuantity());
@@ -204,61 +206,91 @@ public class CartServiceImpl implements CartService {
 			orderItems.add(orderItem);
 		}
 
-		order.setId(UUID.randomUUID());
+		order.setId(CartUtils.generateOrderId(now, id));
 		order.setToken(cart.getToken());
-		order.setCustomerInfo(customerInfo);
-		order.setTotal(total);
-
-		Delivery delivery = new Delivery("123456789",
-				deliveryService.getDeliveryFee(order.getTotal() + order.getSurcharge() - order.getDiscount(),
-						customerInfo.getDistrictId(), customerInfo.getWardCode()),
-				String.format("%s, %s, %s, %s", customerInfo.getAddress(), customerInfo.getWardName(),
-						customerInfo.getDistrictName(), customerInfo.getProvinceName()),
-				DeliveryPartner.GHN, DeliveryStatus.PENDING, null, now, now);
-		deliveryService.save(delivery);
-		order.setDelivery(delivery);
 		order.setOrderStatus(OrderStatus.PENDING);
-		order.setPaymentMethod(paymentMethod);
-		order.setPaymentStatus(PaymentStatus.PENDING);
-		order.setCreateDate(now);
-		order.setUpdateDate(now);
-
-		accountRepository.getAccountEmail(authentication.getId()).ifPresent(email -> {
-			order.setEmail(email);
+		order.setAccount(new Account(authentication.getId()));
+		order.setTotal(total);
+		order.setFee(deliveryService.getDeliveryFee(order.getTotal() + order.getSurcharge() - order.getDiscount(),
+				customerInfo.getDistrictId(), customerInfo.getWardCode()));
+		order.setFullname(customerInfo.getFullname());
+		accountRepository.getAccountEmail(authentication.getId()).ifPresent(e -> {
+			order.setEmail(e);
 		});
+		order.setPhone(customerInfo.getPhone());
+		order.setCreateDate(now);
+		order.setSaleMethod(saleMethod);
 
-		Order created = orderRepository.save(order);
+		if (voucher != null) {
+			Voucher selectedVoucher = voucherRepository
+					.findAvailableVoucherById(voucher.getId(), VoucherStatus.ACTIVE, now)
+					.orElseThrow(() -> new ValidationException("Mã giảm giá không hợp lệ."));
+			if (order.getTotal() < selectedVoucher.getRequiredValue()) {
+				throw new ValidationException("Mã giảm giá không hợp lệ.");
+			}
+
+			long discount = 0;
+
+			switch (selectedVoucher.getVoucherType()) {
+			case PERCENT:
+				if (selectedVoucher.getAmount() <= 0 || selectedVoucher.getAmount() > 100) {
+					throw new ValidationException("Mã giảm giá không hợp lệ.");
+				}
+				discount = order.getTotal() * voucher.getAmount() / 100;
+				break;
+			case DISCOUNT:
+				discount = voucher.getAmount();
+				break;
+			default:
+				throw new ValidationException("Mã giảm giá không hợp lệ.");
+			}
+
+			if (voucher.getMaxValue() > 0 && discount > voucher.getMaxValue()) {
+				discount = voucher.getMaxValue();
+			}
+			order.setVoucher(selectedVoucher);
+			order.setDiscount(discount <= order.getTotal() ? discount : order.getTotal());
+
+			if (voucherRepository.decreateVoucherQuantity(selectedVoucher.getId()) != 1) {
+				throw new ValidationException("Mã giảm giá không hợp lệ.");
+			}
+		}
+
+		order.setProvinceId(customerInfo.getProvinceId());
+		order.setDistrictId(customerInfo.getDistrictId());
+		order.setWardCode(customerInfo.getWardCode());
+		order.setAddress(String.format("%s, %s, %s", customerInfo.getWardName(), customerInfo.getDistrictName(),
+				customerInfo.getProvinceName()));
+		order.setDetailedAddress(customerInfo.getAddress());
+
+		orderRepository.save(order);
 		orderItemRepository.saveAll(orderItems);
 
-		if (cartRepository.updateCartStatus(cart.getId(), CartStatus.APPROVED) == 0) {
+		OrderTimeline orderTimeline = new OrderTimeline();
+		orderTimeline.setCreatedDate(now);
+		orderTimeline.setOrder(order);
+		orderTimeline.setOrderTimelineType(OrderTimelineType.CREATED);
+		orderTimelineRepository.save(orderTimeline);
+
+		if (cartRepository.updateCartStatus(cart.getId(), CartStatus.APPROVED, now) == 0) {
 			throw new ResourceNotFoundException("Không tìm thấy giỏ hàng");
 		}
 
-		accountRepository.getAccountEmail(authentication.getId()).ifPresent(email -> {
-			try {
-				emailService.sendEmail(new EmailRequest(new String[] { email }, null, null,
-						EmailUtil.getNewOrderEmailSubject(order.getId().toString()),
-						EmailUtil.getNewOrderEmailContent(order), true));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
-		});
-		
 		if (order.getEmail() != null) {
-			try {
-				emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-						EmailUtil.getNewOrderEmailSubject(order.getId().toString()),
-						EmailUtil.getNewOrderEmailContent(order), true));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
+			CompletableFuture.runAsync(() -> {
+				try {
+					emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
+							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order),
+							true));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
+			});
 		}
 
-		return created;
+		return order;
 	}
 
 }

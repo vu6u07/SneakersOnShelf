@@ -23,7 +23,7 @@ public class AccountRestController {
 	@PreAuthorize(value = "hasRole('ROLE_USER') and #id == authentication.id")
 	@GetMapping(value = "/accounts/{id}")
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-		return ResponseEntity.of(accountService.findAccountDTOById(id));
+		return ResponseEntity.ok(accountService.findAccountDTOById(id));
 	}
 
 

@@ -1,6 +1,8 @@
 package com.sos.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sos.common.ApplicationConstant.OrderItemStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,11 +31,7 @@ public class OrderItem {
 
 	@ManyToOne
 	private ProductDetail productDetail;
-
-	private int quantity;
-
-	private long price;
-
+	
 	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "order_id")
@@ -40,6 +39,13 @@ public class OrderItem {
 
 	@OneToOne
 	private Rate rate;
+	
+	@Enumerated(EnumType.STRING)
+	private OrderItemStatus orderItemStatus;
+
+	private int quantity;
+
+	private long price;
 
 	public OrderItem(int id) {
 		this.id = id;

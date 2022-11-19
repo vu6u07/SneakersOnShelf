@@ -2,24 +2,18 @@ package com.sos.entity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sos.common.ApplicationConstant.OrderStatus;
-import com.sos.common.ApplicationConstant.PaymentMethod;
-import com.sos.common.ApplicationConstant.PaymentStatus;
+import com.sos.common.ApplicationConstant.SaleMethod;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,23 +27,22 @@ import lombok.NoArgsConstructor;
 public class Order {
 
 	@Id
-	@Type(type = "org.hibernate.type.UUIDCharType")
-	private UUID id;
-
-	@ManyToOne
-	private Account staff;
-
-	@ManyToOne
-	private CustomerInfo customerInfo;
+	private String id;
 
 	private String token;
+
+	@Enumerated(EnumType.STRING)
+	private OrderStatus orderStatus;
+
+	@Enumerated(EnumType.STRING)
+	private SaleMethod saleMethod;
+
+	@ManyToOne
+	private Account account;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "order")
 	private List<OrderItem> orderItems;
-
-	@OneToOne(cascade = CascadeType.PERSIST)
-	private Delivery delivery;
 
 	@ManyToOne
 	private Voucher voucher;
@@ -60,28 +53,30 @@ public class Order {
 
 	private long total;
 
+	private long fee;
+
+	private String fullname;
+
+	private String email;
+
+	private String phone;
+
 	private String description;
-
-	@Enumerated(EnumType.STRING)
-	private OrderStatus orderStatus;
-
-	@Enumerated(EnumType.STRING)
-	private PaymentStatus paymentStatus;
-
-	@Enumerated(EnumType.STRING)
-	private PaymentMethod paymentMethod;
 
 	private Date createDate;
 
-	private Date updateDate;
-	
-	private String email;
-	
-	public Order(UUID id, String token, OrderStatus orderStatus, Date createDate) {
+	private int provinceId;
+
+	private int districtId;
+
+	private String wardCode;
+
+	private String address;
+
+	private String detailedAddress;
+
+	public Order(String id) {
 		this.id = id;
-		this.token = token;
-		this.orderStatus = orderStatus;
-		this.createDate = createDate;
 	}
 
 }

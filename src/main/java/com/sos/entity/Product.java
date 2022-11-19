@@ -55,8 +55,6 @@ public class Product {
 
 	private long originalPrice;
 
-	private long importPrice;
-
 	private String description;
 
 	private Date createDate;
