@@ -22,13 +22,14 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
 	@Query(value = "SELECT new com.sos.dto.CartItemDTO(c.id, c.quantity, c.productDetail.product.id, c.productDetail.id, c.productDetail.product.name, c.productDetail.size, c.productDetail.product.productImage.image, c.productDetail.product.sellPrice) FROM CartItem c WHERE c.cart.id = :id")
 	List<CartItemDTO> findAllCartItemDTOByCartId(int id);
-	
+
 	@Query(value = "SELECT COALESCE(SUM(ci.productDetail.product.sellPrice * ci.quantity), '0') FROM Cart c LEFT JOIN c.cartItems ci WHERE c.id = :id")
 	long getTotal(int id);
 
 	// Anonymous Cart
 	@Query(value = "SELECT new com.sos.dto.CartDTO(c.id, c.token) FROM Cart c WHERE c.id = :id AND c.token = :token AND c.cartStatus = :cartStatus AND c.account IS NULL")
 	Optional<CartDTO> findCartDTO(int id, CartStatus cartStatus, String token);
+
 
 	@Query(value = "SELECT new com.sos.entity.Cart(c.id) FROM Cart c WHERE c.id = :id AND c.token = :token AND c.cartStatus = :cartStatus AND c.account IS NULL")
 	Optional<Cart> findCartId(int id, CartStatus cartStatus, String token);
@@ -44,8 +45,8 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 	Optional<CartDTO> findCartDTO(int id, CartStatus cartStatus, int accountId);
 
 	@Query(value = "SELECT new com.sos.entity.Cart(c.id) FROM Cart c WHERE c.id = :id AND c.account.id = :accountId AND c.cartStatus = :cartStatus")
-	Optional<Cart> findCartId(int id, CartStatus cartStatus,  int accountId);
-	
+	Optional<Cart> findCartId(int id, CartStatus cartStatus, int accountId);
+
 	@Modifying
 	@Query(value = "UPDATE Cart c SET c.cartStatus = :cartStatus, c.updateDate = :updateDate WHERE c.id = :id")
 	int updateCartStatus(int id, CartStatus cartStatus, Date updateDate);
@@ -56,7 +57,7 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
 	@Query(value = "SELECT new com.sos.dto.CartReportDTO(c.id, COALESCE(SUM(ci.quantity), 0), COALESCE(SUM(ci.quantity * p.sellPrice), 0), c.cartStatus, c.createDate, c.updateDate) FROM Cart c LEFT JOIN c.cartItems ci LEFT JOIN ci.productDetail pd LEFT JOIN pd.product p WHERE c.account.id = :accountId AND c.id = :id GROUP BY c.id, c.cartStatus, c.createDate, c.updateDate")
 	Page<CartReportDTO> findCartReportDTO(int accountId, int id, Pageable pageable);
-	
+
 	@Modifying
 	@Query(value = "UPDATE Cart c SET c.cartStatus = :cartStatus, c.updateDate = :updateDate WHERE c.id = :id AND c.account.id = :accountId")
 	int updateCartStatus(int id, CartStatus cartStatus, Date updateDate, int accountId);

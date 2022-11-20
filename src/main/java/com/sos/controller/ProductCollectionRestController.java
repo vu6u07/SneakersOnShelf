@@ -20,10 +20,10 @@ public class ProductCollectionRestController {
 	@Autowired
 	private ProductService productService;
 
-	@GetMapping(value = "/{id}")
-	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-		return ResponseEntity.ok(productService.findProductInfoDTOById(id));
-	}
+//	@GetMapping(value = "/{id}")
+//	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
+//		return ResponseEntity.ok(productService.findProductInfoDTOById(id));
+//	}
 
 	// @formatter:off
 	@GetMapping
@@ -70,7 +70,7 @@ public class ProductCollectionRestController {
 		return ResponseEntity
 				.ok(productService.findCollectionProductDTOByCategoryId(categoryId, PageRequest.of(page - 1, size, sorter.getSort())));
 	}
-	
+
 	// @formatter:off
 	@GetMapping(params = {"brand", "gender"})
 	public ResponseEntity<?> getByBrandAndProductGender(
