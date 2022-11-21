@@ -3,7 +3,6 @@ package com.sos.controller.admin;
 import com.sos.common.ApplicationConstant;
 import com.sos.common.Commons;
 import com.sos.common.SorterConstant;
-import com.sos.controller.ProductDTORestController;
 import com.sos.dto.ProductCrudDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.dto.ResponseObject;
@@ -41,7 +40,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping(value = "/admin/v1/")
 public class ProductAdminController extends BaseController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductDTORestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductAdminController.class);
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/products")

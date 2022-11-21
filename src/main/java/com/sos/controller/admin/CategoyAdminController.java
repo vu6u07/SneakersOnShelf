@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping(value = "/admin/v1/categories")
 public class CategoyAdminController {
-    private static Logger logger = LoggerFactory.getLogger(CategoryRestController.class);
+    private static Logger logger = LoggerFactory.getLogger(CategoyAdminController.class);
 
     @Autowired
     private CategoryService categoryService;

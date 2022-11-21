@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping(value = "/admin/v1/brands")
 public class BrandAdminController {
-    private static Logger logger = LoggerFactory.getLogger(BrandRestController.class);
+    private static Logger logger = LoggerFactory.getLogger(BrandAdminController.class);
 
     @Autowired
     private BrandService brandService;

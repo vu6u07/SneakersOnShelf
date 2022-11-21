@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/admin/v1/images")
 public class ImageAdminController extends BaseController{
 
-    private static Logger logger = LoggerFactory.getLogger(BrandRestController.class);
+    private static Logger logger = LoggerFactory.getLogger(ImageAdminController.class);
 
 //    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")

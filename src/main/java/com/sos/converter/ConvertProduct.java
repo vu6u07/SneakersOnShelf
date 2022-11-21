@@ -1,9 +1,7 @@
 package com.sos.converter;
 
 import com.sos.common.ApplicationConstant;
-import com.sos.controller.ProductDTORestController;
 import com.sos.dto.ProductCrudDTO;
-import com.sos.dto.ProductDTO;
 import com.sos.dto.ProductInfoDTO;
 import com.sos.entity.*;
 import com.sos.service.BrandService;
