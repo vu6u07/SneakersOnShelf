@@ -1,5 +1,6 @@
 package com.sos.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EnumType;
@@ -40,6 +41,12 @@ public class ProductInfoDTO {
 
 	private String description;
 
+
+	private long importPrice;
+
+	private Date createDate;
+
+	private Date updateDate;
 	public ProductInfoDTO(int id, String name, ProductGender productGender, String brand, String category,
 			String productImage, long sellPrice, long originalPrice, String description) {
 		this.id = id;

@@ -1,5 +1,6 @@
 package com.sos.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -34,10 +35,12 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query(value = "SELECT new com.sos.entity.Account(a.id) FROM Account a WHERE a.facebookOAuthId = :facebookOAuthId AND a.accountStatus = :accountStatus")
 	Optional<Account> findAccountFacebookOAuthId(String facebookOAuthId, AccountStatus accountStatus);
 
+
+
 	// Admin
 	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.id = :id AND a.accountStatus = :accountStatus")
 	Optional<AccountDTO> findAccountDTOById(int id, AccountStatus accountStatus);
-	
+
 	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.accountStatus = :accountStatus")
 	Page<AccountDTO> findAccountDTOs(AccountStatus accountStatus, Pageable pageable);
 
