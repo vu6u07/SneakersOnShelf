@@ -56,14 +56,15 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
-	public OrderItem(int id, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice, int quantity) {
+	public OrderItem(int id, long price, int quantity, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice) {
 		this.id = id;
+		this.price = price;
+		this.quantity = quantity;
 		this.productDetail = new ProductDetail(productDetailId, productDetailSize, productDetailQuantity);
 		Product product = new Product();
 		product.setSellPrice(sellPrice);
 		product.setName(name);
 		this.productDetail.setProduct(product);
-		this.quantity = quantity;
 	}
-
+	
 }

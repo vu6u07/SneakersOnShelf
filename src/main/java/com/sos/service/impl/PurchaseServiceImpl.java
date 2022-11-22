@@ -13,6 +13,7 @@ import com.sos.dto.PurchaseInfoDTO;
 import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.OrderRepository;
 import com.sos.repository.OrderTimelineRepository;
+import com.sos.repository.TransactionRepository;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.PurchaseService;
 
@@ -24,6 +25,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	@Autowired
 	private OrderTimelineRepository orderTimelineRepository;
+	
+	@Autowired
+	private TransactionRepository transactionRepository;
 
 	@Value("${vietqr.bank.id}")
 	private String bankId;
@@ -49,6 +53,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 		purchaseDTO.setItems(orderRepository.findAllPurchaseItemDTO(purchaseDTO.getId()));
 		purchaseDTO.setTimelines(orderTimelineRepository.findOrderTimelineDTOsByOrderId(purchaseDTO.getId()));
+		purchaseDTO.setTransactions(transactionRepository.findAllTransactionDTOByOrderId(purchaseDTO.getId()));
 		long total = purchaseDTO.getTotal() + purchaseDTO.getFee() + purchaseDTO.getSurcharge()
 				- purchaseDTO.getDiscount();
 		purchaseDTO.setPaymentQRCode(getPaymentQRCode(bankId, accountId, vietQRTemplate, total,
@@ -62,6 +67,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
 		purchaseDTO.setItems(orderRepository.findAllPurchaseItemDTO(purchaseDTO.getId()));
 		purchaseDTO.setTimelines(orderTimelineRepository.findOrderTimelineDTOsByOrderId(purchaseDTO.getId()));
+		purchaseDTO.setTransactions(transactionRepository.findAllTransactionDTOByOrderId(purchaseDTO.getId()));
 		long total = purchaseDTO.getTotal() + purchaseDTO.getFee() + purchaseDTO.getSurcharge()
 				- purchaseDTO.getDiscount();
 		purchaseDTO.setPaymentQRCode(getPaymentQRCode(bankId, accountId, vietQRTemplate, total,

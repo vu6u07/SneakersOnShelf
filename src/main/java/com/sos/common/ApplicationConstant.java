@@ -14,16 +14,28 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum PaymentMethod {
-		CASH("Tiền mặt"), BANKING("Chuyển khoản"), COD("Thanh toán khi nhận hàng");
+		CASH("CASH", "Tiền mặt", "success"), BANKING("BANKING", "Chuyển khoản", "primary");
 
+		private final String name;
 		private final String description;
+		private final String color;
 
-		private PaymentMethod(String description) {
+		private PaymentMethod(String name, String description, String color) {
+			this.name = name;
 			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		public String getDescription() {
 			return description;
+		}
+
+		public String getColor() {
+			return color;
 		}
 	}
 
@@ -139,7 +151,7 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderTimelineType {
-		CREATED("CREATED", "Đơn Tạo Đơn Hàng", "FaRegFileAlt", "#2dc258"),
+		CREATED("CREATED", "Tạo Đơn Hàng", "FaRegFileAlt", "#2dc258"),
 		CONFIRMED("CONFIRMED", "Đã Xác Nhận Thông Tin Thanh Toán", "FaMoneyCheckAlt", "#2dc258"),
 		SHIPPING("SHIPPING", "Đã Giao Cho Đơn Vị Vận Chuyển", "FaTruck", "#2dc258"),
 		APPROVED("APPROVED", "Đã Nhận Được Hàng", "FaCalendarCheck", "#2dc258"),
@@ -180,8 +192,31 @@ public class ApplicationConstant {
 		APPROVED, REVERSE
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum TransactionType {
-		PAYMENT, REVERSE
+		PAYMENT("PAYMENT", "Thanh toán", "primary"), REVERSE("REVERSE", "Hoàn tiền", "error");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private TransactionType(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -228,14 +263,10 @@ public class ApplicationConstant {
 		MEN, WOMAN, UNISEX
 	}
 
-	public enum StockTransactionType {
-		IMPORT, EXPORT, RETURN
-	}
-
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum VoucherStatus {
 		ACTIVE("ACTIVE", "Kích hoạt", "primary"), INACTIVE("INACTIVE", "Đã hủy", "error");
-		
+
 		private final String name;
 		private final String description;
 		private final String color;
@@ -266,7 +297,7 @@ public class ApplicationConstant {
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum VoucherAccess {
 		PUBLIC("PUBLIC", "Công khai", "primary"), PROTECTED("PROTECTED", "Giới hạn", "warning");
-		
+
 		private final String name;
 		private final String description;
 		private final String color;

@@ -61,8 +61,6 @@ public class Account {
 
 	private String picture;
 
-	private long point;
-
 	private Date createDate;
 
 	private Date updateDate;
@@ -78,7 +76,7 @@ public class Account {
 	}
 
 	public Account(int id, String username, String email, String fullname, String googleOAuthEmail,
-			String facebookOAuthId, CustomerInfo customerInfo, String picture, long point, Date createDate) {
+			String facebookOAuthId, CustomerInfo customerInfo, String picture, Date createDate) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
@@ -87,7 +85,6 @@ public class Account {
 		this.facebookOAuthId = facebookOAuthId;
 		this.customerInfo = customerInfo;
 		this.picture = picture;
-		this.point = point;
 		this.createDate = createDate;
 	}
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,6 +99,12 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Page<AccountDTO> findAccoutDTOs(String query, Pageable pageable) {
 		return accountRepository.findAccountDTOs("%".concat(query).concat("%"), AccountStatus.ACTIVE, pageable);
+	}
+
+	@Transactional
+	@Override
+	public void updateAccountInfo(int id, String fullname, String email) {
+		accountRepository.updateAccountInfo(id, fullname, email);
 	}
 
 }

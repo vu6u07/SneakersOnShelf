@@ -1,4 +1,4 @@
-package com.sos.controller;
+package com.sos.controller.admin;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ import com.sos.service.StatisticService;
 import com.sos.service.util.DateUtil;
 
 @RestController
-@RequestMapping(value = "/api/v1")
+@RequestMapping(value = "/admin/v1")
 public class StatisticRestController {
 
 	@Autowired
@@ -27,5 +27,17 @@ public class StatisticRestController {
 	public ResponseEntity<?> getOrderChartStatistic() {
 		Date date = new Date();
 		return ResponseEntity.ok(statisticService.getOrderChartDataProjection(DateUtil.getFirstDayOfThisMonth(date), date));
+	}
+	
+	@GetMapping(value = "/statistics/best-selling-product")
+	public ResponseEntity<?> getBestSellingProduct() {
+		Date date = new Date();
+		return ResponseEntity.ok(statisticService.getBestSellingProductStatistic(DateUtil.getFirstDayOfThisMonth(date), DateUtil.getFirstDayOfNextMonth(date)));
+	}
+	
+	@GetMapping(value = "/statistics/order-status")
+	public ResponseEntity<?> getOrderStatusStatisticProjections() {
+		Date date = new Date();
+		return ResponseEntity.ok(statisticService.getOrderStatusStatisticProjections(DateUtil.getFirstDayOfThisMonth(date), DateUtil.getFirstDayOfNextMonth(date)));
 	}
 }

@@ -129,8 +129,6 @@ public class CartAdminController {
 			AccountAuthentication authentication) 
 			throws JsonProcessingException, IllegalArgumentException {
 		
-		System.out.println("submit cart");
-		
 		SaleMethod saleMethod = SaleMethod.valueOf(data.get("saleMethod").asText());
 		CustomerInfo customerInfo = mapper.treeToValue(data.get("customerInfo"), CustomerInfo.class);
 		if(saleMethod == SaleMethod.DELIVERY) {

@@ -16,6 +16,7 @@ import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.ProductDetailRepository;
 import com.sos.repository.ProductImageRepository;
 import com.sos.repository.ProductRepository;
+import com.sos.repository.RateRepository;
 import com.sos.service.ProductService;
 
 @Service
@@ -29,6 +30,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductDetailRepository productDetailRepository;
+
+	@Autowired
+	private RateRepository rateRepository;
 
 	@Override
 	public List<Product> findAll() {
@@ -61,50 +65,24 @@ public class ProductServiceImpl implements ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id : " + id));
 		rs.setProductImages(productImageRepository.findProductImageDTOByProductId(id));
 		rs.setProductDetails(productDetailRepository.findByProductId(id));
+		rateRepository.findAverageScore(rs.getId()).ifPresent(aggregateData -> {
+			if (aggregateData.getCount() > 0 && aggregateData.getSum() > 0) {
+				rs.setScore((float) aggregateData.getSum() / aggregateData.getCount());
+			}
+		});
 		return rs;
 	}
 
 	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(Pageable pageable) {
-		return productRepository.findCollectionProductDTO(pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTOByBrandId(int brandId, Pageable pageable) {
-		return productRepository.findCollectionProductDTOByBrandId(brandId, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(ProductGender productGender, Pageable pageable) {
-		return productRepository.findCollectionProductDTO(productGender, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTOByCategoryId(int categoryId, Pageable pageable) {
-		return productRepository.findCollectionProductDTOByCategoryId(categoryId, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(int brandId, ProductGender productGender,
-			Pageable pageable) {
-		return productRepository.findCollectionProductDTO(brandId, productGender, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(int brandId, int categoryId, Pageable pageable) {
-		return productRepository.findCollectionProductDTO(brandId, categoryId, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(int brandId, int categoryId, ProductGender productGender,
-			Pageable pageable) {
-		return productRepository.findCollectionProductDTO(brandId, categoryId, productGender, pageable);
-	}
-
-	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTOByCategoryIdAndProductGender(int categoryId,
+	public Page<CollectionProductDTO> findCollectionProductDTO(String query, Integer brandId, Integer categoryId,
 			ProductGender productGender, Pageable pageable) {
-		return productRepository.findCollectionProductDTOByCategoryIdAndProductGender(categoryId, productGender,
-				pageable);
+		return productRepository.findCollectionProductDTO(query, brandId, categoryId, productGender, pageable);
 	}
+
+	@Override
+	public Page<CollectionProductDTO> findBestSellingProductDTO(String query, Integer brandId, Integer categoryId,
+			ProductGender productGender, Pageable pageable) {
+		return productRepository.findBestSellingProductDTO(query, brandId, categoryId, productGender, pageable);
+	}
+
 }

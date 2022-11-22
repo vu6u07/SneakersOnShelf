@@ -79,4 +79,16 @@ public class Order {
 		this.id = id;
 	}
 
+	public Order(String id, OrderStatus orderStatus, SaleMethod saleMethod, long discount, long surcharge, long total,
+			int districtId, String wardCode) {
+		this.id = id;
+		this.orderStatus = orderStatus;
+		this.saleMethod = saleMethod;
+		this.discount = discount;
+		this.surcharge = surcharge;
+		this.total = total;
+		this.districtId = districtId;
+		this.wardCode = wardCode;
+	}
+
 }

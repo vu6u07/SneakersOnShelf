@@ -10,22 +10,10 @@ import com.sos.entity.Product;
 
 public interface ProductService extends CrudService<Product, Integer> {
 
-	Page<CollectionProductDTO> findCollectionProductDTO(Pageable pageable);
+	Page<CollectionProductDTO> findCollectionProductDTO(String query, Integer brandId, Integer categoryId,
+			ProductGender productGender, Pageable pageable);
 
-	Page<CollectionProductDTO> findCollectionProductDTOByBrandId(int brandId, Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTO(ProductGender productGender, Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTOByCategoryId(int categoryId, Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTO(int brandId, ProductGender productGender, Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTO(int brandId, int categoryId, Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTO(int brandId, int categoryId, ProductGender productGender,
-			Pageable pageable);
-
-	Page<CollectionProductDTO> findCollectionProductDTOByCategoryIdAndProductGender(int categoryId,
+	Page<CollectionProductDTO> findBestSellingProductDTO(String query, Integer brandId, Integer categoryId,
 			ProductGender productGender, Pageable pageable);
 
 	ProductInfoDTO findProductInfoDTOById(int id);

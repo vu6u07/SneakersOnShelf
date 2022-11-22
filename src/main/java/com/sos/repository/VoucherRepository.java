@@ -28,6 +28,9 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v WHERE v.id = :id")
 	Optional<Voucher> findVoucher(int id);
 	
+	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Order o JOIN o.voucher v WHERE o.id = :id")
+	Optional<Voucher> findVoucherByOrderId(String id);
+	
 	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v")
 	Page<Voucher> findAllVoucher(Pageable pageable);
 	

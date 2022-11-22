@@ -18,7 +18,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query(value = "SELECT new com.sos.entity.Account(a.id, a.username, a.password) FROM Account a WHERE a.username = :username AND a.accountStatus = :accountStatus")
 	Optional<Account> findByUsername(String username, AccountStatus accountStatus);
 
-	@Query(value = "SELECT new com.sos.entity.Account(a.id, a.username, a.email, a.fullname, a.googleOAuthEmail, a.facebookOAuthId, c, a.picture, a.point, a.createDate) FROM Account a LEFT JOIN a.customerInfo c WHERE a.id = :id")
+	@Query(value = "SELECT new com.sos.entity.Account(a.id, a.username, a.email, a.fullname, a.googleOAuthEmail, a.facebookOAuthId, c, a.picture, a.createDate) FROM Account a LEFT JOIN a.customerInfo c WHERE a.id = :id")
 	Optional<Account> findAccountDTOById(int id);
 
 	@Modifying
@@ -34,10 +34,21 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query(value = "SELECT new com.sos.entity.Account(a.id) FROM Account a WHERE a.facebookOAuthId = :facebookOAuthId AND a.accountStatus = :accountStatus")
 	Optional<Account> findAccountFacebookOAuthId(String facebookOAuthId, AccountStatus accountStatus);
 
+	@Modifying
+	@Query(value = "UPDATE Account a SET a.fullname = :fullname, a.email = :email WHERE a.id = :id AND a.username IS NOT NULL")
+	int updateAccountInfo(int id, String fullname, String email);
+
+	@Modifying
+	@Query(value = "UPDATE Account a SET a.password = :password WHERE a.id = :id AND a.username IS NOT NULL")
+	int updatePassword(int id, String password);
+
+	@Query(value = "SELECT a.password FROM Account a WHERE a.id = :id AND a.username IS NOT NULL")
+	Optional<String> findAccountPassword(int id);
+
 	// Admin
 	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.id = :id AND a.accountStatus = :accountStatus")
 	Optional<AccountDTO> findAccountDTOById(int id, AccountStatus accountStatus);
-	
+
 	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.accountStatus = :accountStatus")
 	Page<AccountDTO> findAccountDTOs(AccountStatus accountStatus, Pageable pageable);
 

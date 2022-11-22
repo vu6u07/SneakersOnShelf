@@ -12,9 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.sos.dto.RateDTO;
+import com.sos.entity.OrderItem;
 import com.sos.entity.Rate;
 import com.sos.exception.ResourceNotFoundException;
+import com.sos.repository.OrderItemRepository;
 import com.sos.repository.RateRepository;
+import com.sos.security.AccountAuthentication;
 import com.sos.service.RateService;
 
 @Service
@@ -22,6 +25,9 @@ public class RateServiceImpl implements RateService {
 
 	@Autowired
 	private RateRepository rateRepository;
+
+	@Autowired
+	private OrderItemRepository orderItemRepository;
 
 	@Override
 	public List<Rate> findAll() {
@@ -60,11 +66,13 @@ public class RateServiceImpl implements RateService {
 
 	@Transactional
 	@Override
-	public Rate save(int orderItemId, Rate rate) {
+	public Rate save(int orderItemId, Rate rate, AccountAuthentication authentication) {
+		OrderItem orderItem = orderItemRepository.findOrderItem(orderItemId, authentication.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng."));
 		rate.setId(0);
 		rate.setCreateDate(new Date());
 		Rate created = rateRepository.save(rate);
-		if (rateRepository.updadteRateIdOfOrderItem(orderItemId, rate) < 1) {
+		if (rateRepository.updadteRateIdOfOrderItem(orderItem.getId(), rate) < 1) {
 			throw new ResourceNotFoundException("OrderItem not found");
 		}
 		return created;

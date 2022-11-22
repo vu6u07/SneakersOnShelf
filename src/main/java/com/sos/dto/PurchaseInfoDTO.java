@@ -50,6 +50,8 @@ public class PurchaseInfoDTO {
 	private List<CartItemDTO> items;
 	
 	private List<OrderTimelineDTO> timelines;
+	
+	private List<TransactionDTO> transactions;
 
 	public PurchaseInfoDTO(String id, String token, SaleMethod saleMethod, OrderStatus orderStatus, long discount, long surcharge, long total,
 			long fee, String fullname, String email, String phone, String description, Date createDate, String address,

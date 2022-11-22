@@ -3,6 +3,7 @@ package com.sos.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,99 +29,18 @@ public class ProductCollectionRestController {
 	// @formatter:off
 	@GetMapping
 	public ResponseEntity<?> get(
+			@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "brand", required = false) Integer brandId,
+			@RequestParam(name = "category", required = false) Integer categoryId,
+			@RequestParam(name = "gender", required = false) ProductGender productGender,
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
+			@RequestParam(name = "size", defaultValue = "9") int size,
 			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
+		if(sorter == ProductSorter.best_selling) {
+			return ResponseEntity.ok(productService.findBestSellingProductDTO(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null, brandId, categoryId, productGender, PageRequest.of(page - 1, size)));
+		}
 		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = "brand")
-	public ResponseEntity<?> getByBrand(
-			@RequestParam(name = "brand") int brandId,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTOByBrandId(brandId, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = "gender")
-	public ResponseEntity<?> getByProductGender(
-			@RequestParam(name = "gender") ProductGender productGender,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(productGender, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = "category")
-	public ResponseEntity<?> getByCategory(
-			@RequestParam(name = "category") int categoryId,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTOByCategoryId(categoryId, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	
-	// @formatter:off
-	@GetMapping(params = {"brand", "gender"})
-	public ResponseEntity<?> getByBrandAndProductGender(
-			@RequestParam(name = "brand") int brandId,
-			@RequestParam(name = "gender") ProductGender productGender,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(brandId, productGender, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = {"brand", "category"})
-	public ResponseEntity<?> getByBrandAndCategory(
-			@RequestParam(name = "brand") int brandId,
-			@RequestParam(name = "category") int categoryId,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(brandId, categoryId, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = {"brand", "category", "gender"})
-	public ResponseEntity<?> getByBrandAndCategoryAndProductGender(
-			@RequestParam(name = "brand") int brandId,
-			@RequestParam(name = "category") int categoryId,
-			@RequestParam(name = "gender") ProductGender productGender,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(brandId, categoryId, productGender, PageRequest.of(page - 1, size, sorter.getSort())));
-	}
-	// @formatter:on
-
-	// @formatter:off
-	@GetMapping(params = {"gender", "category"})
-	public ResponseEntity<?> getByCategoryAndProductGender(
-			@RequestParam(name = "gender") ProductGender productGender,
-			@RequestParam(name = "category") int categoryId,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
-		return ResponseEntity
-				.ok(productService.findCollectionProductDTOByCategoryIdAndProductGender(categoryId, productGender, PageRequest.of(page - 1, size, sorter.getSort())));
+				.ok(productService.findCollectionProductDTO(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null, brandId, categoryId, productGender, PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on
 

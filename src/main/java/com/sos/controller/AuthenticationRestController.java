@@ -25,11 +25,6 @@ public class AuthenticationRestController {
 		return ResponseEntity.ok(authenticationService.signin(loginRequest));
 	}
 
-	@PostMapping(value = "/signup")
-	public ResponseEntity<?> signup(@Valid @RequestBody LoginRequest loginRequest) {
-		return ResponseEntity.ok(authenticationService.signup(loginRequest));
-	}
-
 	@PostMapping(value = "/refresh")
 	public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) throws AuthenticationException {
 		return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));

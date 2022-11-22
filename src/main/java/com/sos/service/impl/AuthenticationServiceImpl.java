@@ -6,7 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.validation.Valid;
+import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +24,11 @@ import org.springframework.stereotype.Service;
 import com.sos.common.ApplicationConstant.AccountStatus;
 import com.sos.dto.JwtResponse;
 import com.sos.dto.LoginRequest;
+import com.sos.dto.RegisterRequest;
 import com.sos.entity.Account;
 import com.sos.entity.RefreshToken;
 import com.sos.entity.Role;
+import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.AccountRepository;
 import com.sos.repository.RefreshTokenRepository;
 import com.sos.repository.RoleRepository;
@@ -82,11 +85,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public JwtResponse signup(@Valid LoginRequest loginRequest) {
+	public JwtResponse signup(RegisterRequest register) {
 		Date date = new Date();
 		Account account = new Account();
-		account.setEmail(loginRequest.getUsername());
-		account.setPassword(passwordEncoder.encode(loginRequest.getPassword()));
+		account.setUsername(register.getUsername());
+		account.setFullname(register.getFullname());
+		account.setEmail(register.getEmail());
+		account.setPassword(passwordEncoder.encode(register.getPassword()));
 		account.setRoles(userRoles);
 		account.setAccountStatus(AccountStatus.ACTIVE);
 		account.setCreateDate(date);
@@ -117,6 +122,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		String accessToken = jwtUtils.generateToken(String.valueOf(accountId), authorities);
 		return new JwtResponse(accountId, accessToken, "Bearer", token);
+	}
+
+	@Transactional
+	@Override
+	public void updateAccountPassword(int id, String password, String newPassword) {
+		String encryptedPassword = accountRepository.findAccountPassword(id).orElseThrow(
+				() -> new ResourceNotFoundException("Không tìm thấy tài khoản mật khẩu với account id : " + id));
+
+		if (!passwordEncoder.matches(password, encryptedPassword)) {
+			throw new ValidationException("Mật khẩu hiện tại không chính xác.");
+		}
+
+		accountRepository.updatePassword(id, passwordEncoder.encode(newPassword));
 	}
 
 }

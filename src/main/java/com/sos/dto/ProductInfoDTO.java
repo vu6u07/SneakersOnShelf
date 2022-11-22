@@ -33,12 +33,14 @@ public class ProductInfoDTO {
 	private List<String> productImages;
 
 	private List<ProductDetail> productDetails;
-
+	
 	private long sellPrice;
 
 	private long originalPrice;
 
 	private String description;
+	
+	private float score;
 
 	public ProductInfoDTO(int id, String name, ProductGender productGender, String brand, String category,
 			String productImage, long sellPrice, long originalPrice, String description) {
