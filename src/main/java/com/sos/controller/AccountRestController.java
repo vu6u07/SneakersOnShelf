@@ -1,8 +1,10 @@
 package com.sos.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sos.dto.ChangePasswordRequest;
 import com.sos.dto.RegisterRequest;
 import com.sos.service.AccountService;
@@ -68,7 +71,14 @@ public class AccountRestController {
 	@PutMapping(value = "/accounts/{id}/password")
 	public ResponseEntity<?> updateAccountPassword(@PathVariable(name = "id") int id,
 			@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-		authenticationService.updateAccountPassword(id, changePasswordRequest.getPassword(), changePasswordRequest.getNewPassword());
+		authenticationService.updateAccountPassword(id, changePasswordRequest.getPassword(),
+				changePasswordRequest.getNewPassword());
+		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping(value = "/accounts/reset-password")
+	public ResponseEntity<?> resetAccountPassword(@RequestBody JsonNode data) throws UnsupportedEncodingException, MessagingException {
+		authenticationService.resetAccountPassword(data.get("username").asText(), data.get("email").asText());
 		return ResponseEntity.noContent().build();
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -37,14 +38,14 @@ public class Order {
 	@Enumerated(EnumType.STRING)
 	private SaleMethod saleMethod;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Account account;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "order")
 	private List<OrderItem> orderItems;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Voucher voucher;
 
 	private long discount;

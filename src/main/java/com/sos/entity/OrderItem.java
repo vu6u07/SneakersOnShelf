@@ -3,6 +3,7 @@ package com.sos.entity;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,11 +34,11 @@ public class OrderItem {
 	private ProductDetail productDetail;
 	
 	@JsonBackReference
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private Rate rate;
 	
 	@Enumerated(EnumType.STRING)

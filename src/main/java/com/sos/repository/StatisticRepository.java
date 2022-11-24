@@ -32,14 +32,15 @@ public interface StatisticRepository extends JpaRepository<Order, String> {
 			"t.date, COUNT(o.id) AS count, SUM(o.total - o.discount) AS amount \r\n" + 
 			"FROM orders o\r\n" + 
 			"JOIN ( SELECT\r\n" + 
-			"DATE_FORMAT(MAX(created_date),'%d') as date,\r\n" + 
+			"DATE_FORMAT(MAX(created_date),'%d/%m/%Y') as date,\r\n" + 
 			"order_id\r\n" + 
 			"FROM order_timeline\r\n" + 
 			"WHERE order_timeline_type = 'APPROVED'\r\n" + 
 			"AND created_date >= :fromDate AND DATE(created_date) <= :toDate\r\n" + 
 			"GROUP BY order_id ) t ON o.id = t.order_id\r\n" + 
 			"WHERE o.order_status = 'APPROVED'\r\n" + 
-			"GROUP BY t.date", nativeQuery = true)
+			"GROUP BY t.date " +
+			"ORDER BY t.date", nativeQuery = true)
 	List<OrderChartDataProjection> getOrderChartDataProjection(String fromDate, String toDate);
 
 	@Query(value = "SELECT new com.sos.dto.StatisticDTO$BestSellingProductStatistic(p.id, p.name, i.image, p.sellPrice, SUM(od.quantity) AS quantity) FROM OrderItem od JOIN od.order o JOIN od.productDetail pd JOIN pd.product p LEFT JOIN p.productImage i WHERE o.orderStatus = 'APPROVED' AND od.orderItemStatus = 'APPROVED' AND o.createDate >= :fromDate AND o.createDate < :toDate GROUP BY p.id, p.name, i.image, p.sellPrice, p.originalPrice ORDER BY quantity DESC")

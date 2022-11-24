@@ -28,7 +28,6 @@ public class RateRestController {
 	public ResponseEntity<?> getByProductDetailId(@PathVariable(name = "id") int id,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		System.out.println(size);
 		return ResponseEntity.ok(rateService.findByProductDetailId(id, PageRequest.of(page - 1, size)));
 	}
 

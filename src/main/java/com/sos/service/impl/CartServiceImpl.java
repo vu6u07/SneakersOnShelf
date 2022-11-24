@@ -252,7 +252,6 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 			}
 			order.setVoucher(selectedVoucher);
 			order.setDiscount(discount <= order.getTotal() ? discount : order.getTotal());
-			System.out.println(order.getDiscount());
 			if (voucherRepository.decreateVoucherQuantity(selectedVoucher.getId()) != 1) {
 				throw new ValidationException("Mã giảm giá không hợp lệ.");
 			}

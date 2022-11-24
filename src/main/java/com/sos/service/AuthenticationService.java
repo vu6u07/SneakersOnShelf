@@ -1,5 +1,9 @@
 package com.sos.service;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.mail.MessagingException;
+
 import org.springframework.security.core.AuthenticationException;
 
 import com.sos.dto.JwtResponse;
@@ -15,5 +19,7 @@ public interface AuthenticationService {
 	public JwtResponse refreshToken(String refreshToken) throws AuthenticationException;
 
 	void updateAccountPassword(int id, String password, String newPassword);
+	
+	void resetAccountPassword(String username, String email) throws UnsupportedEncodingException, MessagingException;
 
 }

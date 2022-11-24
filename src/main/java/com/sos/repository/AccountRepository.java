@@ -20,6 +20,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
 	@Query(value = "SELECT new com.sos.entity.Account(a.id, a.username, a.email, a.fullname, a.googleOAuthEmail, a.facebookOAuthId, c, a.picture, a.createDate) FROM Account a LEFT JOIN a.customerInfo c WHERE a.id = :id")
 	Optional<Account> findAccountDTOById(int id);
+	
+	@Query(value = "SELECT new com.sos.entity.Account(a.id) FROM Account a WHERE a.username = :username AND a.email = :email")
+	Optional<Account> findAccountIdByUsernameEmail(String username, String email);
 
 	@Modifying
 	@Query(value = "UPDATE Account a SET a.cart = :cart WHERE a.id = :id")
@@ -35,7 +38,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	Optional<Account> findAccountFacebookOAuthId(String facebookOAuthId, AccountStatus accountStatus);
 
 	@Modifying
-	@Query(value = "UPDATE Account a SET a.fullname = :fullname, a.email = :email WHERE a.id = :id AND a.username IS NOT NULL")
+	@Query(value = "UPDATE Account a SET a.fullname = :fullname, a.email = :email WHERE a.id = :id")
 	int updateAccountInfo(int id, String fullname, String email);
 
 	@Modifying

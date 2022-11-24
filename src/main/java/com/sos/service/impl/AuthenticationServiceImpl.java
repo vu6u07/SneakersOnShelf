@@ -1,14 +1,17 @@
 package com.sos.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,8 +23,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sos.common.ApplicationConstant.AccountStatus;
+import com.sos.dto.EmailRequest;
 import com.sos.dto.JwtResponse;
 import com.sos.dto.LoginRequest;
 import com.sos.dto.RegisterRequest;
@@ -35,6 +40,7 @@ import com.sos.repository.RoleRepository;
 import com.sos.security.CustomUserDetail;
 import com.sos.security.jwt.JwtUtils;
 import com.sos.service.AuthenticationService;
+import com.sos.service.EmailService;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -50,6 +56,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
 	private RefreshTokenRepository refreshTokenRepository;
+
+	@Autowired
+	private EmailService emailService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -135,6 +144,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		}
 
 		accountRepository.updatePassword(id, passwordEncoder.encode(newPassword));
+	}
+
+	@Transactional
+	@Override
+	public void resetAccountPassword(String username, String email)
+			throws UnsupportedEncodingException, MessagingException {
+		if (!StringUtils.hasText(username) || !StringUtils.hasText(email)) {
+			throw new ValidationException("Tên tài khoản hoặc email không chính xác.");
+		}
+
+		Account account = accountRepository.findAccountIdByUsernameEmail(username, email)
+				.orElseThrow(() -> new ValidationException("Tên tài khoản hoặc email không chính xác."));
+		String password = RandomStringUtils.randomAlphabetic(10);
+
+		if (accountRepository.updatePassword(account.getId(), passwordEncoder.encode(password)) != 1) {
+			throw new ValidationException("Tên tài khoản hoặc email không chính xác.");
+		}
+
+		emailService.sendEmail(new EmailRequest(new String[] { email }, null, null,
+				"[Sneakers On Shelf] Mật khẩu của bạn đã được đổi lại.", String.format("Mật khẩu mới : %s", password),
+				false));
 	}
 
 }
