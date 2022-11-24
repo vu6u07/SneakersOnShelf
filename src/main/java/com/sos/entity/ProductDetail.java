@@ -1,6 +1,7 @@
 package com.sos.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,4 +39,15 @@ public class ProductDetail {
 		this.quantity = quantity;
 	}
 
+	public ProductDetail(int id, String size, int quantity, int productId, String name, long sellPrice) {
+		this.id = id;
+		this.size = size;
+		this.quantity = quantity;
+		Product product = new Product();
+		product.setId(productId);
+		product.setName(name);
+		product.setSellPrice(sellPrice);
+		this.product = product;
+	}
+	
 }

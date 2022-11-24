@@ -3,6 +3,7 @@ package com.sos.entity;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,11 +34,11 @@ public class OrderItem {
 	private ProductDetail productDetail;
 	
 	@JsonBackReference
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private Rate rate;
 	
 	@Enumerated(EnumType.STRING)
@@ -56,14 +57,15 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
-	public OrderItem(int id, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice, int quantity) {
+	public OrderItem(int id, long price, int quantity, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice) {
 		this.id = id;
+		this.price = price;
+		this.quantity = quantity;
 		this.productDetail = new ProductDetail(productDetailId, productDetailSize, productDetailQuantity);
 		Product product = new Product();
 		product.setSellPrice(sellPrice);
 		product.setName(name);
 		this.productDetail.setProduct(product);
-		this.quantity = quantity;
 	}
-
+	
 }

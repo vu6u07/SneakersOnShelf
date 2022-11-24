@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,12 +57,10 @@ public class Account {
 	@Enumerated(EnumType.STRING)
 	private AccountStatus accountStatus;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private Cart cart;
 
 	private String picture;
-
-	private long point;
 
 	private Date createDate;
 
@@ -78,7 +77,7 @@ public class Account {
 	}
 
 	public Account(int id, String username, String email, String fullname, String googleOAuthEmail,
-			String facebookOAuthId, CustomerInfo customerInfo, String picture, long point, Date createDate) {
+			String facebookOAuthId, CustomerInfo customerInfo, String picture, Date createDate) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
@@ -87,7 +86,6 @@ public class Account {
 		this.facebookOAuthId = facebookOAuthId;
 		this.customerInfo = customerInfo;
 		this.picture = picture;
-		this.point = point;
 		this.createDate = createDate;
 	}
 

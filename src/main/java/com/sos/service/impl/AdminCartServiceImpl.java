@@ -64,7 +64,7 @@ public class AdminCartServiceImpl implements AdminCartService {
 
 	@Autowired
 	private OrderRepository orderRepository;
-	
+
 	@Autowired
 	private OrderItemRepository orderItemRepository;
 
@@ -197,8 +197,10 @@ public class AdminCartServiceImpl implements AdminCartService {
 			orderItem.setQuantity(cartItem.getQuantity());
 			orderItem.setOrderItemStatus(OrderItemStatus.APPROVED);
 			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
-			productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
-					orderItem.getQuantity());
+			if (productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
+					orderItem.getQuantity()) != 1) {
+				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng", cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
+			}
 			total += orderItem.getPrice() * orderItem.getQuantity();
 			orderItems.add(orderItem);
 		}
@@ -260,7 +262,7 @@ public class AdminCartServiceImpl implements AdminCartService {
 		order.setEmail(email);
 		order.setPhone(customerInfo.getPhone());
 		order.setCreateDate(now);
-		
+
 		orderRepository.save(order);
 		orderItemRepository.saveAll(orderItems);
 
@@ -268,6 +270,7 @@ public class AdminCartServiceImpl implements AdminCartService {
 		orderTimeline.setCreatedDate(now);
 		orderTimeline.setOrder(order);
 		orderTimeline.setOrderTimelineType(OrderTimelineType.CREATED);
+		orderTimeline.setDescription("Nhân viên tạo đơn cho khách.");
 		orderTimeline.setStaff(new Account(authentication.getId()));
 		orderTimelineRepository.save(orderTimeline);
 

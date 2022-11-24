@@ -6,14 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
-	
+
 	private static final DateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private static final DateFormat ddMMyyyyDashes = new SimpleDateFormat("dd-MM-yyyy");
 
 	public static String convertToStringddMMyyyy(Date date) {
 		return ddMMyyyyDashes.format(date);
 	}
-	
+
 	public static String convertToString(Date date) {
 		return defaultFormat.format(date);
 	}
@@ -44,6 +44,14 @@ public class DateUtil {
 	public static Date getFirstDayOfThisMonth(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
+		cal.set(Calendar.DATE, 1);
+		return cal.getTime();
+	}
+
+	public static Date getFirstDayOfNextMonth(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.MONTH, 1);
 		cal.set(Calendar.DATE, 1);
 		return cal.getTime();
 	}

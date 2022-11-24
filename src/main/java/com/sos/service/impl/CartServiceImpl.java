@@ -200,8 +200,10 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 			orderItem.setQuantity(cartItem.getQuantity());
 			orderItem.setOrderItemStatus(OrderItemStatus.APPROVED);
 			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
-			productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
-					orderItem.getQuantity());
+			if (productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
+					orderItem.getQuantity()) != 1) {
+				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng", cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
+			}
 			total += orderItem.getPrice() * orderItem.getQuantity();
 			orderItems.add(orderItem);
 		}
@@ -236,21 +238,20 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 				if (selectedVoucher.getAmount() <= 0 || selectedVoucher.getAmount() > 100) {
 					throw new ValidationException("Mã giảm giá không hợp lệ.");
 				}
-				discount = order.getTotal() * voucher.getAmount() / 100;
+				discount = order.getTotal() * selectedVoucher.getAmount() / 100;
 				break;
 			case DISCOUNT:
-				discount = voucher.getAmount();
+				discount = selectedVoucher.getAmount();
 				break;
 			default:
 				throw new ValidationException("Mã giảm giá không hợp lệ.");
 			}
 
-			if (voucher.getMaxValue() > 0 && discount > voucher.getMaxValue()) {
-				discount = voucher.getMaxValue();
+			if (selectedVoucher.getMaxValue() > 0 && discount > selectedVoucher.getMaxValue()) {
+				discount = selectedVoucher.getMaxValue();
 			}
 			order.setVoucher(selectedVoucher);
 			order.setDiscount(discount <= order.getTotal() ? discount : order.getTotal());
-
 			if (voucherRepository.decreateVoucherQuantity(selectedVoucher.getId()) != 1) {
 				throw new ValidationException("Mã giảm giá không hợp lệ.");
 			}
@@ -269,6 +270,7 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 		OrderTimeline orderTimeline = new OrderTimeline();
 		orderTimeline.setCreatedDate(now);
 		orderTimeline.setOrder(order);
+		orderTimeline.setDescription("Người mua tạo đơn hàng.");
 		orderTimeline.setOrderTimelineType(OrderTimelineType.CREATED);
 		orderTimelineRepository.save(orderTimeline);
 

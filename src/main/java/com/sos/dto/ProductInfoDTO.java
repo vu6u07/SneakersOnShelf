@@ -34,12 +34,14 @@ public class ProductInfoDTO {
 	private List<String> productImages;
 
 	private List<ProductDetail> productDetails;
-
+	
 	private long sellPrice;
 
 	private long originalPrice;
 
 	private String description;
+	
+	private float score;
 
 
 	private long importPrice;

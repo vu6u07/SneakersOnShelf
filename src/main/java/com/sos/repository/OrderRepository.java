@@ -10,11 +10,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.sos.common.ApplicationConstant.OrderItemStatus;
 import com.sos.common.ApplicationConstant.OrderStatus;
 import com.sos.dto.CartItemDTO;
 import com.sos.dto.PurchaseDTO;
 import com.sos.dto.PurchaseInfoDTO;
 import com.sos.entity.Order;
+import com.sos.entity.Voucher;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
@@ -55,5 +57,25 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 	@Modifying
 	@Query(value = "UPDATE Order o SET o.orderStatus = :orderStatus WHERE o.id = :id")
 	int updateOrderStatus(String id, OrderStatus orderStatus);
+	
+	//for update order address
+	@Query(value = "SELECT new com.sos.entity.Order(o.id, o.orderStatus, o.saleMethod, o.discount, o.surcharge, o.total, o.districtId, o.wardCode) FROM Order o WHERE o.id = :id")
+	Optional<Order> findStagingOrder(String id);
+	
+	//for update order address
+	@Query(value = "SELECT new com.sos.entity.Order(o.id, o.orderStatus, o.saleMethod, o.discount, o.surcharge, o.total, o.districtId, o.wardCode) FROM OrderItem oi JOIN oi.order o WHERE oi.id = :orderItemId")
+	Optional<Order> findStagingOrder(int orderItemId);
 
+	@Modifying
+	@Query(value = "UPDATE Order o SET o.fee = :fee, o.fullname = :fullname, o.phone = :phone, o.provinceId = :provinceId, o.districtId = :districtId, o.wardCode = :wardCode, o.address = :address, o.detailedAddress = :detailedAddress WHERE o.id = :id")
+	int updateOrderAddress(String id, long fee, String fullname, String phone, int provinceId, int districtId, String wardCode, String address, String detailedAddress);
+	
+	//for update order item quantity (decrease)
+	@Modifying
+	@Query(value = "UPDATE Order o SET o.total = :total, o.fee = :fee, o.discount = :discount, o.voucher = :voucher WHERE o.id = :id")
+	int updateOrderAfterChange(String id, long total, long fee, long discount, Voucher voucher);
+	
+	//for delete order item
+	@Query(value = "SELECT COUNT(o.id) FROM OrderItem o WHERE o.order.id = :id AND o.orderItemStatus = :orderItemStatus")
+	long getCountOrderItemByOrderId(String id, OrderItemStatus orderItemStatus);
 }

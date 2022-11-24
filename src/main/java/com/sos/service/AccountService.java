@@ -12,11 +12,13 @@ import com.sos.entity.Account;
 public interface AccountService extends UserDetailsService, CrudService<Account, Integer> {
 
 	Optional<Account> findAccountDTOById(int id);
-	
+
 	AccountDTO findAccountReportDTOById(int id);
 
 	Page<AccountDTO> findAccoutDTOs(Pageable pageable);
 
 	Page<AccountDTO> findAccoutDTOs(String query, Pageable pageable);
 
+	void updateAccountInfo(int id, String fullname, String email);
+	
 }

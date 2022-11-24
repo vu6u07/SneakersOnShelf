@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,14 +38,14 @@ public class Product {
 	@Enumerated(EnumType.STRING)
 	private ProductGender productGender;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Brand brand;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Category category;
 
 	@JsonIgnoreProperties("product")
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	private ProductImage productImage;
 
 	@JsonIgnoreProperties("product")

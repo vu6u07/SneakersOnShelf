@@ -1,6 +1,7 @@
 package com.sos.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,7 @@ public class CartItem {
 	private int id;
 
 	@JsonIgnoreProperties("cartItems")
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Cart cart;
 
 	@JsonIgnoreProperties("product")
