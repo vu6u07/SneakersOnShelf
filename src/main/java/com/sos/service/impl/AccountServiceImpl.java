@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sos.common.ApplicationConstant.AccountStatus;
 import com.sos.common.ApplicationConstant.CustomerInfoStatus;
@@ -27,9 +28,13 @@ import com.sos.repository.CustomerInfoRepository;
 import com.sos.repository.RoleRepository;
 import com.sos.security.CustomUserDetail;
 import com.sos.service.AccountService;
+import com.sos.service.RoleService;
 
 @Service
 public class AccountServiceImpl implements AccountService {
+
+	@Autowired
+	private RoleService roleService;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -85,26 +90,38 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public AccountDTO findAccountReportDTOById(int id) {
-		AccountDTO rs = accountRepository.findAccountDTOById(id, AccountStatus.ACTIVE)
+		AccountDTO rs = accountRepository.findAccountInfoDTOById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản."));
 		rs.setCustomerInfos(customerInfoRepository.findByAccountId(rs.getId(), CustomerInfoStatus.ACTIVE));
 		return rs;
 	}
 
 	@Override
-	public Page<AccountDTO> findAccoutDTOs(Pageable pageable) {
-		return accountRepository.findAccountDTOs(AccountStatus.ACTIVE, pageable);
-	}
-
-	@Override
-	public Page<AccountDTO> findAccoutDTOs(String query, Pageable pageable) {
-		return accountRepository.findAccountDTOs("%".concat(query).concat("%"), AccountStatus.ACTIVE, pageable);
+	public Page<AccountDTO> findAccoutDTOs(String query, AccountStatus accountStatus, Pageable pageable) {
+		return accountRepository.findAccountDTOs(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+				accountStatus, pageable);
 	}
 
 	@Transactional
 	@Override
 	public void updateAccountInfo(int id, String fullname, String email) {
 		accountRepository.updateAccountInfo(id, fullname, email);
+	}
+
+	@Transactional
+	@Override
+	public void updateAccountStatus(int id, AccountStatus accountStatus) {
+		accountRepository.updateAccountStatus(id, accountStatus);
+	}
+
+	@Override
+	public void updateAccountInfo(int id, String fullname, String email, boolean admin) {
+		Account account = accountRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Account not found with id : " + id));
+		account.setFullname(fullname);
+		account.setEmail(email);
+		account.setRoles(admin ? roleService.getAdminRoles() : roleService.getUserRoles());
+		accountRepository.save(account);
 	}
 
 }

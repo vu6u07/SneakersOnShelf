@@ -2,10 +2,8 @@ package com.sos.dto;
 
 import java.util.List;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 import com.sos.common.ApplicationConstant.ProductGender;
+import com.sos.common.ApplicationConstant.ProductStatus;
 import com.sos.entity.ProductDetail;
 
 import lombok.AllArgsConstructor;
@@ -20,8 +18,9 @@ public class ProductInfoDTO {
 	private int id;
 
 	private String name;
+	
+	private ProductStatus productStatus;
 
-	@Enumerated(EnumType.STRING)
 	private ProductGender productGender;
 
 	private String brand;
@@ -31,8 +30,6 @@ public class ProductInfoDTO {
 	private String productImage;
 
 	private List<String> productImages;
-
-	private List<ProductDetail> productDetails;
 	
 	private long sellPrice;
 
@@ -40,12 +37,15 @@ public class ProductInfoDTO {
 
 	private String description;
 	
+	private List<ProductDetail> productDetails;
+	
 	private float score;
 
-	public ProductInfoDTO(int id, String name, ProductGender productGender, String brand, String category,
+	public ProductInfoDTO(int id, String name, ProductStatus productStatus, ProductGender productGender, String brand, String category,
 			String productImage, long sellPrice, long originalPrice, String description) {
 		this.id = id;
 		this.name = name;
+		this.productStatus = productStatus;
 		this.productGender = productGender;
 		this.brand = brand;
 		this.category = category;

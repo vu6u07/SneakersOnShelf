@@ -1,11 +1,14 @@
 package com.sos.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import com.sos.common.ApplicationConstant.ActiveStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +27,9 @@ public class ProductDetail {
 	private String size;
 
 	private int quantity;
+
+	@Enumerated(EnumType.STRING)
+	private ActiveStatus activeStatus;
 
 	@ManyToOne
 	private Product product;
@@ -49,5 +55,5 @@ public class ProductDetail {
 		product.setSellPrice(sellPrice);
 		this.product = product;
 	}
-	
+
 }

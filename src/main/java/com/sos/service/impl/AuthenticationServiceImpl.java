@@ -3,10 +3,8 @@ package com.sos.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
@@ -26,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.sos.common.ApplicationConstant.AccountStatus;
+import com.sos.dto.CreateAccountRequestDTO;
 import com.sos.dto.EmailRequest;
 import com.sos.dto.JwtResponse;
 import com.sos.dto.LoginRequest;
@@ -41,12 +40,16 @@ import com.sos.security.CustomUserDetail;
 import com.sos.security.jwt.JwtUtils;
 import com.sos.service.AuthenticationService;
 import com.sos.service.EmailService;
+import com.sos.service.RoleService;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private RoleService roleService;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -69,13 +72,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Value("${security.jwt.refresh-expiration}")
 	private long jwtRefreshExpirationMs;
 
-	private Set<Role> userRoles;
-
-	@PostConstruct
-	private void init() {
-		userRoles = roleRepository.findByName("ROLE_USER");
-	}
-
 	@Override
 	public JwtResponse signin(LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
@@ -89,7 +85,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		RefreshToken refreshTokenEntity = new RefreshToken(new Account(user.getId()), refreshToken, date,
 				refreshTokenEmpiredDate);
 		refreshTokenRepository.save(refreshTokenEntity);
-
 		return new JwtResponse(user.getId(), token, "Bearer", refreshToken);
 	}
 
@@ -101,14 +96,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		account.setFullname(register.getFullname());
 		account.setEmail(register.getEmail());
 		account.setPassword(passwordEncoder.encode(register.getPassword()));
-		account.setRoles(userRoles);
+		account.setRoles(roleService.getUserRoles());
 		account.setAccountStatus(AccountStatus.ACTIVE);
 		account.setCreateDate(date);
 		account.setUpdateDate(date);
 		accountRepository.save(account);
 
-		Authentication authentication = new UsernamePasswordAuthenticationToken(account.getId(), null,
-				userRoles.stream().map(Role::getName).map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+		Authentication authentication = new UsernamePasswordAuthenticationToken(account.getId(), null, account
+				.getRoles().stream().map(Role::getName).map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
 		String token = jwtUtils.generateToken(String.valueOf(account.getId()), authentication.getAuthorities());
 
 		Date refreshTokenEmpiredDate = new Date(date.getTime() + jwtRefreshExpirationMs);
@@ -165,6 +160,49 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		emailService.sendEmail(new EmailRequest(new String[] { email }, null, null,
 				"[Sneakers On Shelf] Mật khẩu của bạn đã được đổi lại.", String.format("Mật khẩu mới : %s", password),
 				false));
+	}
+
+	@Transactional
+	@Override
+	public String resetAccountPassword(int id) {
+		String password = RandomStringUtils.randomAlphabetic(10);
+
+		if (accountRepository.updatePassword(id, passwordEncoder.encode(password)) != 1) {
+			throw new ValidationException("Tên tài khoản hoặc email không chính xác.");
+		}
+
+		accountRepository.getAccountEmail(id).ifPresent(email -> {
+			try {
+				emailService.sendEmail(new EmailRequest(new String[] { email }, null, null,
+						"[Sneakers On Shelf] Mật khẩu của bạn đã được đổi lại.",
+						String.format("Mật khẩu mới : %s", password), false));
+			} catch (UnsupportedEncodingException | MessagingException e) {
+				e.printStackTrace();
+			}
+		});
+
+		return password;
+	}
+
+	@Override
+	public Account signup(CreateAccountRequestDTO register) throws UnsupportedEncodingException, MessagingException {
+		Date date = new Date();
+		Account account = new Account();
+		account.setUsername(register.getUsername());
+		account.setFullname(register.getFullname());
+		account.setEmail(register.getEmail());
+		String password = RandomStringUtils.randomAlphabetic(10);
+		account.setPassword(passwordEncoder.encode(password));
+		account.setRoles(register.isAdmin() ? roleService.getAdminRoles() : roleService.getUserRoles());
+		account.setAccountStatus(AccountStatus.ACTIVE);
+		account.setCreateDate(date);
+		account.setUpdateDate(date);
+		accountRepository.save(account);
+
+		emailService.sendEmail(new EmailRequest(new String[] { account.getEmail() }, null, null,
+				"[Sneakers On Shelf] Chào mừng đến với sneakers on shelf, đây là thông tin tài khoản của bạn.",
+				String.format("Tên tài khoản : %s\n" + "Mật khẩu      : %s", register.getUsername(), password), false));
+		return account;
 	}
 
 }

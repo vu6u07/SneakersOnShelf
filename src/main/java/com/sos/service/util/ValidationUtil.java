@@ -25,4 +25,13 @@ public class ValidationUtil {
 		}
 	}
 
+	public static void validateUsername(String username) {
+		if (!StringUtils.hasText(username)) {
+			throw new ValidationException("Vui lòng nhập tên tài khoản.");
+		}
+		if(!username.matches("^[a-zA-Z0-9._-]{3,}$")) {
+			throw new ValidationException("Tên tài khoản không hợp lệ.");
+		}
+	}
+
 }

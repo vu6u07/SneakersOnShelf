@@ -49,6 +49,7 @@ public class AccountRestController {
 
 	@PostMapping(value = "/accounts")
 	public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+		ValidationUtil.validateUsername(request.getUsername());
 		return ResponseEntity.ok(authenticationService.signup(request));
 	}
 

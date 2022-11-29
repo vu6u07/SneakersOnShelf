@@ -49,12 +49,14 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	Optional<String> findAccountPassword(int id);
 
 	// Admin
-	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.id = :id AND a.accountStatus = :accountStatus")
-	Optional<AccountDTO> findAccountDTOById(int id, AccountStatus accountStatus);
+	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate) FROM Account a WHERE a.id = :id")
+	Optional<AccountDTO> findAccountInfoDTOById(int id);
 
-	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.accountStatus = :accountStatus")
-	Page<AccountDTO> findAccountDTOs(AccountStatus accountStatus, Pageable pageable);
-
-	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.createDate, a.updateDate) FROM Account a WHERE a.accountStatus = :accountStatus AND (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query)")
+	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate) FROM Account a WHERE (:accountStatus IS NULL OR a.accountStatus = :accountStatus) AND (:query IS NULL OR (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query))")
 	Page<AccountDTO> findAccountDTOs(String query, AccountStatus accountStatus, Pageable pageable);
+	
+	@Modifying
+	@Query(value = "UPDATE Account a SET a.accountStatus = :accountStatus WHERE a.id = :id")
+	int updateAccountStatus(int id, AccountStatus accountStatus);
+	
 }

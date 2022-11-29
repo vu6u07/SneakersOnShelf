@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.sos.common.ApplicationConstant.ActiveStatus;
 import com.sos.entity.Brand;
 import com.sos.repository.BrandRepository;
 import com.sos.service.BrandService;
@@ -27,7 +29,7 @@ public class BrandServiceImpl implements BrandService {
 	public Page<Brand> findAll(Pageable pageable) {
 		return brandRepository.findAll(pageable);
 	}
-
+	
 	@Override
 	public Optional<Brand> findById(Integer id) {
 		return brandRepository.findById(id);
@@ -43,4 +45,14 @@ public class BrandServiceImpl implements BrandService {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public List<Brand> findAll(ActiveStatus activeStatus) {
+		return brandRepository.findAll(activeStatus);
+	}
+	
+	@Override
+	public Page<Brand> findAll(String query, ActiveStatus activeStatus, Pageable pageable) {
+		return brandRepository.findAll(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null, activeStatus, pageable);
+	}
+	
 }

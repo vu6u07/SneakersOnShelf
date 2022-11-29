@@ -4,8 +4,58 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ApplicationConstant {
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum ActiveStatus {
+		ACTIVE("ACTIVE", "Kích hoạt", "primary"), INACTIVE("INACTIVE", "Ngừng kích hoạt", "error");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ActiveStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum AccountStatus {
-		ACTIVE, INACTIVE
+		ACTIVE("ACTIVE", "Kích hoạt", "primary"), INACTIVE("INACTIVE", "Ngừng kích hoạt", "error");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private AccountStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 	public enum OAuthProvider {
@@ -112,8 +162,31 @@ public class ApplicationConstant {
 		PENDING, FAILED, APPROVED
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum ProductStatus {
-		ACTIVE, SUSPENSION, SOLD_OUT, COMING_SOON
+		ACTIVE("ACTIVE", "Kinh doanh", "primary"), SUSPENSION("SUSPENSION", "Ngừng kinh doanh", "error"), COMING_SOON("COMING_SOON", "Hàng sắp về", "success");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ProductStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 	public enum WishlistStatus {
@@ -259,8 +332,31 @@ public class ApplicationConstant {
 		VERIFY_EMAIL
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum ProductGender {
-		MEN, WOMAN, UNISEX
+		MEN("MEN", "Nam", "primary"), WOMAN("WOMAN", "Nữ", "success"), UNISEX("UNISEX", "Unisex", "warning");
+		
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ProductGender(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
