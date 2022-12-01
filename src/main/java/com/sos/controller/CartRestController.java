@@ -32,6 +32,7 @@ import com.sos.entity.Voucher;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.CartService;
 import com.sos.service.CustomerInfoService;
+import com.sos.service.impl.GoogleFCMNotificationService;
 import com.sos.service.util.ValidationUtil;
 
 @RestController
@@ -41,6 +42,9 @@ public class CartRestController {
 	@Autowired
 	@Qualifier("CartServiceImpl")
 	private CartService<AccountAuthentication> cartService;
+	
+	@Autowired
+	private GoogleFCMNotificationService notificationService;
 	
 	@Autowired
 	private CustomerInfoService customerInfoService;
@@ -134,6 +138,7 @@ public class CartRestController {
 		Voucher voucher = mapper.treeToValue(data.get("voucher"), Voucher.class);
 		
 		Order order = cartService.submitCart(id, customerInfo, null, SaleMethod.DELIVERY, voucher, authentication);
+		notificationService.sendNotificationOnNewOrder(order.getId());
 		return ResponseEntity.ok(order.getId());
 	}
 	// @formatter:on

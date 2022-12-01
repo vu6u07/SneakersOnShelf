@@ -164,7 +164,8 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum ProductStatus {
-		ACTIVE("ACTIVE", "Kinh doanh", "primary"), SUSPENSION("SUSPENSION", "Ngừng kinh doanh", "error"), COMING_SOON("COMING_SOON", "Hàng sắp về", "success");
+		ACTIVE("ACTIVE", "Kinh doanh", "primary"), SUSPENSION("SUSPENSION", "Ngừng kinh doanh", "error"),
+		COMING_SOON("COMING_SOON", "Hàng sắp về", "success");
 
 		private final String name;
 		private final String description;
@@ -335,7 +336,7 @@ public class ApplicationConstant {
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum ProductGender {
 		MEN("MEN", "Nam", "primary"), WOMAN("WOMAN", "Nữ", "success"), UNISEX("UNISEX", "Unisex", "warning");
-		
+
 		private final String name;
 		private final String description;
 		private final String color;
@@ -414,6 +415,32 @@ public class ApplicationConstant {
 
 		public String getColor() {
 			return color;
+		}
+	}
+
+	public enum NotificationTopic {
+		ADMIN("ADMIN", "Quản trị viên", "sos-admin"), USER("USER", "Người dùng", "sos-user"), ALL("ALL", "Tất cả", "sos-all");
+
+		private final String name;
+		private final String description;
+		private final String topic;
+
+		private NotificationTopic(String name, String description, String topic) {
+			this.name = name;
+			this.description = description;
+			this.topic = topic;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getTopic() {
+			return topic;
 		}
 	}
 
