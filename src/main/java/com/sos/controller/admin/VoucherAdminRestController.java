@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sos.common.ApplicationConstant.VoucherAccess;
 import com.sos.common.ApplicationConstant.VoucherStatus;
+import com.sos.common.ApplicationConstant.VoucherType;
 import com.sos.entity.Voucher;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.VoucherService;
@@ -45,25 +47,13 @@ public class VoucherAdminRestController {
 
 	@GetMapping(value = "/vouchers")
 	public ResponseEntity<?> get(
+			@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "type", required = false) VoucherType voucherType,
+			@RequestParam(name = "access", required = false) VoucherAccess voucherAccess,
+			@RequestParam(name = "status", required = false) VoucherStatus voucherStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(voucherService.findAll(PageRequest.of(page - 1, size)));
-	}
-
-	@GetMapping(value = "/vouchers", params = { "query" })
-	public ResponseEntity<?> get(
-			@RequestParam(name = "query") String query,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(voucherService.findAll(query, PageRequest.of(page - 1, size)));
-	}
-	
-	@GetMapping(value = "/vouchers", params = { "status" })
-	public ResponseEntity<?> get(
-			@RequestParam(name = "status") VoucherStatus voucherStatus,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(voucherService.findAll(voucherStatus, PageRequest.of(page - 1, size)));
+		return ResponseEntity.ok(voucherService.findAll(query, voucherType, voucherAccess, voucherStatus, PageRequest.of(page - 1, size)));
 	}
 	
 	@GetMapping(value = "/vouchers/available")

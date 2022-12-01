@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,23 +96,10 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<PurchaseDTO> findPurchaseDTOs(Pageable pageable) {
-		return orderRepository.findAllPurchaseDTOs(pageable);
-	}
-
-	@Override
-	public Page<PurchaseDTO> findPurchaseDTOs(OrderStatus orderStatus, Pageable pageable) {
-		return orderRepository.findAllPurchaseDTOs(orderStatus, pageable);
-	}
-
-	@Override
-	public Page<PurchaseDTO> findPurchaseDTOs(String query, PageRequest pageable) {
-		return orderRepository.findAllPurchaseDTOs("%".concat(query).concat("%"), pageable);
-	}
-
-	@Override
-	public Page<PurchaseDTO> findPurchaseDTOs(String query, OrderStatus orderStatus, PageRequest pageable) {
-		return orderRepository.findAllPurchaseDTOs("%".concat(query).concat("%"), orderStatus, pageable);
+	public Page<PurchaseDTO> findAllPurchaseDTOs(String query, SaleMethod saleMethod, OrderStatus orderStatus,
+			Date fromDate, Date toDate, PageRequest pageable) {
+		return orderRepository.findAllPurchaseDTOs(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+				saleMethod, orderStatus, fromDate, toDate, pageable);
 	}
 
 	@Override
@@ -254,7 +242,7 @@ public class OrderServiceImpl implements OrderService {
 		orderTimeline.setOrderTimelineType(OrderTimelineType.EDITED);
 		orderTimeline.setDescription(String.format("Thêm sản phẩm [%s] cỡ [%s], số lượng : %s",
 				productDetail.getProduct().getName(), productDetail.getSize(), orderItem.getQuantity()));
-		
+
 		orderItem.setId(0);
 		orderItem.setOrder(order);
 		orderItem.setOrderItemStatus(OrderItemStatus.APPROVED);
@@ -301,7 +289,7 @@ public class OrderServiceImpl implements OrderService {
 						order.getDiscount(), order.getVoucher()) != 1) {
 			throw new ValidationException();
 		}
-		
+
 		orderTimelineRepository.save(orderTimeline);
 	}
 
@@ -371,10 +359,10 @@ public class OrderServiceImpl implements OrderService {
 					order.setDiscount(discount <= order.getTotal() ? discount : order.getTotal());
 				}
 			}
-			
+
 			if (order.getSaleMethod() == SaleMethod.DELIVERY) {
-				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(), order.getDistrictId(),
-						order.getWardCode()));
+				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(),
+						order.getDistrictId(), order.getWardCode()));
 			}
 
 			if (orderItemRepository.updateOrderItemQuantity(orderItem.getId(), quantity) != 1
@@ -426,8 +414,8 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			if (order.getSaleMethod() == SaleMethod.DELIVERY) {
-				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(), order.getDistrictId(),
-						order.getWardCode()));
+				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(),
+						order.getDistrictId(), order.getWardCode()));
 			}
 
 			if (productDetailRepository.decreaseProductDetailQuantity(newOrderItem.getProductDetail().getId(),
@@ -502,8 +490,8 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			if (order.getSaleMethod() == SaleMethod.DELIVERY) {
-				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(), order.getDistrictId(),
-						order.getWardCode()));
+				order.setFee(deliveryService.getDeliveryFee(order.getTotal() - order.getDiscount(),
+						order.getDistrictId(), order.getWardCode()));
 			}
 
 			orderItemRepository.deleteOrderItemById(id);

@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.sos.common.ApplicationConstant.VoucherAccess;
 import com.sos.common.ApplicationConstant.VoucherStatus;
+import com.sos.common.ApplicationConstant.VoucherType;
 import com.sos.entity.Account;
 import com.sos.entity.Voucher;
 import com.sos.exception.ResourceNotFoundException;
@@ -40,7 +42,7 @@ public class VoucherServiceImpl implements VoucherService {
 	public Voucher save(Voucher entity) {
 		return null;
 	}
-	
+
 	@Override
 	public Voucher save(Voucher voucher, AccountAuthentication authentication) {
 		voucher.setStaff(new Account(authentication.getId()));
@@ -61,13 +63,9 @@ public class VoucherServiceImpl implements VoucherService {
 	}
 
 	@Override
-	public Page<Voucher> findAll(String query, Pageable pageable) {
-		return voucherRepository.findAllVoucher("%".concat(query).concat("%"), pageable);
-	}
-	
-	@Override
-	public Page<Voucher> findAll(VoucherStatus voucherStatus, Pageable pageable) {
-		return voucherRepository.findAllVoucher(voucherStatus, pageable);
+	public Page<Voucher> findAll(String query, VoucherType voucherType, VoucherAccess voucherAccess,
+			VoucherStatus voucherStatus, Pageable pageable) {
+		return voucherRepository.findAllVoucher(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null, voucherType, voucherAccess, voucherStatus, pageable);
 	}
 
 	@Override
@@ -77,18 +75,20 @@ public class VoucherServiceImpl implements VoucherService {
 
 	@Override
 	public Page<Voucher> findAllAvailableVoucher(String query, Date date, Pageable pageable) {
-		return voucherRepository.findAllAvailableVoucher("%".concat(query).concat("%"), date, VoucherStatus.ACTIVE, pageable);
+		return voucherRepository.findAllAvailableVoucher("%".concat(query).concat("%"), date, VoucherStatus.ACTIVE,
+				pageable);
 	}
-	
-	//User
+
+	// User
 	@Override
-	public Page<Voucher> findAllAvailableVoucher(Date date, VoucherStatus voucherStatus, VoucherAccess voucherAccess, Pageable pageable) {
+	public Page<Voucher> findAllAvailableVoucher(Date date, VoucherStatus voucherStatus, VoucherAccess voucherAccess,
+			Pageable pageable) {
 		return voucherRepository.findAllAvailableVoucher(date, voucherStatus, voucherAccess, pageable);
 	}
-	
+
 	@Override
 	public Page<Voucher> findAvailableVoucherByCode(String code, Date date, Pageable pageable) {
 		return voucherRepository.findAvailableVoucherByCode(code, VoucherStatus.ACTIVE, date, pageable);
 	}
-	
+
 }

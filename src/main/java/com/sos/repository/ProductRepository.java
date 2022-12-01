@@ -1,10 +1,12 @@
 package com.sos.repository;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,8 @@ import com.sos.common.ApplicationConstant.ProductGender;
 import com.sos.common.ApplicationConstant.ProductStatus;
 import com.sos.dto.CollectionProductDTO;
 import com.sos.dto.ProductInfoDTO;
+import com.sos.entity.Brand;
+import com.sos.entity.Category;
 import com.sos.entity.Product;
 
 @Repository
@@ -29,4 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	Page<CollectionProductDTO> findBestSellingProductDTO(String query, Integer brandId, Integer categoryId,
 			ProductGender productGender, ProductStatus productStatus, Pageable pageable);
 
+	@Modifying
+	@Query(value = "UPDATE Product p SET p.name = :name, p.productGender = :productGender, p.productStatus = :productStatus, p.brand = :brand, p.category = :category, p.sellPrice = :sellPrice, p.updateDate = :date, p.description = :description WHERE p.id = :id")
+	int updateProduct(int id, String name, ProductGender productGender, ProductStatus productStatus, Brand brand, Category category, long sellPrice, String description, Date date);
+	
 }

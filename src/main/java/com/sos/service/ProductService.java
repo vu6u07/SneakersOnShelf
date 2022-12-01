@@ -20,6 +20,6 @@ public interface ProductService extends CrudService<Product, Integer> {
 	
 	ProductInfoDTO findProductInfoDTOById(int id);
 
-	Product save(ProductVO productVO);
+	Product saveOrUpdate(ProductVO productVO);
 	
 }

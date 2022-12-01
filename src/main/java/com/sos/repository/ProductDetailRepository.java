@@ -41,7 +41,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 	int updateProductDetailQuantity(int id, int quantity);
 	
 	//admin
-	@Query(value = "SELECT new com.sos.entity.ProductDetail(pd.id, pd.quantity) FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.size = :size")
+	@Query(value = "SELECT new com.sos.entity.ProductDetail(pd.id, pd.size, pd.quantity) FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.size = :size")
 	Optional<ProductDetail> findProductDetail(int productId, String size);
 	
 	@Modifying(clearAutomatically = true)

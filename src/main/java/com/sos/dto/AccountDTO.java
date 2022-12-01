@@ -33,8 +33,9 @@ public class AccountDTO {
 
 	private List<CustomerInfo> customerInfos;
 	
-	public AccountDTO(int id, String username, String email, String fullname, String picture, Date createDate,
-			Date updateDate) {
+	private boolean admin;
+	
+	public AccountDTO(int id, String username, String email, String fullname, String picture, Date createDate, Date updateDate) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
@@ -44,8 +45,7 @@ public class AccountDTO {
 		this.updateDate = updateDate;
 	}
 
-	public AccountDTO(int id, String username, String email, String fullname, String picture,
-			AccountStatus accountStatus, Date createDate, Date updateDate) {
+	public AccountDTO(int id, String username, String email, String fullname, String picture, AccountStatus accountStatus, Date createDate, Date updateDate) {
 		this.id = id;
 		this.username = username;
 		this.email = email;

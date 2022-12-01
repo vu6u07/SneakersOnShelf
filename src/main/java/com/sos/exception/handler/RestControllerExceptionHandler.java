@@ -1,5 +1,7 @@
 package com.sos.exception.handler;
 
+import java.text.ParseException;
+
 import javax.validation.ValidationException;
 
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,12 @@ public class RestControllerExceptionHandler {
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public String validationException(ValidationException ex, WebRequest request) {
 		return ex.getMessage();
+	}
+
+	@ExceptionHandler(value = { ParseException.class })
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String parseException(ParseException ex, WebRequest request) {
+		return "Dữ liệu không hợp lệ";
 	}
 
 }

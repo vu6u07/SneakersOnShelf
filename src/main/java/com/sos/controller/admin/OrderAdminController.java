@@ -1,5 +1,7 @@
 package com.sos.controller.admin;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +28,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sos.common.ApplicationConstant.OrderStatus;
+import com.sos.common.ApplicationConstant.SaleMethod;
 import com.sos.entity.CustomerInfo;
 import com.sos.entity.OrderItem;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.OrderService;
+import com.sos.service.util.DateUtil;
 import com.sos.service.util.ValidationUtil;
 
 @RestController
@@ -46,35 +51,18 @@ public class OrderAdminController {
 
 	// @formatter:off
 	@GetMapping(value = "/orders")
-	public ResponseEntity<?> get(
+	public ResponseEntity<?> get(@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "method", required = false) SaleMethod saleMethod,
+			@RequestParam(name = "status", required = false) OrderStatus orderStatus,
+			@RequestParam(name = "from-date", required = false) String fromDateString,
+			@RequestParam(name = "to-date", required = false) String toDateString,
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(orderService.findPurchaseDTOs(PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
-	}
-	
-	@GetMapping(value = "/orders", params = "status")
-	public ResponseEntity<?> get(
-			@RequestParam(name = "status") OrderStatus orderStatus,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(orderService.findPurchaseDTOs(orderStatus, PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
-	}
+			@RequestParam(name = "size", defaultValue = "10") int size) throws ParseException {
+		Date fromDate = StringUtils.hasText(fromDateString) ? DateUtil.parse(fromDateString) : null;
+		Date toDate = StringUtils.hasText(toDateString) ? DateUtil.getTomorrow(DateUtil.parse(toDateString)) : null;
 
-	@GetMapping(value = "/orders", params = {"query"})
-	public ResponseEntity<?> get(
-			@RequestParam(name = "query") String query,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(orderService.findPurchaseDTOs(query, PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
-	}
-	
-	@GetMapping(value = "/orders", params = {"query", "status"})
-	public ResponseEntity<?> get(
-			@RequestParam(name = "query") String query,
-			@RequestParam(name = "status") OrderStatus orderStatus,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(orderService.findPurchaseDTOs(query, orderStatus, PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
+		return ResponseEntity.ok(orderService.findAllPurchaseDTOs(query, saleMethod, orderStatus, fromDate, toDate,
+				PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
 	}
 	// @formatter:on
 
@@ -107,8 +95,7 @@ public class OrderAdminController {
 	}
 
 	@PostMapping(value = "/orders/{id}/order-items")
-	public ResponseEntity<?> addOrderItemQuantity(
-			@PathVariable(name = "id") String id,
+	public ResponseEntity<?> addOrderItemQuantity(@PathVariable(name = "id") String id,
 			@RequestBody OrderItem orderItem, AccountAuthentication authentication)
 			throws JsonProcessingException, IllegalArgumentException {
 		orderService.addOrderItem(id, orderItem, authentication);

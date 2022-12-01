@@ -1,5 +1,6 @@
 package com.sos.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sos.common.ApplicationConstant.OrderItemStatus;
 import com.sos.common.ApplicationConstant.OrderStatus;
+import com.sos.common.ApplicationConstant.SaleMethod;
 import com.sos.dto.CartItemDTO;
 import com.sos.dto.PurchaseDTO;
 import com.sos.dto.PurchaseInfoDTO;
@@ -41,18 +43,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
 	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi WHERE o.id = :id GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
 	Optional<PurchaseDTO> findPurchaseDTOById(String id);
-
-	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
-	Page<PurchaseDTO> findAllPurchaseDTOs(Pageable pageable);
-
-	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi WHERE o.orderStatus = :orderStatus GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
-	Page<PurchaseDTO> findAllPurchaseDTOs(OrderStatus orderStatus, Pageable pageable);
-
-	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi WHERE CAST(o.id AS string) LIKE :query OR o.fullname LIKE :query GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
-	Page<PurchaseDTO> findAllPurchaseDTOs(String query, Pageable pageable);
 	
-	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi WHERE o.orderStatus = :orderStatus AND (CAST(o.id AS string) LIKE :query OR o.fullname LIKE :query) GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
-	Page<PurchaseDTO> findAllPurchaseDTOs(String query, OrderStatus orderStatus, Pageable pageable);
+	@Query(value = "SELECT new com.sos.dto.PurchaseDTO(o.id, o.fullname, o.phone, COUNT(oi.quantity), (o.total - o.discount + o.fee), o.saleMethod, o.orderStatus, o.createDate) FROM Order o JOIN o.orderItems oi WHERE (:query IS NULL OR (CAST(o.id AS string) LIKE :query OR o.fullname LIKE :query)) AND (:saleMethod IS NULL OR o.saleMethod = :saleMethod) AND (:orderStatus IS NULL OR o.orderStatus = :orderStatus) AND (:fromDate IS NULL OR o.createDate >= :fromDate) AND (:toDate IS NULL OR o.createDate < :toDate) GROUP BY o.id, o.fullname, o.phone, o.total, o.discount, o.fee, o.saleMethod, o.orderStatus, o.createDate")
+	Page<PurchaseDTO> findAllPurchaseDTOs(String query, SaleMethod saleMethod, OrderStatus orderStatus, Date fromDate, Date toDate, Pageable pageable);
 
 	@Modifying
 	@Query(value = "UPDATE Order o SET o.orderStatus = :orderStatus WHERE o.id = :id")

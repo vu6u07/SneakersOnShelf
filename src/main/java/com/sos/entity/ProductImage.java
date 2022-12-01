@@ -26,4 +26,13 @@ public class ProductImage {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
 
+	public ProductImage(int id) {
+		this.id = id;
+	}
+
+	public ProductImage(int id, String image) {
+		this.id = id;
+		this.image = image;
+	}
+
 }

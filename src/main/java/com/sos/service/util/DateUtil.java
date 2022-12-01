@@ -1,6 +1,7 @@
 package com.sos.service.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +17,17 @@ public class DateUtil {
 
 	public static String convertToString(Date date) {
 		return defaultFormat.format(date);
+	}
+	
+	public static Date parse(String date) throws ParseException {
+		return defaultFormat.parse(date);
+	}
+	
+	public static Date getTomorrow(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, +1);
+		return cal.getTime();
 	}
 
 	public static Date getYesterday(Date date) {

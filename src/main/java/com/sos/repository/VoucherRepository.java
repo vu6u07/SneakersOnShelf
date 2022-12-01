@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sos.common.ApplicationConstant.VoucherAccess;
 import com.sos.common.ApplicationConstant.VoucherStatus;
+import com.sos.common.ApplicationConstant.VoucherType;
 import com.sos.entity.Voucher;
 
 @Repository
@@ -34,11 +35,8 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v")
 	Page<Voucher> findAllVoucher(Pageable pageable);
 	
-	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v WHERE v.code LIKE :query")
-	Page<Voucher> findAllVoucher(String query, Pageable pageable);
-	
-	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v WHERE v.voucherStatus = :voucherStatus")
-	Page<Voucher> findAllVoucher(VoucherStatus voucherStatus, Pageable pageable);
+	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v WHERE (:query IS NULL OR v.code LIKE :query) AND (:voucherType IS NULL OR v.voucherType = :voucherType) AND (:voucherAccess IS NULL OR v.voucherAccess = :voucherAccess) AND (:voucherStatus IS NULL OR v.voucherStatus = :voucherStatus)")
+	Page<Voucher> findAllVoucher(String query, VoucherType voucherType, VoucherAccess voucherAccess, VoucherStatus voucherStatus, Pageable pageable);
 	
 	@Query(value = "SELECT new com.sos.entity.Voucher(v.id, v.code, v.amount, v.requiredValue, v.maxValue, v.quantity, v.voucherStatus, v.voucherType, v.voucherAccess, v.createDate, v.startDate, v.experationDate) FROM Voucher v WHERE v.voucherStatus = :voucherStatus AND v.startDate <= :date AND v.experationDate > :date AND (v.quantity > 0 OR v.quantity = -1) AND v.id = :id")
 	Optional<Voucher> findAvailableVoucherById(int id, VoucherStatus voucherStatus, Date date);

@@ -93,9 +93,13 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findBestSellingProductDTO(query, brandId, categoryId, productGender, productStatus,
 				pageable);
 	}
-	
+
+	@Transactional
 	@Override
-	public Product save(ProductVO productVO) {
+	public Product saveOrUpdate(ProductVO productVO) {
+		if (productVO.getId() > 0) {
+			return updateProduct(productVO.getId(), productVO);
+		}
 		Date date = new Date();
 		Product product = new Product();
 		product.setName(productVO.getName());
@@ -111,4 +115,9 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.save(product);
 	}
 
+	private Product updateProduct(int id, ProductVO productVO) {
+		Date date = new Date();
+		productRepository.updateProduct(id, productVO.getName(), productVO.getProductGender(), productVO.getProductStatus(), productVO.getBrand(), productVO.getCategory(), productVO.getSellPrice(), productVO.getDescription(), date);
+		return new Product(id);
+	}
 }

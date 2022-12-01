@@ -38,7 +38,7 @@ public class OrderItem {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	private Rate rate;
 	
 	@Enumerated(EnumType.STRING)

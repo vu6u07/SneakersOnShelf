@@ -93,6 +93,8 @@ public class AccountServiceImpl implements AccountService {
 		AccountDTO rs = accountRepository.findAccountInfoDTOById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản."));
 		rs.setCustomerInfos(customerInfoRepository.findByAccountId(rs.getId(), CustomerInfoStatus.ACTIVE));
+		List<Role> roles = roleRepository.findByAccountId(rs.getId());
+		rs.setAdmin(roles.containsAll(roleService.getAdminRoles()));
 		return rs;
 	}
 

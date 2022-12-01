@@ -3,6 +3,9 @@ package com.sos.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+import javax.validation.ValidationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,8 +52,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 		// TODO Auto-generated method stub
 	}
 
+	@Transactional
 	@Override
 	public ProductDetail addSize(int productId, String size, int quantity) {
+		if (quantity < 0) {
+			throw new ValidationException("Số lượng không hợp lệ.");
+		}
 		Optional<ProductDetail> pd = productDetailRepository.findProductDetail(productId, size);
 		if (pd.isPresent()) {
 			ProductDetail productDetail = pd.get();
@@ -66,4 +73,19 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 		return productDetailRepository.save(productDetail);
 	}
 
+	@Transactional
+	@Override
+	public void changeProductDetailQuantity(int id, int quantity) {
+		if (quantity < 0) {
+			throw new ValidationException("Số lượng không hợp lệ.");
+		}
+		productDetailRepository.updateProductDetailQuantity(id, quantity);
+	}
+	
+	@Transactional
+	@Override
+	public void changeProductDetailStatus(int id, ActiveStatus activeStatus) {
+		productDetailRepository.updateProductDetailStatus(id, activeStatus);
+	}
+	
 }
