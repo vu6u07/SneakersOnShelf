@@ -36,9 +36,9 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Page<TransactionDTO> findTransactions(String query, TransactionType transactionType, PaymentMethod paymentMethod,
-			Pageable pageable) {
+	public Page<TransactionDTO> findTransactions(String query, TransactionStatus transactionStatus,
+			TransactionType transactionType, PaymentMethod paymentMethod, Pageable pageable) {
 		return transactionRepository.findTransactions(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
-				transactionType, paymentMethod, pageable);
+				transactionStatus, transactionType, paymentMethod, pageable);
 	}
 }

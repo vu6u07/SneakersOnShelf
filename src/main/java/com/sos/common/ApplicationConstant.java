@@ -118,8 +118,8 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum TransactionStatus {
-		PENDING("PENDING", "Đang chờ xác nhận", "warning"), FAILED("FAILED", "Thất bại", "error"),
-		APPROVED("APPROVED", "Đã thanh toán", "primary");
+		PENDING("PENDING", "Đang chờ", "warning"), FAILED("FAILED", "Thất bại", "error"),
+		APPROVED("APPROVED", "Thành công", "primary");
 
 		private final String name;
 		private final String description;
