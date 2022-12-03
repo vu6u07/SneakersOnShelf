@@ -4,7 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import com.sos.dto.BrandRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,7 @@ public class BrandAdminRestController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody Brand brand, HttpServletRequest request) throws URISyntaxException {
+	public ResponseEntity<?> post(@Valid @RequestBody BrandRequest brand, HttpServletRequest request) throws URISyntaxException {
 		Brand created = brandService.save(brand);
 		return ResponseEntity.created(new URI(request.getRequestURL().append("/").append(created.getId()).toString()))
 				.build();
