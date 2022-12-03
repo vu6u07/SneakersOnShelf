@@ -4,18 +4,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import com.sos.common.ApplicationConstant;
+import com.sos.common.SorterConstant;
+import com.sos.dto.CategoryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.sos.entity.Category;
 import com.sos.exception.ResourceNotFoundException;
@@ -30,6 +29,16 @@ public class CategoryAdminRestController {
 	@Autowired
 	private CategoryService categoryService;
 
+	@GetMapping
+	public ResponseEntity<?> get(
+			@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "status", required = false) ApplicationConstant.ActiveStatus activeStatus,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "8") int size,
+			@RequestParam(name = "sort", defaultValue = "id_asc") SorterConstant.BrandSorter brandSorter) {
+		return ResponseEntity.ok(categoryService.findAll(query, activeStatus, PageRequest.of(page - 1, size, brandSorter.getSort())));
+	}
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
 		return ResponseEntity.ok(categoryService.findById(id)
@@ -37,7 +46,7 @@ public class CategoryAdminRestController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody Category category, HttpServletRequest request) throws URISyntaxException {
+	public ResponseEntity<?> post(@Valid @RequestBody CategoryRequest category, HttpServletRequest request) throws URISyntaxException {
 		Category created = categoryService.save(category);
 		return ResponseEntity.created(new URI(request.getRequestURL().append("/").append(created.getId()).toString()))
 				.build();
