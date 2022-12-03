@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sos.common.ApplicationConstant.PaymentMethod;
+import com.sos.common.ApplicationConstant.TransactionStatus;
 import com.sos.common.ApplicationConstant.TransactionType;
 import com.sos.common.SorterConstant.TransactionSorter;
 import com.sos.entity.Transaction;
@@ -44,12 +45,13 @@ public class TransactionAdminController {
 	@GetMapping(value = "/transactions")
 	public ResponseEntity<?> get(
 			@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "transaction-status", required = false) TransactionStatus transactionStatus,
 			@RequestParam(name = "transaction-type", required = false) TransactionType transactionType,
 			@RequestParam(name = "payment-method", required = false) PaymentMethod paymentMethod,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size,
 			@RequestParam(name = "sort", defaultValue = "date_desc") TransactionSorter sorter){
-		return ResponseEntity.ok(transactionService.findTransactions(query, transactionType, paymentMethod, PageRequest.of(page - 1, size, sorter.getSort())));
+		return ResponseEntity.ok(transactionService.findTransactions(query, transactionStatus, transactionType, paymentMethod, PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on
 }

@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,6 +82,9 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@Value("${sos.client.domain}")
+	private String clientDomain;
 
 	@Transactional
 	@Override
@@ -282,7 +286,7 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 			CompletableFuture.runAsync(() -> {
 				try {
 					emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order),
+							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order, clientDomain),
 							true));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();

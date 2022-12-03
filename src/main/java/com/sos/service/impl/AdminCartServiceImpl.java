@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,9 @@ public class AdminCartServiceImpl implements AdminCartService {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@Value("${sos.client.domain}")
+	private String clientDomain;
 
 	@Override
 	public Page<CartReportDTO> findCartReportDTO(AccountAuthentication authentication, CartStatus cartStatus,
@@ -283,7 +287,7 @@ public class AdminCartServiceImpl implements AdminCartService {
 			CompletableFuture.runAsync(() -> {
 				try {
 					emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order),
+							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order, clientDomain),
 							true));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();

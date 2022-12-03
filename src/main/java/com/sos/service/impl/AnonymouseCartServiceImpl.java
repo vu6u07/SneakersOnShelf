@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +80,9 @@ public class AnonymouseCartServiceImpl implements CartService<String> {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Value("${sos.client.domain}")
+	private String clientDomain;
 
 	@Override
 	public CartDTO createCart(String authentication) {
@@ -267,7 +271,7 @@ public class AnonymouseCartServiceImpl implements CartService<String> {
 		CompletableFuture.runAsync(() -> {
 			try {
 				emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-						EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order),
+						EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order, clientDomain),
 						true));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
