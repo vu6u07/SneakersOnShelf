@@ -104,7 +104,7 @@ public class EmailUtil {
 			+ "                            <span class=\"divine-table-item-value\">%s</span>"
 			+ "                        </td>" + "                    </tr>" + "                </table>"
 			+ "            </div>" + "" + "            <div style=\"margin-top: 40px;text-align: center;\">"
-			+ "                <a href=\"http://truottotnghiep.ga/\" target=\"_blank\">"
+			+ "                <a href=\"%s\" target=\"_blank\">"
 			+ "                    <button class=\"divine-button\">Tiếp tục mua sắm</button>" + "                </a>"
 			+ "            </div>" + "        </div>" + "    </div>" + "    <div class=\"divine-footer\">"
 			+ "        <div class=\"divine-hotline-content\">" + "            Hotline hỗ trợ: 1900 633 305"
@@ -115,9 +115,9 @@ public class EmailUtil {
 			+ "                <img src=\"https://cdn.divineshop.vn/image/mail/website.png\" alt=\"\">"
 			+ "            </a>" + "        </div>" + "    </div>" + "</div>" + "</body>" + "</html>";
 
-	public static String getNewOrderEmailContent(Order order) {
+	public static String getNewOrderEmailContent(Order order, String clientDomain) {
 
-		String linkOrder = String.format("http://52.76.26.240:9999/purchase/%s", order.getId().toString());
+		String linkOrder = String.format("%s/purchase/%s", clientDomain, order.getId().toString());
 		if (order.getToken() != null) {
 			linkOrder = linkOrder.concat("?token=").concat(order.getToken());
 		}
@@ -125,7 +125,7 @@ public class EmailUtil {
 		return String.format(NEW_ORDER_EMAIL_CONTENT, order.getId(), order.getFullname(),
 				linkOrder, DateUtil.convertToStringddMMyyyy(order.getCreateDate()), order.getFullname(),
 				order.getId().toString(), order.getEmail(), order.getOrderStatus().getDescription(),
-				order.getPhone(), NumberUtil.VND(order.getTotal()));
+				order.getPhone(), NumberUtil.VND(order.getTotal()), clientDomain);
 	}
 
 	public static String getNewOrderEmailSubject(String orderId) {

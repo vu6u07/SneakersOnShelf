@@ -118,7 +118,8 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum TransactionStatus {
-		PENDING("PENDING", "Đang chờ xác nhận", "warning"), APPROVED("APPROVED", "Đã thanh toán", "primary");
+		PENDING("PENDING", "Đang chờ xác nhận", "warning"), FAILED("FAILED", "Thất bại", "error"),
+		APPROVED("APPROVED", "Đã thanh toán", "primary");
 
 		private final String name;
 		private final String description;
@@ -419,7 +420,8 @@ public class ApplicationConstant {
 	}
 
 	public enum NotificationTopic {
-		ADMIN("ADMIN", "Quản trị viên", "sos-admin"), USER("USER", "Người dùng", "sos-user"), ALL("ALL", "Tất cả", "sos-all");
+		ADMIN("ADMIN", "Quản trị viên", "sos-admin"), USER("USER", "Người dùng", "sos-user"),
+		ALL("ALL", "Tất cả", "sos-all");
 
 		private final String name;
 		private final String description;
