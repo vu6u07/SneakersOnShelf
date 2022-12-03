@@ -4,7 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import com.sos.dto.CategoryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,15 @@ public class CategoryRestController {
 			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter brandSorter) {
 		return ResponseEntity.ok(categoryService.findAll(PageRequest.of(page - 1, size, brandSorter.getSort())));
 	}
+
+	@GetMapping(value = "/select")
+	public ResponseEntity<?> get(
+			@RequestParam(name = "query", required = false) String query,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "8") int size,
+			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter brandSorter){
+		return ResponseEntity.ok(categoryService.findAll(query, PageRequest.of(page - 1, size,brandSorter.getSort())));
+	}
 	// @formatter:on
 
 	@GetMapping(value = "/{id}")
@@ -55,7 +66,7 @@ public class CategoryRestController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody Category category, HttpServletRequest request) throws URISyntaxException {
+	public ResponseEntity<?> post(@Valid @RequestBody CategoryRequest category, HttpServletRequest request) throws URISyntaxException {
 		Category created = categoryService.save(category);
 		return ResponseEntity.created(new URI(request.getRequestURL().append("/").append(created.getId()).toString()))
 				.build();

@@ -3,6 +3,8 @@ package com.sos.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.sos.dto.BrandRequest;
+import com.sos.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +44,26 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		Brand brand = brandRepository.findById(id).orElse(null);
+		if (brand == null) throw new ResourceNotFoundException("Brand not found");
+		brand.setActiveStatus(ActiveStatus.INACTIVE);
+		brandRepository.save(brand);
+	}
+
+	@Override
+	public Page<Brand> findAll(String query, Pageable pageable) {
+		return null;
+	}
+
+	@Override
+	public Brand save(BrandRequest brandRequest) {
+		Brand brand = new Brand();
+		brand.setId(brandRequest.getId());
+		brand.setName(brandRequest.getName());
+		if(brand.getId() > 0){
+			brand.setActiveStatus(brandRequest.getActiveStatus());
+		} else brand.setActiveStatus(ActiveStatus.ACTIVE);
+		return brandRepository.save(brand);
 	}
 
 	@Override
