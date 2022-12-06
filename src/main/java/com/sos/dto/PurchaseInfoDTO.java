@@ -18,10 +18,12 @@ public class PurchaseInfoDTO {
 	private String id;
 
 	private String token;
-	
+
 	private SaleMethod saleMethod;
 
 	private OrderStatus orderStatus;
+
+	private long memberOffer;
 
 	private long discount;
 
@@ -48,18 +50,19 @@ public class PurchaseInfoDTO {
 	private String paymentQRCode;
 
 	private List<CartItemDTO> items;
-	
+
 	private List<OrderTimelineDTO> timelines;
-	
+
 	private List<TransactionDTO> transactions;
 
-	public PurchaseInfoDTO(String id, String token, SaleMethod saleMethod, OrderStatus orderStatus, long discount, long surcharge, long total,
-			long fee, String fullname, String email, String phone, String description, Date createDate, String address,
-			String detailedAddress) {
+	public PurchaseInfoDTO(String id, String token, SaleMethod saleMethod, OrderStatus orderStatus, long memberOffer,
+			long discount, long surcharge, long total, long fee, String fullname, String email, String phone,
+			String description, Date createDate, String address, String detailedAddress) {
 		this.id = id;
 		this.token = token;
 		this.saleMethod = saleMethod;
 		this.orderStatus = orderStatus;
+		this.memberOffer = memberOffer;
 		this.discount = discount;
 		this.surcharge = surcharge;
 		this.total = total;

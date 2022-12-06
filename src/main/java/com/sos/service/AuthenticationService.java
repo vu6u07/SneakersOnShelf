@@ -1,6 +1,7 @@
 package com.sos.service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -28,4 +29,5 @@ public interface AuthenticationService {
 
 	Account signup(CreateAccountRequestDTO account) throws UnsupportedEncodingException, MessagingException;
 	
+	void signup(List<CreateAccountRequestDTO> accounts) throws UnsupportedEncodingException, MessagingException;
 }

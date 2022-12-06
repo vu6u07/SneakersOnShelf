@@ -2,10 +2,7 @@ package com.sos.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,9 +25,13 @@ import com.sos.repository.RoleRepository;
 import com.sos.security.CustomOAuth2User;
 import com.sos.security.jwt.JwtUtils;
 import com.sos.service.OAuth2AuthenticationService;
+import com.sos.service.RoleService;
 
 @Service
 public class OAuth2AuthenticationServiceImpl implements OAuth2AuthenticationService {
+	
+	@Autowired
+	private RoleService roleService;
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -49,13 +50,6 @@ public class OAuth2AuthenticationServiceImpl implements OAuth2AuthenticationServ
 
 	@Value("${security.jwt.refresh-expiration}")
 	private long jwtRefreshExpirationMs;
-
-	private Set<Role> userRoles;
-
-	@PostConstruct
-	private void init() {
-		userRoles = roleRepository.findByName("ROLE_USER");
-	}
 
 	@Override
 	public OAuth2User signin(OAuthProvider oauthProvider, OAuth2User oAuth2User) {
@@ -101,7 +95,7 @@ public class OAuth2AuthenticationServiceImpl implements OAuth2AuthenticationServ
 		account.setGoogleOAuthEmail(oAuth2User.getAttribute("email").toString());
 		account.setEmail(oAuth2User.getAttribute("email").toString());
 		account.setFullname(oAuth2User.getAttribute("name").toString());
-		account.setRoles(userRoles);
+		account.setRoles(roleService.getUserRoles());
 		account.setAccountStatus(AccountStatus.ACTIVE);
 		account.setPicture(oAuth2User.getAttribute("picture").toString());
 		account.setCreateDate(date);
@@ -116,7 +110,7 @@ public class OAuth2AuthenticationServiceImpl implements OAuth2AuthenticationServ
 		account.setEmail(oAuth2User.getAttribute("email").toString());
 		account.setFacebookOAuthId(oAuth2User.getAttribute("id").toString());
 		account.setFullname(oAuth2User.getAttribute("name").toString());
-		account.setRoles(userRoles);
+		account.setRoles(roleService.getUserRoles());
 		account.setAccountStatus(AccountStatus.ACTIVE);
 		JsonNode node = mapper.convertValue(oAuth2User.getAttribute("picture"), JsonNode.class);
 		account.setPicture(node.get("data").get("url").asText());

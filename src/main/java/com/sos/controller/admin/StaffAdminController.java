@@ -33,7 +33,7 @@ import com.sos.service.util.ValidationUtil;
 
 @RestController
 @RequestMapping(value = "/admin/v1")
-public class AccountAdminController {
+public class StaffAdminController {
 
 	@Autowired
 	private AccountService accountService;
@@ -45,41 +45,33 @@ public class AccountAdminController {
 	private Validator validator;
 
 	// @formatter:off
-	@GetMapping(value = "/accounts")
-	public ResponseEntity<?> get(
-			@RequestParam(name = "query", required = false) String query,
+	@GetMapping(value = "/staff")
+	public ResponseEntity<?> get(@RequestParam(name = "query", required = false) String query,
 			@RequestParam(name = "status", required = false) AccountStatus accountStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(accountService.findAccoutDTOs(query, accountStatus, PageRequest.of(page - 1, size)));
+		return ResponseEntity.ok(accountService.findStaffAccoutDTOs(query, accountStatus, PageRequest.of(page - 1, size)));
 	}
 	// @formatter:on
 
-	@GetMapping(value = "/accounts/{id}")
-	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
-		return ResponseEntity.ok(accountService.findAccountReportDTOById(id));
-	}
-
-	@PostMapping(value = "/accounts")
+	@PostMapping(value = "/staff")
 	public ResponseEntity<?> post(@RequestBody CreateAccountRequestDTO account, HttpServletRequest request)
 			throws URISyntaxException, UnsupportedEncodingException, MessagingException {
 		ValidationUtil.validateEmail(account.getEmail());
 		ValidationUtil.validateUsername(account.getUsername());
-		account.setAdmin(false);
+		account.setAdmin(true);
 		Account created = authenticationService.signup(account);
 		return ResponseEntity.created(new URI(request.getRequestURL().append("/").append(created.getId()).toString()))
 				.body(created.getId());
 
 	}
 
-	@PutMapping(value = "/accounts/{id}/account-status")
-	public ResponseEntity<?> updateAccountStatus(@PathVariable(name = "id") int id,
-			@RequestBody AccountStatus accountStatus) {
-		accountService.updateAccountStatus(id, accountStatus);
-		return ResponseEntity.noContent().build();
+	@GetMapping(value = "/staff/{id}")
+	public ResponseEntity<?> getById(@PathVariable(name = "id") int id) {
+		return ResponseEntity.ok(accountService.findStaffAccountReportDTOById(id));
 	}
 
-	@PutMapping(value = "/accounts/{id}/info")
+	@PutMapping(value = "/staff/{id}/info")
 	public ResponseEntity<?> updateAccountInfo(@PathVariable(name = "id") int id,
 			@RequestBody CreateAccountRequestDTO request) {
 		Set<ConstraintViolation<CreateAccountRequestDTO>> violations = validator.validateProperty(request, "fullname");
@@ -91,12 +83,6 @@ public class AccountAdminController {
 		}
 		accountService.updateAccountInfo(id, request.getFullname(), request.getEmail());
 		return ResponseEntity.noContent().build();
-	}
-
-	@PutMapping(value = "/accounts/{id}/reset-password")
-	public ResponseEntity<?> resetAccountPassword(@PathVariable(name = "id") int id)
-			throws UnsupportedEncodingException, MessagingException {
-		return ResponseEntity.ok(authenticationService.resetAccountPassword(id));
 	}
 
 }

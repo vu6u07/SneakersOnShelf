@@ -1,8 +1,11 @@
 package com.sos.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -10,6 +13,8 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,9 +46,12 @@ import com.sos.security.jwt.JwtUtils;
 import com.sos.service.AuthenticationService;
 import com.sos.service.EmailService;
 import com.sos.service.RoleService;
+import com.sos.service.util.ValidationUtil;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -90,6 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public JwtResponse signup(RegisterRequest register) {
+		ValidationUtil.validatePassword(register.getPassword());
 		Date date = new Date();
 		Account account = new Account();
 		account.setUsername(register.getUsername());
@@ -203,6 +212,41 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				"[Sneakers On Shelf] Chào mừng đến với sneakers on shelf, đây là thông tin tài khoản của bạn.",
 				String.format("Tên tài khoản : %s\n" + "Mật khẩu      : %s", register.getUsername(), password), false));
 		return account;
+	}
+
+	@Transactional
+	@Override
+	public void signup(List<CreateAccountRequestDTO> accounts) throws UnsupportedEncodingException, MessagingException {
+		List<EmailRequest> emails = new ArrayList<EmailRequest>();
+		Date date = new Date();
+
+		for (CreateAccountRequestDTO register : accounts) {
+			Account account = new Account();
+			account.setUsername(register.getUsername());
+			account.setFullname(register.getFullname());
+			account.setEmail(register.getEmail());
+			String password = RandomStringUtils.randomAlphabetic(10);
+			account.setPassword(passwordEncoder.encode(password));
+			account.setRoles(register.isAdmin() ? roleService.getAdminRoles() : roleService.getUserRoles());
+			account.setAccountStatus(AccountStatus.ACTIVE);
+			account.setCreateDate(date);
+			account.setUpdateDate(date);
+			accountRepository.save(account);
+			emails.add(new EmailRequest(new String[] { account.getEmail() }, null, null,
+					"[Sneakers On Shelf] Chào mừng đến với sneakers on shelf, đây là thông tin tài khoản của bạn.",
+					String.format("Tên tài khoản : %s\n" + "Mật khẩu      : %s", register.getUsername(), password),
+					false));
+		}
+
+		CompletableFuture.runAsync(() -> {
+			for (EmailRequest email : emails) {
+				try {
+					emailService.sendEmail(email);
+				} catch (UnsupportedEncodingException | MessagingException e) {
+					logger.error("{}", e);
+				}
+			}
+		});
 	}
 
 }

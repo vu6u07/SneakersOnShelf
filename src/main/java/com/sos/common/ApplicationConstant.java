@@ -32,6 +32,34 @@ public class ApplicationConstant {
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum MemberRank {
+		CLIENT("CLIENT", "Khách hàng", "default"), MEMBER("MEMBER", "Thành viên", "success"),
+		SILVER("SILVER", "Bạc", "primary"), GOLD("GOLD", "Vàng", "warning"), DIAMOND("DIAMOND", "Kim cương", "error");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private MemberRank(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum AccountStatus {
 		ACTIVE("ACTIVE", "Kích hoạt", "primary"), INACTIVE("INACTIVE", "Ngừng kích hoạt", "error");
 
@@ -161,38 +189,6 @@ public class ApplicationConstant {
 
 	public enum ExchangeStatus {
 		PENDING, FAILED, APPROVED
-	}
-
-	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-	public enum ProductStatus {
-		ACTIVE("ACTIVE", "Kinh doanh", "primary"), SUSPENSION("SUSPENSION", "Ngừng kinh doanh", "error"),
-		COMING_SOON("COMING_SOON", "Hàng sắp về", "success");
-
-		private final String name;
-		private final String description;
-		private final String color;
-
-		private ProductStatus(String name, String description, String color) {
-			this.name = name;
-			this.description = description;
-			this.color = color;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public String getColor() {
-			return color;
-		}
-	}
-
-	public enum WishlistStatus {
-		ACTIVE, CLOSE, NOTIFIED
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -443,6 +439,151 @@ public class ApplicationConstant {
 
 		public String getTopic() {
 			return topic;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum ProductStatus {
+		ACTIVE("ACTIVE", "Kinh doanh", "primary"), SUSPENSION("SUSPENSION", "Ngừng kinh doanh", "error"),
+		COMING_SOON("COMING_SOON", "Hàng sắp về", "success");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ProductStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum ShoeHeight {
+		LOW_TOP("LOW_TOP", "Thấp", "primary"), MID_TOP("MID_TOP", "Vừa", "success"),
+		HIGH_TOP("HIGH_TOP", "Cao", "warning");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ShoeHeight(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum Benefit {
+		NEUTRAL("NEUTRAL", "Tất cả", "default"), WARM("WARM", "Thời tiết ấm áp", "warning"),
+		COLD("COLD", "Thời tiết lạnh", "secondary"), HUMID("HUMID", "Thời tiết ẩm ướt", "primary");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private Benefit(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum ShoeFeel {
+		NEUTRAL("NEUTRAL", "Ổn định", "default"), FLEXIBLE("FLEXIBLE", "Thoải mái linh hoạt", "primary"),
+		SRPINGY("SRPINGY", "Co dãn đàn hồi", "secondary"), SOFT("SOFT", "Mềm mại", "secondary");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private ShoeFeel(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+	}
+
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	public enum Surface {
+		NEUTRAL("NEUTRAL", "Tất cả", "default"), 
+		FIRM("FIRM", "Kiên cố", "primary"),
+		HARD_COURT("HARD_COURT", "Sân cứng", "secondary"),
+		INDOOR_COURT("INDOOR_COURT", "Sân đấu trong nhà", "secondary"),
+		ROAD("ROAD", "Đường", "info"),
+		TRAIL("TRAIL", "Đường mòn", "default"),
+		TURF("TURF", "Cỏ", "success");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private Surface(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
 		}
 	}
 

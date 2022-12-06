@@ -117,7 +117,7 @@ public class AnonymouseCartRestController {
 
 		Order order = anonymouseCartService.submitCart(id, customerInfo, email, SaleMethod.DELIVERY, voucher, token);
 		notificationService.sendNotificationOnNewOrder(order.getId());
-		return ResponseEntity.ok(order.getId());
+		return ResponseEntity.ok(order);
 	}
 
 }
