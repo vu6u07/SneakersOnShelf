@@ -1,10 +1,14 @@
 package com.sos.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.sos.common.ApplicationConstant.ActiveStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +29,7 @@ public class Color {
 
 	private String code;
 
+	@Enumerated(EnumType.STRING)
+	private ActiveStatus activeStatus;
+	
 }
