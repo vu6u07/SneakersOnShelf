@@ -156,7 +156,7 @@ public class CartAdminController {
 		Voucher voucher = mapper.treeToValue(data.get("voucher"), Voucher.class);
 		
 		Order order = cartService.submitCart(id, customerInfo, email, saleMethod, voucher, authentication);
-		return ResponseEntity.ok(order.getId());
+		return ResponseEntity.ok(order);
 	}
 	
 	// @formatter:on

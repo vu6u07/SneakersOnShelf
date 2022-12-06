@@ -47,6 +47,7 @@ import com.sos.security.AccountAuthentication;
 import com.sos.service.CartService;
 import com.sos.service.DeliveryService;
 import com.sos.service.EmailService;
+import com.sos.service.MemberOfferPolicyService;
 import com.sos.service.util.CartUtils;
 import com.sos.service.util.EmailUtil;
 
@@ -67,7 +68,7 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 
 	@Autowired
 	private OrderRepository orderRepository;
-	
+
 	@Autowired
 	private OrderItemRepository orderItemRepository;
 
@@ -82,7 +83,10 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 
 	@Autowired
 	private EmailService emailService;
-	
+
+	@Autowired
+	private MemberOfferPolicyService memberOfferPolicyService;
+
 	@Value("${sos.client.domain}")
 	private String clientDomain;
 
@@ -206,7 +210,8 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
 			if (productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 					orderItem.getQuantity()) != 1) {
-				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng", cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
+				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng",
+						cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
 			}
 			total += orderItem.getPrice() * orderItem.getQuantity();
 			orderItems.add(orderItem);
@@ -217,6 +222,8 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 		order.setOrderStatus(OrderStatus.PENDING);
 		order.setAccount(new Account(authentication.getId()));
 		order.setTotal(total);
+		int offer = memberOfferPolicyService.getMemberOfferPolicyByAccountId(order.getAccount().getId()).getOffer();
+		order.setMemberOffer(offer > 0 ? total * offer / 100 : 0);
 		order.setFee(deliveryService.getDeliveryFee(order.getTotal() + order.getSurcharge() - order.getDiscount(),
 				customerInfo.getDistrictId(), customerInfo.getWardCode()));
 		order.setFullname(customerInfo.getFullname());
@@ -286,8 +293,8 @@ public class CartServiceImpl implements CartService<AccountAuthentication> {
 			CompletableFuture.runAsync(() -> {
 				try {
 					emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order, clientDomain),
-							true));
+							EmailUtil.getNewOrderEmailSubject(order.getId()),
+							EmailUtil.getNewOrderEmailContent(order, clientDomain), true));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (MessagingException e) {

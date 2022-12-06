@@ -10,4 +10,6 @@ public interface RoleService {
 	
 	Set<Role> getAdminRoles();
 	
+	Role getAdminRole();
+	
 }

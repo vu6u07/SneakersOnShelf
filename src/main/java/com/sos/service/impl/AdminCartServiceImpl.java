@@ -48,6 +48,7 @@ import com.sos.security.AccountAuthentication;
 import com.sos.service.AdminCartService;
 import com.sos.service.DeliveryService;
 import com.sos.service.EmailService;
+import com.sos.service.MemberOfferPolicyService;
 import com.sos.service.util.CartUtils;
 import com.sos.service.util.EmailUtil;
 
@@ -80,7 +81,10 @@ public class AdminCartServiceImpl implements AdminCartService {
 
 	@Autowired
 	private EmailService emailService;
-	
+
+	@Autowired
+	private MemberOfferPolicyService memberOfferPolicyService;
+
 	@Value("${sos.client.domain}")
 	private String clientDomain;
 
@@ -203,7 +207,8 @@ public class AdminCartServiceImpl implements AdminCartService {
 			orderItem.setPrice(cartItem.getProductDetail().getProduct().getSellPrice());
 			if (productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 					orderItem.getQuantity()) != 1) {
-				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng", cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
+				throw new ValidationException(String.format("Sản phẩm %s [Cỡ %s] số lượng không đủ đáp ứng",
+						cartItem.getProductDetail().getProduct().getName(), cartItem.getProductDetail().getSize()));
 			}
 			total += orderItem.getPrice() * orderItem.getQuantity();
 			orderItems.add(orderItem);
@@ -215,6 +220,10 @@ public class AdminCartServiceImpl implements AdminCartService {
 		order.setOrderStatus(OrderStatus.PENDING);
 		order.setTotal(total);
 		order.setAccount(customerInfo.getAccount());
+		if (order.getAccount() != null) {
+			int offer = memberOfferPolicyService.getMemberOfferPolicyByAccountId(order.getAccount().getId()).getOffer();
+			order.setMemberOffer(offer > 0 ? total * offer / 100 : 0);
+		}
 
 		if (voucher != null) {
 			Voucher selectedVoucher = voucherRepository
@@ -287,8 +296,8 @@ public class AdminCartServiceImpl implements AdminCartService {
 			CompletableFuture.runAsync(() -> {
 				try {
 					emailService.sendEmail(new EmailRequest(new String[] { order.getEmail() }, null, null,
-							EmailUtil.getNewOrderEmailSubject(order.getId()), EmailUtil.getNewOrderEmailContent(order, clientDomain),
-							true));
+							EmailUtil.getNewOrderEmailSubject(order.getId()),
+							EmailUtil.getNewOrderEmailContent(order, clientDomain), true));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (MessagingException e) {

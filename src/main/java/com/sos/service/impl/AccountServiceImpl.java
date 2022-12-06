@@ -93,8 +93,14 @@ public class AccountServiceImpl implements AccountService {
 		AccountDTO rs = accountRepository.findAccountInfoDTOById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản."));
 		rs.setCustomerInfos(customerInfoRepository.findByAccountId(rs.getId(), CustomerInfoStatus.ACTIVE));
-		List<Role> roles = roleRepository.findByAccountId(rs.getId());
-		rs.setAdmin(roles.containsAll(roleService.getAdminRoles()));
+		return rs;
+	}
+
+	@Override
+	public AccountDTO findStaffAccountReportDTOById(int id) {
+		AccountDTO rs = accountRepository.findAccountInfoDTOById(id, roleService.getAdminRole())
+				.orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản."));
+		rs.setCustomerInfos(customerInfoRepository.findByAccountId(rs.getId(), CustomerInfoStatus.ACTIVE));
 		return rs;
 	}
 
@@ -102,6 +108,11 @@ public class AccountServiceImpl implements AccountService {
 	public Page<AccountDTO> findAccoutDTOs(String query, AccountStatus accountStatus, Pageable pageable) {
 		return accountRepository.findAccountDTOs(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
 				accountStatus, pageable);
+	}
+
+	@Override
+	public Page<AccountDTO> findStaffAccoutDTOs(String query, AccountStatus accountStatus, Pageable pageable) {
+		return accountRepository.findStaffAccountDTOs(query, accountStatus, roleService.getAdminRole(), pageable);
 	}
 
 	@Transactional
@@ -114,16 +125,6 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void updateAccountStatus(int id, AccountStatus accountStatus) {
 		accountRepository.updateAccountStatus(id, accountStatus);
-	}
-
-	@Override
-	public void updateAccountInfo(int id, String fullname, String email, boolean admin) {
-		Account account = accountRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Account not found with id : " + id));
-		account.setFullname(fullname);
-		account.setEmail(email);
-		account.setRoles(admin ? roleService.getAdminRoles() : roleService.getUserRoles());
-		accountRepository.save(account);
 	}
 
 }

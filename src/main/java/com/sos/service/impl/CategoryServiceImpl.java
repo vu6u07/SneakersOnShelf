@@ -3,19 +3,18 @@ package com.sos.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import com.sos.common.ApplicationConstant;
-import com.sos.dto.CategoryRequest;
-import com.sos.entity.Brand;
-import com.sos.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.sos.common.ApplicationConstant;
+import com.sos.dto.CategoryRequest;
 import com.sos.entity.Category;
+import com.sos.exception.ResourceNotFoundException;
 import com.sos.repository.CategoryRepository;
 import com.sos.service.CategoryService;
-import org.springframework.util.StringUtils;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {

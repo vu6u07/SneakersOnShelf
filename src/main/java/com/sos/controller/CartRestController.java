@@ -139,7 +139,7 @@ public class CartRestController {
 		
 		Order order = cartService.submitCart(id, customerInfo, null, SaleMethod.DELIVERY, voucher, authentication);
 		notificationService.sendNotificationOnNewOrder(order.getId());
-		return ResponseEntity.ok(order.getId());
+		return ResponseEntity.ok(order);
 	}
 	// @formatter:on
 

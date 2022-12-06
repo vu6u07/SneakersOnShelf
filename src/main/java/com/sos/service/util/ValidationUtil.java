@@ -34,4 +34,14 @@ public class ValidationUtil {
 		}
 	}
 
+	public static void validatePassword(String username) {
+		if (!StringUtils.hasText(username)) {
+			throw new ValidationException("Vui lòng nhập mật khẩu.");
+		}
+		if(!username.matches("^[a-zA-Z0-9._-]{3,}$")) {
+			throw new ValidationException("Mật khẩu không hợp lệ.");
+		}
+	}
+
+	
 }

@@ -15,8 +15,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sos.common.ApplicationConstant.Benefit;
 import com.sos.common.ApplicationConstant.ProductGender;
 import com.sos.common.ApplicationConstant.ProductStatus;
+import com.sos.common.ApplicationConstant.ShoeFeel;
+import com.sos.common.ApplicationConstant.ShoeHeight;
+import com.sos.common.ApplicationConstant.Surface;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,6 +50,27 @@ public class Product {
 
 	@ManyToOne
 	private Category category;
+	
+	@ManyToOne
+	private Color color;
+	
+	@ManyToOne
+	private Sole sole;
+	
+	@ManyToOne
+	private Material material;
+	
+	@Enumerated(EnumType.STRING)
+	private ShoeHeight shoeHeight;
+	
+	@Enumerated(EnumType.STRING)
+	private Benefit benefit;
+	
+	@Enumerated(EnumType.STRING)
+	private ShoeFeel shoeFeel;
+	
+	@Enumerated(EnumType.STRING)
+	private Surface surface;
 
 	@JsonIgnoreProperties("product")
 	@OneToOne

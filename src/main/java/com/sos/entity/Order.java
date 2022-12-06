@@ -55,6 +55,8 @@ public class Order {
 	private long total;
 
 	private long fee;
+	
+	private long memberOffer;
 
 	private String fullname;
 
@@ -92,4 +94,17 @@ public class Order {
 		this.wardCode = wardCode;
 	}
 
+	public Order(String id, OrderStatus orderStatus, SaleMethod saleMethod, long memberOffer, long discount, long surcharge, long total,
+			int districtId, String wardCode) {
+		this.id = id;
+		this.orderStatus = orderStatus;
+		this.saleMethod = saleMethod;
+		this.memberOffer = memberOffer;
+		this.discount = discount;
+		this.surcharge = surcharge;
+		this.total = total;
+		this.districtId = districtId;
+		this.wardCode = wardCode;
+	}
+	
 }

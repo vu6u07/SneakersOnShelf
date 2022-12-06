@@ -16,12 +16,14 @@ public interface AccountService extends UserDetailsService, CrudService<Account,
 
 	AccountDTO findAccountReportDTOById(int id);
 	
+	AccountDTO findStaffAccountReportDTOById(int id);
+	
 	Page<AccountDTO> findAccoutDTOs(String query, AccountStatus accountStatus, Pageable pageable);
+	
+	Page<AccountDTO> findStaffAccoutDTOs(String query, AccountStatus accountStatus, Pageable pageable);
 
 	void updateAccountInfo(int id, String fullname, String email);
 	
-	void updateAccountInfo(int id, String fullname, String email, boolean admin);
-
 	void updateAccountStatus(int id, AccountStatus accountStatus);
 	
 }

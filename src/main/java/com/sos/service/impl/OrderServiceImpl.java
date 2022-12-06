@@ -39,10 +39,14 @@ import com.sos.repository.TransactionRepository;
 import com.sos.repository.VoucherRepository;
 import com.sos.security.AccountAuthentication;
 import com.sos.service.DeliveryService;
+import com.sos.service.MemberOfferPolicyService;
 import com.sos.service.OrderService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+	@Autowired
+	private MemberOfferPolicyService memberOfferPolicyService;
 
 	@Autowired
 	private DeliveryService deliveryService;
@@ -174,6 +178,11 @@ public class OrderServiceImpl implements OrderService {
 		orderTimelineRepository.save(orderTimeline);
 		if (orderRepository.updateOrderStatus(id, orderStatus) != 1) {
 			throw new ResourceNotFoundException("Không tìm thấy đơn hàng.");
+		}
+
+		if (orderStatus == OrderStatus.APPROVED) {
+			long point = (purchaseDTO.getTotal() / 1000);
+			memberOfferPolicyService.rewardPoint(purchaseDTO.getId(), point);
 		}
 	}
 

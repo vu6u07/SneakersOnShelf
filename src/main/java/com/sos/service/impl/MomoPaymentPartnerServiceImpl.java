@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,12 @@ public class MomoPaymentPartnerServiceImpl implements PaymentPartnerService<Purc
 		transaction.setOrder(new Order(entity.getId()));
 		transaction.setPaymentMethod(PaymentMethod.BANKING);
 		transaction.setCreateDate(date);
-		transaction.setAmount(entity.getTotal() + entity.getSurcharge() + entity.getFee() - entity.getDiscount());
+		long amount = entity.getTotal() + entity.getSurcharge() + entity.getFee() - entity.getDiscount()
+				- entity.getMemberOffer();
+		if (amount <= 0) {
+			throw new ValidationException("Số tiền không khả dụng để thanh toán.");
+		}
+		transaction.setAmount(amount);
 		transaction.setTransactionStatus(TransactionStatus.PENDING);
 		transaction.setTransactionType(TransactionType.PAYMENT);
 		transaction.setUpdateDate(date);
@@ -102,7 +108,7 @@ public class MomoPaymentPartnerServiceImpl implements PaymentPartnerService<Purc
 		data.setOrderId(UUID.randomUUID().toString());
 		data.setOrderInfo(String.format("Thanh toán đơn hàng %s trên website %s", entity.getId(), "Sneakers On Shelf"));
 		data.setRedirectUrl(clientDomain.concat("/purchase/").concat(entity.getId())
-				.concat(StringUtils.hasText(entity.getToken()) ? entity.getToken() : ""));
+				.concat(StringUtils.hasText(entity.getToken()) ? "?token=" + entity.getToken() : ""));
 		data.setIpnUrl(String.format("%s/api/v1/partner/payment/transactions/%s", serverDomain, transaction.getId()));
 		data.setRequestType("captureWallet");
 		data.setExtraData(passwordEncoder.encode(String.format("%s_sos_%s", entity.getId(), transaction.getId())));
