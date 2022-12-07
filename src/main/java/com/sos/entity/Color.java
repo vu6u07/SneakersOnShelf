@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 import com.sos.common.ApplicationConstant.ActiveStatus;
 
@@ -25,11 +26,10 @@ public class Color {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	private String name;
-
+	@NotBlank(message = "Mã màu không được trống.")
 	private String code;
 
 	@Enumerated(EnumType.STRING)
 	private ActiveStatus activeStatus;
-	
+
 }
