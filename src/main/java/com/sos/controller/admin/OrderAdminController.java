@@ -11,7 +11,6 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sos.common.ApplicationConstant.OrderStatus;
 import com.sos.common.ApplicationConstant.SaleMethod;
+import com.sos.common.SorterConstant.OrderSorter;
 import com.sos.entity.CustomerInfo;
 import com.sos.entity.OrderItem;
 import com.sos.security.AccountAuthentication;
@@ -57,12 +57,13 @@ public class OrderAdminController {
 			@RequestParam(name = "from-date", required = false) String fromDateString,
 			@RequestParam(name = "to-date", required = false) String toDateString,
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size) throws ParseException {
+			@RequestParam(name = "size", defaultValue = "10") int size,
+			@RequestParam(name = "sort", defaultValue = "date_desc") OrderSorter sorter) throws ParseException {
 		Date fromDate = StringUtils.hasText(fromDateString) ? DateUtil.parse(fromDateString) : null;
 		Date toDate = StringUtils.hasText(toDateString) ? DateUtil.getTomorrow(DateUtil.parse(toDateString)) : null;
 
 		return ResponseEntity.ok(orderService.findAllPurchaseDTOs(query, saleMethod, orderStatus, fromDate, toDate,
-				PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
+				PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on
 
@@ -114,6 +115,14 @@ public class OrderAdminController {
 	public ResponseEntity<?> deleteOrderItem(@PathVariable(name = "id") int id, @RequestParam String description,
 			AccountAuthentication authentication) throws JsonProcessingException, IllegalArgumentException {
 		orderService.deleteOrderItem(id, description, authentication);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping(value = "/order-items/{id}/reverse")
+	public ResponseEntity<?> reverseOrderItem(@PathVariable(name = "id") int id, @RequestBody JsonNode data,
+			AccountAuthentication authentication) throws JsonProcessingException, IllegalArgumentException {
+		orderService.reverseOrderItem(id, data.get("quantity").asInt(), data.get("surchange").asLong(),
+				data.get("description").asText(), authentication);
 		return ResponseEntity.noContent().build();
 	}
 

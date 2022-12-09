@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,13 @@ public class VoucherServiceImpl implements VoucherService {
 
 	@Override
 	public Voucher save(Voucher voucher, AccountAuthentication authentication) {
+		if (!voucher.getStartDate().before(voucher.getExperationDate())) {
+			throw new ValidationException("Ngày bắt đầu và kết thúc voucher không hợp lệ.");
+		}
+		if (voucher.getExperationDate().before(new Date())) {
+			throw new ValidationException("Voucher đã hết hạn.");
+		}
+		voucher.setId(0);
 		voucher.setStaff(new Account(authentication.getId()));
 		return voucherRepository.save(voucher);
 	}
@@ -65,7 +73,8 @@ public class VoucherServiceImpl implements VoucherService {
 	@Override
 	public Page<Voucher> findAll(String query, VoucherType voucherType, VoucherAccess voucherAccess,
 			VoucherStatus voucherStatus, Pageable pageable) {
-		return voucherRepository.findAllVoucher(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null, voucherType, voucherAccess, voucherStatus, pageable);
+		return voucherRepository.findAllVoucher(StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+				voucherType, voucherAccess, voucherStatus, pageable);
 	}
 
 	@Override

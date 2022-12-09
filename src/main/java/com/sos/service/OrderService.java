@@ -34,4 +34,6 @@ public interface OrderService extends CrudService<Order, String> {
 	
 	void deleteOrderItem(int id, String description, AccountAuthentication authentication) throws JsonMappingException, JsonProcessingException;
 	
+	void reverseOrderItem(int id, int quantity, long surchange, String description, AccountAuthentication authentication);
+	
 }

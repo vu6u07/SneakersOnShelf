@@ -13,14 +13,16 @@ public class SorterConstant {
 		// @formatter:on
 		private final String description;
 		private final Sort sort;
-		
+
 		private BrandSorter(String description, Sort sort) {
 			this.description = description;
 			this.sort = sort;
 		}
+
 		public String getDescription() {
 			return description;
 		}
+
 		public Sort getSort() {
 			return sort;
 		}
@@ -44,34 +46,63 @@ public class SorterConstant {
 			this.description = description;
 			this.sort = sort;
 		}
+
 		public String getDescription() {
 			return description;
 		}
+
 		public Sort getSort() {
 			return sort;
 		}
 	}
-	
+
 	public enum TransactionSorter {
 		// @formatter:off
 		date_desc("Mới nhất", Sort.by("createDate").ascending()),
 		amount_asc("Giá trị tăng dần", Sort.by("amount").ascending()),
 		amount_desc("Giá trị giảm dần", Sort.by("amount").descending());
 		// @formatter:on
-		
+
 		private final String description;
 		private final Sort sort;
-		
+
 		private TransactionSorter(String description, Sort sort) {
 			this.description = description;
 			this.sort = sort;
 		}
+
 		public String getDescription() {
 			return description;
 		}
+
 		public Sort getSort() {
 			return sort;
 		}
 	}
-	
+
+	public enum OrderSorter {
+		// @formatter:off
+		date_desc("Mới nhất", Sort.by("createDate").descending()),
+		date_asc("Cũ nhất", Sort.by("createDate").ascending()),
+		total_asc("Giá trị tăng dần", Sort.by("total").ascending()),
+		total_desc("Giá trị giảm dần", Sort.by("total").descending());
+		// @formatter:on
+
+		private final String description;
+		private final Sort sort;
+
+		private OrderSorter(String description, Sort sort) {
+			this.description = description;
+			this.sort = sort;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public Sort getSort() {
+			return sort;
+		}
+	}
+
 }

@@ -66,4 +66,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query(value = "UPDATE Account a SET a.accountStatus = :accountStatus WHERE a.id = :id")
 	int updateAccountStatus(int id, AccountStatus accountStatus);
 	
+	@Modifying
+	@Query(value = "UPDATE Account a SET a.point = :point")
+	int resetAccountPoint(long point);
+	
 }

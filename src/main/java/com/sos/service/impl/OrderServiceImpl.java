@@ -114,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
 		purchaseDTO.setTimelines(orderTimelineRepository.findOrderTimelineDTOsByOrderId(purchaseDTO.getId()));
 		purchaseDTO.setTransactions(transactionRepository.findAllTransactionDTOByOrderId(purchaseDTO.getId()));
 		return purchaseDTO;
+
 	}
 
 	@Transactional
@@ -260,7 +261,7 @@ public class OrderServiceImpl implements OrderService {
 
 		orderItemRepository.save(orderItem);
 
-		order.setTotal(order.getTotal() + orderItem.getPrice() * orderItem.getQuantity());
+		order.setTotal(orderRepository.getTotalByOrderId(order.getId()));
 
 		Optional<Voucher> voucherOptional = voucherRepository.findVoucherByOrderId(order.getId());
 		if (voucherOptional.isPresent()) {
@@ -295,7 +296,7 @@ public class OrderServiceImpl implements OrderService {
 		if (productDetailRepository.decreaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 				orderItem.getQuantity()) != 1
 				|| orderRepository.updateOrderAfterChange(order.getId(), order.getTotal(), order.getFee(),
-						order.getDiscount(), order.getVoucher()) != 1) {
+						order.getDiscount(), order.getRefund(), order.getVoucher()) != 1) {
 			throw new ValidationException();
 		}
 
@@ -330,12 +331,8 @@ public class OrderServiceImpl implements OrderService {
 		orderTimeline.setStaff(new Account(authentication.getId()));
 
 		if (quantity < orderItem.getQuantity()) {
-			if (quantity > orderItem.getProductDetail().getQuantity()) {
-				throw new ValidationException(String.format("Sản phẩm %s cỡ %s chỉ còn lại %s chiếc.",
-						orderItem.getProductDetail().getProduct().getName(), orderItem.getProductDetail().getSize(),
-						orderItem.getProductDetail().getQuantity()));
-			}
-			order.setTotal(order.getTotal() - orderItem.getPrice() * (orderItem.getQuantity() - quantity));
+			orderItemRepository.updateOrderItemQuantity(orderItem.getId(), quantity);
+			order.setTotal(orderRepository.getTotalByOrderId(order.getId()));
 			orderTimeline.setDescription(String.format("Giảm số lượng sản phẩm [%s] Cỡ [%s] xuống còn %s chiếc. %s",
 					orderItem.getProductDetail().getProduct().getName(), orderItem.getProductDetail().getSize(),
 					quantity, description));
@@ -374,14 +371,19 @@ public class OrderServiceImpl implements OrderService {
 						order.getDistrictId(), order.getWardCode()));
 			}
 
-			if (orderItemRepository.updateOrderItemQuantity(orderItem.getId(), quantity) != 1
-					|| productDetailRepository.increaseProductDetailQuantity(orderItem.getProductDetail().getId(),
-							orderItem.getQuantity() - quantity) != 1
+			if (productDetailRepository.increaseProductDetailQuantity(orderItem.getProductDetail().getId(),
+					orderItem.getQuantity() - quantity) != 1
 					|| orderRepository.updateOrderAfterChange(order.getId(), order.getTotal(), order.getFee(),
-							order.getDiscount(), order.getVoucher()) != 1) {
+							order.getDiscount(), order.getRefund(), order.getVoucher()) != 1) {
 				throw new ValidationException();
 			}
 		} else {
+			if (quantity - orderItem.getQuantity() > orderItem.getProductDetail().getQuantity()) {
+				throw new ValidationException(String.format("Sản phẩm %s cỡ %s chỉ còn lại %s chiếc.",
+						orderItem.getProductDetail().getProduct().getName(), orderItem.getProductDetail().getSize(),
+						orderItem.getProductDetail().getQuantity()));
+			}
+
 			orderTimeline.setDescription(String.format("Thêm sản phẩm [%s] Cỡ [%s] thêm %s chiếc. %s",
 					orderItem.getProductDetail().getProduct().getName(), orderItem.getProductDetail().getSize(),
 					quantity - orderItem.getQuantity(), description));
@@ -394,8 +396,7 @@ public class OrderServiceImpl implements OrderService {
 			newOrderItem.setQuantity(quantity - orderItem.getQuantity());
 
 			orderItemRepository.save(newOrderItem);
-
-			order.setTotal(order.getTotal() + newOrderItem.getQuantity() * newOrderItem.getPrice());
+			order.setTotal(orderRepository.getTotalByOrderId(order.getId()));
 
 			Optional<Voucher> voucherOptional = voucherRepository.findVoucherByOrderId(order.getId());
 			if (voucherOptional.isPresent()) {
@@ -430,7 +431,7 @@ public class OrderServiceImpl implements OrderService {
 			if (productDetailRepository.decreaseProductDetailQuantity(newOrderItem.getProductDetail().getId(),
 					newOrderItem.getQuantity()) != 1
 					|| orderRepository.updateOrderAfterChange(order.getId(), order.getTotal(), order.getFee(),
-							order.getDiscount(), order.getVoucher()) != 1) {
+							order.getDiscount(), order.getRefund(), order.getVoucher()) != 1) {
 				throw new ValidationException();
 			}
 		}
@@ -508,8 +509,80 @@ public class OrderServiceImpl implements OrderService {
 			if (productDetailRepository.increaseProductDetailQuantity(orderItem.getProductDetail().getId(),
 					orderItem.getQuantity()) != 1
 					|| orderRepository.updateOrderAfterChange(order.getId(), order.getTotal(), order.getFee(),
-							order.getDiscount(), order.getVoucher()) != 1) {
+							order.getDiscount(), order.getRefund(), order.getVoucher()) != 1) {
 				throw new ValidationException();
+			}
+		}
+		orderTimelineRepository.save(orderTimeline);
+	}
+
+	@Transactional
+	@Override
+	public void reverseOrderItem(int id, int quantity, long surchange, String description,
+			AccountAuthentication authentication) {
+		Order order = orderRepository.findStagingOrder(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Order Item not found with id : " + id));
+		if (order.getOrderStatus() != OrderStatus.APPROVED) {
+			throw new ValidationException("Trạng thái đơn hàng không hợp lệ.");
+		}
+
+		OrderItem orderItem = orderItemRepository.findOrderItem(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Order item not found with id : " + id));
+
+		if (orderItem.getOrderItemStatus() != OrderItemStatus.APPROVED) {
+			throw new ValidationException("Trạng thái sản phẩm không hợp lệ.");
+		}
+
+		if (quantity < 1 || quantity > orderItem.getQuantity()) {
+			throw new ValidationException("Số lượng không hợp lệ.");
+		}
+
+		if (surchange > orderItem.getPrice() * quantity) {
+			throw new ValidationException("Phụ phí không hợp lệ.");
+		}
+
+		if (voucherRepository.findVoucherByOrderId(order.getId()).isPresent()) {
+			throw new ValidationException("Chính sách hoàn tiền không áp dụng cho đơn hàng giảm giá bằng voucher.");
+		}
+
+		OrderTimeline orderTimeline = new OrderTimeline();
+		orderTimeline.setCreatedDate(new Date());
+		orderTimeline.setStaff(new Account(authentication.getId()));
+		orderTimeline.setOrder(order);
+
+		if (orderRepository.getCountOrderItemByOrderId(order.getId(), OrderItemStatus.APPROVED) == 1
+				&& quantity == orderItem.getQuantity()) {
+			orderTimeline.setOrderTimelineType(OrderTimelineType.CANCELLED);
+			orderTimeline.setDescription(String.format("Đã hủy đơn sau khi khách yêu cầu trả hàng. %s", description));
+			if (orderRepository.updateOrderStatus(order.getId(), OrderStatus.CANCELLED) != 1) {
+				throw new ResourceNotFoundException("Không tìm thấy đơn hàng.");
+			}
+		} else {
+			orderTimeline.setOrderTimelineType(OrderTimelineType.REVERSED);
+			orderTimeline.setDescription(String.format("Đã hoàn trả [%s] sản phẩm [%s] cỡ [%s] với phụ phí [%s]. %s",
+					quantity, orderItem.getProductDetail().getProduct().getName(),
+					orderItem.getProductDetail().getSize(), surchange, description));
+
+			if (orderItem.getQuantity() == quantity) {
+				orderItemRepository.updateOrderItemStatus(orderItem.getId(), OrderItemStatus.REVERSE);
+			} else {
+				OrderItem reversed = new OrderItem();
+				reversed.setOrder(order);
+				reversed.setOrderItemStatus(OrderItemStatus.REVERSE);
+				reversed.setQuantity(quantity);
+				reversed.setPrice(orderItem.getPrice());
+				reversed.setProductDetail(orderItem.getProductDetail());
+				orderItemRepository.save(reversed);
+				orderItemRepository.updateOrderItemQuantity(orderItem.getId(), orderItem.getQuantity() - quantity);
+			}
+
+			order.setRefund(order.getRefund() + orderItem.getPrice() * quantity - surchange);
+
+			if (productDetailRepository.increaseProductDetailQuantity(orderItem.getProductDetail().getId(),
+					quantity) != 1
+					|| orderRepository.updateOrderAfterChange(order.getId(), order.getTotal(), order.getFee(),
+							order.getDiscount(), order.getRefund(), order.getVoucher()) != 1) {
+				throw new ValidationException("Có lỗi xảy ra, hãy thử lại sau");
 			}
 		}
 		orderTimelineRepository.save(orderTimeline);
