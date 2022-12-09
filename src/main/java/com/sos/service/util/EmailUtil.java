@@ -76,7 +76,7 @@ public class EmailUtil {
 			+ "            <div class=\"divine-title\">Chào %s,</div>"
 			+ "            <div style=\"line-height: 30px;\">"
 			+ "                Đơn hàng của bạn đã được nhận và sẽ được xử lý ngay khi bạn xác nhận thanh toán.<br>"
-			+ "                Để xem chi tiết đơn hàng của mình tại Divine Shop, bạn có thể <a href=\"%s\" class=\"divine-link-color\"><b>nhấn vào đây</b></a>."
+			+ "                Để xem chi tiết đơn hàng của mình tại Sneakers On Shelf Shop, bạn có thể <a href=\"%s\" class=\"divine-link-color\"><b>nhấn vào đây</b></a>."
 			+ "            </div>" + "            <div>"
 			+ "                <span class=\"divine-title\">Thông tin đơn hàng</span>"
 			+ "                <span class=\"divine-date-mb\">Ngày đặt hàng %s</span>" + "            </div>"
