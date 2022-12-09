@@ -91,7 +91,7 @@ public class MomoPaymentPartnerServiceImpl implements PaymentPartnerService<Purc
 		transaction.setPaymentMethod(PaymentMethod.BANKING);
 		transaction.setCreateDate(date);
 		long amount = entity.getTotal() + entity.getSurcharge() + entity.getFee() - entity.getDiscount()
-				- entity.getMemberOffer();
+				- entity.getMemberOffer() - entity.getRefund();
 		if (amount <= 0) {
 			throw new ValidationException("Số tiền không khả dụng để thanh toán.");
 		}

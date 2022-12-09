@@ -55,7 +55,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 		purchaseDTO.setTimelines(orderTimelineRepository.findOrderTimelineDTOsByOrderId(purchaseDTO.getId()));
 		purchaseDTO.setTransactions(transactionRepository.findAllTransactionDTOByOrderId(purchaseDTO.getId()));
 		long total = purchaseDTO.getTotal() + purchaseDTO.getFee() + purchaseDTO.getSurcharge()
-				- purchaseDTO.getDiscount() - purchaseDTO.getMemberOffer();
+				- purchaseDTO.getDiscount() - purchaseDTO.getMemberOffer() - purchaseDTO.getRefund();
 		purchaseDTO.setPaymentQRCode(getPaymentQRCode(bankId, accountId, vietQRTemplate, total,
 				String.format("%s SneakersOnShelf ThanhToan", purchaseDTO.getId()), accountName));
 		return purchaseDTO;
@@ -69,7 +69,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 		purchaseDTO.setTimelines(orderTimelineRepository.findOrderTimelineDTOsByOrderId(purchaseDTO.getId()));
 		purchaseDTO.setTransactions(transactionRepository.findAllTransactionDTOByOrderId(purchaseDTO.getId()));
 		long total = purchaseDTO.getTotal() + purchaseDTO.getFee() + purchaseDTO.getSurcharge()
-				- purchaseDTO.getDiscount();
+				- purchaseDTO.getDiscount() - purchaseDTO.getRefund();
 		purchaseDTO.setPaymentQRCode(getPaymentQRCode(bankId, accountId, vietQRTemplate, total,
 				String.format("%s SneakersOnShelf ThanhToan", purchaseDTO.getId()), accountName));
 		return purchaseDTO;
