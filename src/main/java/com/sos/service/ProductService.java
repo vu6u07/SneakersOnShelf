@@ -26,6 +26,17 @@ public interface ProductService extends CrudService<Product, Integer> {
 			ShoeFeel shoeFeel, Surface surface, ProductGender productGender, ProductStatus productStatus,
 			Pageable pageable);
 
+	// Collection
+	Page<CollectionProductDTO> findCollectionProductDTO(String query, String sizeName, String brandId, String categoryId,
+			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
+			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
+			Pageable pageable);
+	
+	Page<CollectionProductDTO> findBestSellingProductDTO(String query, String sizeName, String brandId, String categoryId,
+			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
+			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
+			Pageable pageable);
+
 	ProductInfoDTO findProductInfoDTOById(int id);
 
 	Product saveOrUpdate(ProductVO productVO);

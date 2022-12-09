@@ -59,10 +59,10 @@ public class ProductAdminRestController {
 			@RequestParam(name = "size", defaultValue = "9") int size,
 			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
 		if(sorter == ProductSorter.best_selling) {
-			return ResponseEntity.ok(productService.findBestSellingProductDTO(query, brandId, categoryId,colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, productStatus, PageRequest.of(page - 1, size)));
+			return ResponseEntity.ok(productService.findBestSellingProductDTO(query, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, productStatus, PageRequest.of(page - 1, size)));
 		}
 		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(query, brandId, categoryId,colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, productStatus, PageRequest.of(page - 1, size, sorter.getSort())));
+				.ok(productService.findCollectionProductDTO(query, brandId, categoryId, colorId , soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, productStatus, PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on
 
