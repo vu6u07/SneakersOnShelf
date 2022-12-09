@@ -203,6 +203,7 @@ public class AnonymouseCartServiceImpl implements CartService<String> {
 
 		order.setId(CartUtils.generateOrderId(now, id));
 		order.setToken(cart.getToken());
+		order.setEmail(email);
 		order.setOrderStatus(OrderStatus.PENDING);
 		order.setTotal(total);
 		order.setFee(deliveryService.getDeliveryFee(order.getTotal() + order.getSurcharge() - order.getDiscount(),

@@ -32,7 +32,7 @@ public class OrderItem {
 
 	@ManyToOne
 	private ProductDetail productDetail;
-	
+
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id")
@@ -40,7 +40,7 @@ public class OrderItem {
 
 	@OneToOne
 	private Rate rate;
-	
+
 	@Enumerated(EnumType.STRING)
 	private OrderItemStatus orderItemStatus;
 
@@ -57,7 +57,8 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
-	public OrderItem(int id, long price, int quantity, int productDetailId, int productDetailQuantity, String productDetailSize, String name, long sellPrice) {
+	public OrderItem(int id, long price, int quantity, int productDetailId, int productDetailQuantity,
+			String productDetailSize, String name, long sellPrice, OrderItemStatus orderItemStatus) {
 		this.id = id;
 		this.price = price;
 		this.quantity = quantity;
@@ -66,6 +67,7 @@ public class OrderItem {
 		product.setSellPrice(sellPrice);
 		product.setName(name);
 		this.productDetail.setProduct(product);
+		this.orderItemStatus = orderItemStatus;
 	}
-	
+
 }

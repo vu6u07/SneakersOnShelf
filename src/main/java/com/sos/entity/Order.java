@@ -55,8 +55,10 @@ public class Order {
 	private long total;
 
 	private long fee;
-	
+
 	private long memberOffer;
+
+	private long refund;
 
 	private String fullname;
 
@@ -82,29 +84,18 @@ public class Order {
 		this.id = id;
 	}
 
-	public Order(String id, OrderStatus orderStatus, SaleMethod saleMethod, long discount, long surcharge, long total,
-			int districtId, String wardCode) {
-		this.id = id;
-		this.orderStatus = orderStatus;
-		this.saleMethod = saleMethod;
-		this.discount = discount;
-		this.surcharge = surcharge;
-		this.total = total;
-		this.districtId = districtId;
-		this.wardCode = wardCode;
-	}
-
-	public Order(String id, OrderStatus orderStatus, SaleMethod saleMethod, long memberOffer, long discount, long surcharge, long total,
-			int districtId, String wardCode) {
+	public Order(String id, OrderStatus orderStatus, SaleMethod saleMethod, long memberOffer, long discount,
+			long surcharge, long refund, long total, int districtId, String wardCode) {
 		this.id = id;
 		this.orderStatus = orderStatus;
 		this.saleMethod = saleMethod;
 		this.memberOffer = memberOffer;
 		this.discount = discount;
 		this.surcharge = surcharge;
+		this.refund = refund;
 		this.total = total;
 		this.districtId = districtId;
 		this.wardCode = wardCode;
 	}
-	
+
 }

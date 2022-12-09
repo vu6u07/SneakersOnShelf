@@ -227,7 +227,8 @@ public class ApplicationConstant {
 		SHIPPING("SHIPPING", "Đã Giao Cho Đơn Vị Vận Chuyển", "FaTruck", "#2dc258"),
 		APPROVED("APPROVED", "Đã Nhận Được Hàng", "FaCalendarCheck", "#2dc258"),
 		CANCELLED("CANCELLED", "Đơn Hàng Đã Hủy", "FaWindowClose", "#9c2919"),
-		EDITED("EDITED", "Chỉnh Sửa Đơn Hàng", "FaPenSquare", "#ffc107");
+		EDITED("EDITED", "Chỉnh Sửa Đơn Hàng", "FaPenSquare", "#ffc107"),
+		REVERSED("REVERSED", "Hoàn Trả", "FaRetweet", "#9c2919");
 
 		private final String name;
 		private final String title;
@@ -259,8 +260,31 @@ public class ApplicationConstant {
 
 	}
 
+	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum OrderItemStatus {
-		APPROVED, REVERSE
+		APPROVED("APPROVED", "Đã xác nhận", "primary"), REVERSE("REVERSE", "Đã hoàn trả", "error");
+
+		private final String name;
+		private final String description;
+		private final String color;
+
+		private OrderItemStatus(String name, String description, String color) {
+			this.name = name;
+			this.description = description;
+			this.color = color;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public String getColor() {
+			return color;
+		}
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -556,13 +580,10 @@ public class ApplicationConstant {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum Surface {
-		NEUTRAL("NEUTRAL", "Tất cả", "default"), 
-		FIRM("FIRM", "Kiên cố", "primary"),
+		NEUTRAL("NEUTRAL", "Tất cả", "default"), FIRM("FIRM", "Kiên cố", "primary"),
 		HARD_COURT("HARD_COURT", "Sân cứng", "secondary"),
-		INDOOR_COURT("INDOOR_COURT", "Sân đấu trong nhà", "secondary"),
-		ROAD("ROAD", "Đường", "info"),
-		TRAIL("TRAIL", "Đường mòn", "default"),
-		TURF("TURF", "Cỏ", "success");
+		INDOOR_COURT("INDOOR_COURT", "Sân đấu trong nhà", "secondary"), ROAD("ROAD", "Đường", "info"),
+		TRAIL("TRAIL", "Đường mòn", "default"), TURF("TURF", "Cỏ", "success");
 
 		private final String name;
 		private final String description;

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import javax.mail.MessagingException;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,6 +86,9 @@ public class AdminCartServiceImpl implements AdminCartService {
 
 	@Autowired
 	private MemberOfferPolicyService memberOfferPolicyService;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Value("${sos.client.domain}")
 	private String clientDomain;
@@ -223,6 +228,8 @@ public class AdminCartServiceImpl implements AdminCartService {
 		if (order.getAccount() != null) {
 			int offer = memberOfferPolicyService.getMemberOfferPolicyByAccountId(order.getAccount().getId()).getOffer();
 			order.setMemberOffer(offer > 0 ? total * offer / 100 : 0);
+		} else {
+			order.setToken(generateTokenQuery());
 		}
 
 		if (voucher != null) {
@@ -315,6 +322,10 @@ public class AdminCartServiceImpl implements AdminCartService {
 		if (cartRepository.updateCartStatus(id, CartStatus.CANCELLED, new Date(), authentication.getId()) != 1) {
 			throw new ResourceNotFoundException("Có lỗi xảy ra, hãy thử lại sau.");
 		}
+	}
+	
+	private String generateTokenQuery() {
+		return passwordEncoder.encode(UUID.randomUUID().toString()).replaceAll("/", "_");
 	}
 
 }
