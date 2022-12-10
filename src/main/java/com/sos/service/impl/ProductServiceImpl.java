@@ -112,12 +112,13 @@ public class ProductServiceImpl implements ProductService {
 	// for collection param
 	// @formatter:off
 	@Override
-	public Page<CollectionProductDTO> findCollectionProductDTO(String query, String sizeName, String brandId, String categoryId,
+	public Page<CollectionProductDTO> findCollectionProductDTO(String query, Long minPrice, Long maxPrice, String sizeName, String brandId, String categoryId,
 			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
 			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
 			Pageable pageable) {
 		return productRepository.findCollectionProductDTO(
 						StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+						minPrice, maxPrice,
 						StringUtils.hasText(sizeName) ? Arrays.stream(sizeName.split(",")).collect(Collectors.toList()) : null,
 						getCollectionIntegerParams(brandId),
 						getCollectionIntegerParams(categoryId),
@@ -132,27 +133,28 @@ public class ProductServiceImpl implements ProductService {
 						productStatus, pageable);
 	}
 	// @formatter:on
-	
+
 	// @formatter:off
 	@Override
-	public Page<CollectionProductDTO> findBestSellingProductDTO(String query, String sizeName, String brandId, String categoryId,
+	public Page<CollectionProductDTO> findBestSellingProductDTO(String query, Long minPrice, Long maxPrice, String sizeName, String brandId, String categoryId,
 			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
 			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
 			Pageable pageable) {
 		return productRepository.findCollectionProductDTO(
-				StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+						StringUtils.hasText(query) ? "%".concat(query).concat("%") : null,
+						minPrice, maxPrice,
 						StringUtils.hasText(sizeName) ? Arrays.stream(sizeName.split(",")).collect(Collectors.toList()) : null,
-								getCollectionIntegerParams(brandId),
-								getCollectionIntegerParams(categoryId),
-								getCollectionIntegerParams(colorId),
-								getCollectionIntegerParams(soleId),
-								getCollectionIntegerParams(materialId),
-								StringUtils.hasText(shoeHeight) ? Arrays.stream(shoeHeight.split(",")).map(ShoeHeight::valueOf).collect(Collectors.toList()) : null,
-										StringUtils.hasText(benefit) ? Arrays.stream(benefit.split(",")).map(Benefit::valueOf).collect(Collectors.toList()) : null,
-												StringUtils.hasText(shoeFeel) ? Arrays.stream(shoeFeel.split(",")).map(ShoeFeel::valueOf).collect(Collectors.toList()) : null,
-														StringUtils.hasText(surface) ? Arrays.stream(surface.split(",")).map(Surface::valueOf).collect(Collectors.toList()) : null,
-																StringUtils.hasText(productGender) ? Arrays.stream(productGender.split(",")).map(ProductGender::valueOf).collect(Collectors.toList()) : null,
-																		productStatus, pageable);
+						getCollectionIntegerParams(brandId),
+						getCollectionIntegerParams(categoryId),
+						getCollectionIntegerParams(colorId),
+						getCollectionIntegerParams(soleId),
+						getCollectionIntegerParams(materialId),
+						StringUtils.hasText(shoeHeight) ? Arrays.stream(shoeHeight.split(",")).map(ShoeHeight::valueOf).collect(Collectors.toList()) : null,
+						StringUtils.hasText(benefit) ? Arrays.stream(benefit.split(",")).map(Benefit::valueOf).collect(Collectors.toList()) : null,
+						StringUtils.hasText(shoeFeel) ? Arrays.stream(shoeFeel.split(",")).map(ShoeFeel::valueOf).collect(Collectors.toList()) : null,
+						StringUtils.hasText(surface) ? Arrays.stream(surface.split(",")).map(Surface::valueOf).collect(Collectors.toList()) : null,
+						StringUtils.hasText(productGender) ? Arrays.stream(productGender.split(",")).map(ProductGender::valueOf).collect(Collectors.toList()) : null,
+						productStatus, pageable);
 	}
 	// @formatter:on
 

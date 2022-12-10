@@ -27,12 +27,12 @@ public interface ProductService extends CrudService<Product, Integer> {
 			Pageable pageable);
 
 	// Collection
-	Page<CollectionProductDTO> findCollectionProductDTO(String query, String sizeName, String brandId, String categoryId,
+	Page<CollectionProductDTO> findCollectionProductDTO(String query, Long minPrice, Long maxPrice, String sizeName, String brandId, String categoryId,
 			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
 			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
 			Pageable pageable);
 	
-	Page<CollectionProductDTO> findBestSellingProductDTO(String query, String sizeName, String brandId, String categoryId,
+	Page<CollectionProductDTO> findBestSellingProductDTO(String query, Long minPrice, Long maxPrice, String sizeName, String brandId, String categoryId,
 			String colorId, String soleId, String materialId, String shoeHeight, String benefit,
 			String shoeFeel, String surface, String productGender, ProductStatus productStatus,
 			Pageable pageable);

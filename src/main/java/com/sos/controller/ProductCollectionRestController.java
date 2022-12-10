@@ -30,6 +30,8 @@ public class ProductCollectionRestController {
 	public ResponseEntity<?> get(
 			@RequestParam(name = "query", required = false) String query,
 			@RequestParam(name = "size", required = false) String sizeName,
+			@RequestParam(name = "minPrice", required = false) Long minPrice,
+			@RequestParam(name = "maxPrice", required = false) Long maxPrice,
 			@RequestParam(name = "brand", required = false) String brandId,
 			@RequestParam(name = "category", required = false) String categoryId,
 			@RequestParam(name = "color", required = false) String colorId,
@@ -44,10 +46,10 @@ public class ProductCollectionRestController {
 			@RequestParam(name = "psize", defaultValue = "9") int size,
 			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
 		if(sorter == ProductSorter.best_selling) {
-			return ResponseEntity.ok(productService.findBestSellingProductDTO(query, sizeName, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, ProductStatus.ACTIVE, PageRequest.of(page - 1, size)));
+			return ResponseEntity.ok(productService.findBestSellingProductDTO(query, minPrice, maxPrice, sizeName, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, ProductStatus.ACTIVE, PageRequest.of(page - 1, size)));
 		}
 		return ResponseEntity
-				.ok(productService.findCollectionProductDTO(query, sizeName, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, ProductStatus.ACTIVE, PageRequest.of(page - 1, size, sorter.getSort())));
+				.ok(productService.findCollectionProductDTO(query, minPrice, maxPrice, sizeName, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, ProductStatus.ACTIVE, PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on
 
