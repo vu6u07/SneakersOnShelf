@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sos.common.SorterConstant.BrandSorter;
+import com.sos.common.SorterConstant.ProductSorter;
 import com.sos.entity.Product;
 import com.sos.exception.ResourceNotFoundException;
 import com.sos.service.ProductService;
@@ -43,7 +43,7 @@ public class ProductRestController {
 	public ResponseEntity<?> get(
 			@RequestParam(name = "page") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter sorter) {
+			@RequestParam(name = "sort", defaultValue = "date_desc") ProductSorter sorter) {
 		return ResponseEntity.ok(productService.findAll(PageRequest.of(page - 1, size, sorter.getSort())));
 	}
 	// @formatter:on

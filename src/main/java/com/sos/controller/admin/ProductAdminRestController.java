@@ -57,7 +57,7 @@ public class ProductAdminRestController {
 			@RequestParam(name = "status", required = false) ProductStatus productStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "9") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") ProductSorter sorter) {
+			@RequestParam(name = "sort", defaultValue = "date_desc") ProductSorter sorter) {
 		if(sorter == ProductSorter.best_selling) {
 			return ResponseEntity.ok(productService.findBestSellingProductDTO(query, brandId, categoryId, colorId, soleId, materialId, shoeHeight, benefit, shoeFeel, surface, productGender, productStatus, PageRequest.of(page - 1, size)));
 		}

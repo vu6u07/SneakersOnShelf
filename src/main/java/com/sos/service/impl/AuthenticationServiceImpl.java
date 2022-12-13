@@ -208,9 +208,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		account.setUpdateDate(date);
 		accountRepository.save(account);
 
-		emailService.sendEmail(new EmailRequest(new String[] { account.getEmail() }, null, null,
-				"[Sneakers On Shelf] Chào mừng đến với sneakers on shelf, đây là thông tin tài khoản của bạn.",
-				String.format("Tên tài khoản : %s\n" + "Mật khẩu      : %s", register.getUsername(), password), false));
+		CompletableFuture.runAsync(() -> {
+			try {
+				emailService.sendEmail(new EmailRequest(new String[] { account.getEmail() }, null, null,
+						"[Sneakers On Shelf] Chào mừng đến với sneakers on shelf, đây là thông tin tài khoản của bạn.",
+						String.format("Tên tài khoản : %s\n" + "Mật khẩu      : %s", register.getUsername(), password),
+						false));
+			} catch (UnsupportedEncodingException | MessagingException e) {
+				logger.error("{}", e);
+			}
+		});
 		return account;
 	}
 

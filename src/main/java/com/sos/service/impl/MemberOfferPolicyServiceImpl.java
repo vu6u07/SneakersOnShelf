@@ -76,6 +76,7 @@ public class MemberOfferPolicyServiceImpl implements MemberOfferPolicyService {
 		return rs;
 	}
 
+	@Transactional
 	@Override
 	public void updateMemberOfferPolicy(MemberOfferPolicy memberOfferPolicy) {
 		if (memberOfferPolicy.getOffer() < 0) {
