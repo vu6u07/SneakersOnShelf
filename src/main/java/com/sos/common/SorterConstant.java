@@ -58,7 +58,7 @@ public class SorterConstant {
 
 	public enum TransactionSorter {
 		// @formatter:off
-		date_desc("Mới nhất", Sort.by("createDate").ascending()),
+		date_desc("Mới nhất", Sort.by("createDate").descending()),
 		amount_asc("Giá trị tăng dần", Sort.by("amount").ascending()),
 		amount_desc("Giá trị giảm dần", Sort.by("amount").descending());
 		// @formatter:on

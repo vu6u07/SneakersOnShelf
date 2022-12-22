@@ -20,10 +20,10 @@ public interface StatisticRepository extends JpaRepository<Order, String> {
 	@Query(value = 
 			"SELECT * FROM \r\n" + 
 			"(SELECT COALESCE(COUNT(o.id), 0) AS monthlyCount, COALESCE(SUM(o.total - o.discount), 0) AS monthlyAmount FROM orders o JOIN (SELECT DISTINCT order_id FROM order_timeline WHERE order_timeline_type = 'APPROVED' AND created_date >= :firstDayOfMonth AND DATE(created_date) <= :date) t ON t.order_id = o.id WHERE order_status = 'APPROVED' AND o.total > 0) monthly\r\n" + 
-			"JOIN \r\n" + 
+			"JOIN " + 
 			"(SELECT COALESCE(COUNT(o.id), 0) AS dailyCount, COALESCE(SUM(o.total - o.discount), 0) AS dailyAmount FROM orders o JOIN (SELECT DISTINCT order_id FROM order_timeline WHERE order_timeline_type = 'APPROVED' AND DATE(created_date) = :date) t ON t.order_id = o.id WHERE order_status = 'APPROVED' AND o.total > 0) daily " + 
 			"JOIN " + 
-			"(SELECT COALESCE(SUM(oi.quantity), 0) AS 'monthlyProductQuantity' FROM orders o JOIN (SELECT DISTINCT order_id FROM order_timeline WHERE order_timeline_type = 'APPROVED' AND created_date >= '2022-11-01' AND DATE(created_date) <= '2022-11-21') t ON t.order_id = o.id JOIN order_items oi ON o.id = oi.order_id WHERE order_status = 'APPROVED' AND o.total > 0 AND oi.order_item_status = 'APPROVED') pro", nativeQuery = true)
+			"(SELECT COALESCE(SUM(oi.quantity), 0) AS 'monthlyProductQuantity' FROM orders o JOIN order_items oi ON o.id = oi.order_id WHERE  o.order_status = 'APPROVED' AND oi.order_item_status = 'APPROVED' AND DATE(o.create_date) >= :firstDayOfMonth AND DATE(o.create_date) <= :date) pro", nativeQuery = true)
 	OrderStatisticProjection getOrderStatisticProjection(String date, String firstDayOfMonth);
 	// @formatter:on
 

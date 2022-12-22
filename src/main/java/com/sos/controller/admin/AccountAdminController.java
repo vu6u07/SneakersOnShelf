@@ -14,6 +14,7 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +52,7 @@ public class AccountAdminController {
 			@RequestParam(name = "status", required = false) AccountStatus accountStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(accountService.findAccoutDTOs(query, accountStatus, PageRequest.of(page - 1, size)));
+		return ResponseEntity.ok(accountService.findAccoutDTOs(query, accountStatus, PageRequest.of(page - 1, size, Sort.by("createDate").descending())));
 	}
 	// @formatter:on
 

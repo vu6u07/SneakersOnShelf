@@ -56,10 +56,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate, a.point) FROM Account a JOIN a.roles r WHERE a.id = :id AND :role IN r")
 	Optional<AccountDTO> findAccountInfoDTOById(int id, Role role);
 
-	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate, a.point) FROM Account a WHERE (:accountStatus IS NULL OR a.accountStatus = :accountStatus) AND (:query IS NULL OR (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query))")
+	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate, a.point) FROM Account a LEFT JOIN a.customerInfo c WHERE (:accountStatus IS NULL OR a.accountStatus = :accountStatus) AND (:query IS NULL OR (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query OR c.phone LIKE :query))")
 	Page<AccountDTO> findAccountDTOs(String query, AccountStatus accountStatus, Pageable pageable);
 	
-	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate, a.point) FROM Account a JOIN a.roles r WHERE (:role IN r) AND (:accountStatus IS NULL OR a.accountStatus = :accountStatus) AND (:query IS NULL OR (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query))")
+	@Query(value = "SELECT new com.sos.dto.AccountDTO(a.id, a.username, a.email, a.fullname, a.picture, a.accountStatus, a.createDate, a.updateDate, a.point) FROM Account a JOIN a.roles r LEFT JOIN a.customerInfo c WHERE (:role IN r) AND (:accountStatus IS NULL OR a.accountStatus = :accountStatus) AND (:query IS NULL OR (CAST(a.id as string) LIKE :query OR a.email LIKE :query OR a.fullname LIKE :query OR c.phone LIKE :query))")
 	Page<AccountDTO> findStaffAccountDTOs(String query, AccountStatus accountStatus, Role role, Pageable pageable);
 	
 	@Modifying

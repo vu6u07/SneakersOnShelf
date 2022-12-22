@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import javax.validation.ValidationException;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,6 +26,12 @@ public class RestControllerExceptionHandler {
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public String validationException(ValidationException ex, WebRequest request) {
 		return ex.getMessage();
+	}
+	
+	@ExceptionHandler(value = { FileSizeLimitExceededException.class })
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String fileSizeLimitExceededException(FileSizeLimitExceededException ex, WebRequest request) {
+		return "Dung lượng tải lên quá lớn.";
 	}
 
 	@ExceptionHandler(value = { ParseException.class })

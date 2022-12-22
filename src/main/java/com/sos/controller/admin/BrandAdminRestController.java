@@ -43,7 +43,7 @@ public class BrandAdminRestController {
 			@RequestParam(name = "status", required = false) ActiveStatus activeStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size,
-			@RequestParam(name = "sort", defaultValue = "id_asc") BrandSorter brandSorter) {
+			@RequestParam(name = "sort", defaultValue = "id_desc") BrandSorter brandSorter) {
 		return ResponseEntity.ok(brandService.findAll(query, activeStatus, PageRequest.of(page - 1, size, brandSorter.getSort())));
 	}
 	// @formatter:on

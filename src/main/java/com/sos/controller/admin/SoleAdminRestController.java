@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +49,7 @@ public class SoleAdminRestController {
 			@RequestParam(name = "status", required = false) ActiveStatus activeStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(soleService.findAll(query, activeStatus, PageRequest.of(page - 1, size)));
+		return ResponseEntity.ok(soleService.findAll(query, activeStatus, PageRequest.of(page - 1, size, Sort.by("id").descending())));
 	}
 	
 	@PutMapping(value = "/soles/{id}/status")

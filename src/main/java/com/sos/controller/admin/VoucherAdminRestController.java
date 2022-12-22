@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +54,7 @@ public class VoucherAdminRestController {
 			@RequestParam(name = "status", required = false) VoucherStatus voucherStatus,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "8") int size) {
-		return ResponseEntity.ok(voucherService.findAll(query, voucherType, voucherAccess, voucherStatus, PageRequest.of(page - 1, size)));
+		return ResponseEntity.ok(voucherService.findAll(query, voucherType, voucherAccess, voucherStatus, PageRequest.of(page - 1, size, Sort.by("id").descending())));
 	}
 	
 	@GetMapping(value = "/vouchers/available")
